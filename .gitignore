@@ -22,10 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-/.agent
-/.agents
-/.claude
-/.commandcode
-/.copilot
-/.cursor
-/.github
+
+# Ignore root-level dot directories
+/.*/
