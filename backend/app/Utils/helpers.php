@@ -1,3 +1,5 @@
+<?php
+
 if (!function_exists('compare_times')) {
     function compare_times($time1, $time2): int
     {
@@ -47,7 +49,7 @@ if (!function_exists('truncate_text')) {
         return mb_strlen($text) <= $length ? $text : mb_substr($text, 0, $length) . $suffix;
     }
 }
-<?php
+
 
 if (! function_exists('order_status_labels')) {
     function order_status_labels(): array

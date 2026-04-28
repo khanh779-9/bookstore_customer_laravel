@@ -12,6 +12,12 @@ class TacGia extends Model
     protected $primaryKey = 'tacgia_id';
     public $timestamps = false;
     protected $fillable = ['ho', 'tendem', 'ten', 'diachi', 'sdt', 'email'];
+    protected $appends = ['full_name'];
+
+    public function getFullNameAttribute(): string
+    {
+        return trim("{$this->ho} {$this->tendem} {$this->ten}");
+    }
 
     public function sach()
     {

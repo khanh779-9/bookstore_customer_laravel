@@ -15,7 +15,6 @@ class VanPhongPham extends Model
 
     protected $fillable = [
         'sanpham_id',
-        'tenVPP',
     ];
 
     public function sanpham()

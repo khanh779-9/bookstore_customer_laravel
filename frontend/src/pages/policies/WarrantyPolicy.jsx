@@ -1,4 +1,4 @@
-import { FiShield, FiCheckCircle, FiClock, FiTool, FiHeadset, FiCamera, FiFileText, FiBox, FiZap, FiAlertCircle } from 'react-icons/fi';
+import { FiShield, FiCheckCircle, FiClock, FiTool, FiHeadphones, FiCamera, FiFileText, FiBox, FiZap, FiAlertCircle } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 export default function WarrantyPolicy() {
@@ -42,7 +42,7 @@ export default function WarrantyPolicy() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg shadow-blue-100"><FiHeadset /></div>
+              <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg shadow-blue-100"><FiHeadphones /></div>
               <div>
                 <div className="font-black text-gray-900 text-sm">Hỗ trợ đầy đủ</div>
                 <div className="text-xs text-gray-400 font-bold italic">Hotline & email hỗ trợ</div>
@@ -112,7 +112,7 @@ export default function WarrantyPolicy() {
         <aside className="lg:col-span-4 space-y-6">
           <div className="bg-yellow-500 text-white p-10 rounded-[2.5rem] shadow-xl shadow-yellow-100 space-y-6">
             <h3 className="font-black text-xl italic flex items-center gap-2">
-              <FiHeadset /> Cần hỗ trợ ngay?
+              <FiHeadphones /> Cần hỗ trợ ngay?
             </h3>
             <p className="text-sm text-white/90 font-medium italic">
               Đội ngũ CSKH sẵn sàng hỗ trợ bạn. Chúng tôi sẽ phản hồi trong 24 giờ.

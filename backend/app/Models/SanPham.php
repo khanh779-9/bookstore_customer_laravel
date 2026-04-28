@@ -17,6 +17,7 @@ class SanPham extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'tenSP',
         'danhmucSP_id',
         'hinhanh',
         'mo_ta',
@@ -83,12 +84,12 @@ class SanPham extends Model
 
     public function getTenHienThiAttribute(): string
     {
-        if ($this->relationLoaded('sach') && $this->sach && $this->sach->tenSach) {
-            return $this->sach->tenSach;
+        if ($this->tenSP) {
+            return $this->tenSP;
         }
 
-        if ($this->relationLoaded('vanPhongPham') && $this->vanPhongPham && $this->vanPhongPham->tenVPP) {
-            return $this->vanPhongPham->tenVPP;
+        if ($this->relationLoaded('sach') && $this->sach && $this->sach->tenSach) {
+            return $this->sach->tenSach;
         }
 
         return 'Sản phẩm #' . $this->sanpham_id;
@@ -120,8 +121,8 @@ class SanPham extends Model
         if (!empty($filters['q'])) {
             $keyword = $filters['q'];
             $query->where(function ($q) use ($keyword) {
-                $q->whereHas('sach', fn($sq) => $sq->where('tenSach', 'like', '%' . $keyword . '%'))
-                    ->orWhereHas('vanPhongPham', fn($vq) => $vq->where('tenVPP', 'like', '%' . $keyword . '%'));
+                $q->where('tenSP', 'like', '%' . $keyword . '%')
+                    ->orWhereHas('sach', fn($sq) => $sq->where('tenSach', 'like', '%' . $keyword . '%'));
             });
         }
 

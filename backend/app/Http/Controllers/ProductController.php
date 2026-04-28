@@ -23,7 +23,7 @@ class ProductController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        if ($request->expectsJson()) {
+        if ($request->expectsJson() || $request->is('api/*')) {
             return response()->json($products);
         }
 
@@ -53,20 +53,36 @@ class ProductController extends Controller
      */
     public function show(Request $request, int $id)
     {
-        $product = SanPham::with(['sach', 'vanPhongPham', 'danhGia.khachHang'])->findOrFail($id);
+        $product = SanPham::with([
+            'sach.tacgia', 
+            'sach.nhaxuatban', 
+            'vanPhongPham', 
+            'danhGia.khachHang',
+            'nhaCungCap',
+            'danhMuc'
+        ])->findOrFail($id);
         
         $avgRating = (float) $product->danhGia()->avg('rating');
         $totalReviews = (int) $product->danhGia()->count();
 
-        if ($request->expectsJson()) {
+        $reviews = $product->danhGia()->orderByDesc('danhgia_id')->limit(20)->get();
+        $relatedProducts = SanPham::with(['sach', 'vanPhongPham'])
+            ->where('danhmucSP_id', $product->danhmucSP_id)
+            ->where('sanpham_id', '!=', $product->sanpham_id)
+            ->where('soluongton', '>', 0)
+            ->limit(8)
+            ->get();
+
+        if ($request->expectsJson() || $request->is('api/*')) {
             return response()->json([
                 'product' => $product,
-                'avg_rating' => $avgRating,
-                'total_reviews' => $totalReviews,
+                'avgRating' => $avgRating,
+                'totalReviews' => $totalReviews,
+                'reviews' => $reviews,
+                'relatedProducts' => $relatedProducts
             ]);
         }
 
-        $reviews = $product->danhGia()->orderByDesc('danhgia_id')->limit(20)->get();
         $customerId = $this->getCustomerId();
         
         $isWishlisted = $customerId > 0 && SanPhamYeuThich::where('khachhang_id', $customerId)->where('sanpham_id', $id)->exists();
@@ -82,13 +98,6 @@ class ProductController extends Controller
                 ->exists();
             $canReview = $hasPurchased && !$alreadyReviewed;
         }
-
-        $relatedProducts = SanPham::with(['sach', 'vanPhongPham'])
-            ->where('danhmucSP_id', $product->danhmucSP_id)
-            ->where('sanpham_id', '!=', $product->sanpham_id)
-            ->where('soluongton', '>', 0)
-            ->limit(8)
-            ->get();
 
         return view('products.show', compact('product', 'reviews', 'avgRating', 'totalReviews', 'isWishlisted', 'canReview', 'alreadyReviewed', 'relatedProducts'));
     }
@@ -172,9 +181,14 @@ class ProductController extends Controller
 
     private function getCustomerId(): int
     {
-        // Lấy từ session (ưu tiên), không dùng auth()->user() để tránh lỗi undefined
-        $customerId = request()->session()->get('customer_id') ?? request()->session()->get('customer.id');
-        return $customerId ? (int)$customerId : 0;
+        // Kiểm tra nếu request có session (dành cho Web)
+        if (request()->hasSession()) {
+            $customerId = request()->session()->get('customer_id') ?? request()->session()->get('customer.id');
+            if ($customerId) return (int)$customerId;
+        }
+
+        // Fallback dùng auth (dành cho API/Sanctum)
+        return auth()->id() ?? 0;
     }
 
     private function handleAuthFailure(Request $request, string $msg = 'Vui lòng đăng nhập.')

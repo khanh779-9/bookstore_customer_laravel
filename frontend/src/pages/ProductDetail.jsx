@@ -1,29 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import api from '../api/client';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { productService } from '../services/productService';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import ProductCard from '../components/Product/ProductCard';
 import toast from 'react-hot-toast';
+import api from '../api/client';
 import { FiShoppingCart, FiHeart, FiStar, FiMinus, FiPlus, FiChevronRight, FiGift, FiShield, FiTruck, FiRefreshCw, FiArrowRight } from 'react-icons/fi';
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [reviewForm, setReviewForm] = useState({ rating: 5, binhluan: '' });
 
-  useEffect(() => {
-    setLoading(true);
-    api.get(`/products/${id}`).then(res => {
-      setData(res.data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-    window.scrollTo(0, 0);
-  }, [id]);
+  // Product Query
+  const { data, isLoading: loading, error } = useQuery({
+    queryKey: ['product', id],
+    queryFn: () => productService.getProductById(id),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[500px]">
@@ -31,7 +30,7 @@ export default function ProductDetail() {
     </div>
   );
   
-  if (!data) return (
+  if (error || !data) return (
     <div className="text-center py-20">
       <h2 className="text-2xl font-bold text-gray-800">Không tìm thấy sản phẩm.</h2>
       <Link to="/products" className="text-primary hover:underline mt-4 inline-block">Quay lại cửa hàng</Link>
@@ -39,7 +38,7 @@ export default function ProductDetail() {
   );
 
   const { product, reviews = [], avgRating = 0, totalReviews = 0, relatedProducts = [] } = data;
-  const name = product?.sach?.tenSach || product?.van_phong_pham?.tenVPP || product?.ten_hien_thi || '';
+  const name = product?.tenSP || product?.sach?.tenSach || product?.ten_hien_thi || '';
   const price = parseFloat(product.gia) || 0;
   
   // Calculate discount
@@ -57,8 +56,7 @@ export default function ProductDetail() {
     try {
       await api.post(`/products/${id}/reviews`, reviewForm);
       toast.success('Đánh giá đã được ghi nhận!');
-      const res = await api.get(`/products/${id}`);
-      setData(res.data);
+      queryClient.invalidateQueries(['product', id]);
       setReviewForm({ rating: 5, binhluan: '' });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Lỗi gửi đánh giá');
@@ -81,7 +79,7 @@ export default function ProductDetail() {
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm flex items-center justify-center min-h-[400px] relative overflow-hidden group">
             <img 
-              src={`/assets/images/${product.hinhanh}`} 
+              src={`/assets/images/products/${product.hinhanh}`} 
               alt={name} 
               className="max-w-full max-h-[500px] object-contain transition-transform duration-700 group-hover:scale-110"
               onError={(e) => { e.target.src = '/assets/images/products/defaultProduct.png'; }} 
@@ -153,17 +151,17 @@ export default function ProductDetail() {
             </div>
             <div className="flex justify-between py-2 border-b border-gray-50 md:border-none">
               <span className="text-gray-400">Nhà cung cấp:</span>
-              <span className="font-bold text-gray-800">{product.nhacungcap?.tenNhaCungCap || 'Đang cập nhật'}</span>
+              <span className="font-bold text-gray-800">{product.nha_cung_cap?.ten || product.nhaCungCap?.ten || 'Đang cập nhật'}</span>
             </div>
             {product.sach && (
               <>
                 <div className="flex justify-between py-2 border-b border-gray-50 md:border-none">
                   <span className="text-gray-400">Tác giả:</span>
-                  <span className="font-bold text-gray-800">{product.sach.tac_gia || 'Nhiều tác giả'}</span>
+                  <span className="font-bold text-gray-800">{product.sach.tacgia?.full_name || 'Nhiều tác giả'}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-50 md:border-none">
                   <span className="text-gray-400">Nhà xuất bản:</span>
-                  <span className="font-bold text-gray-800">{product.sach.nhaxuatban?.tenNhaXuatBan || 'Đang cập nhật'}</span>
+                  <span className="font-bold text-gray-800">{product.sach.nhaxuatban?.ten || 'Đang cập nhật'}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-50 md:border-none">
                   <span className="text-gray-400">Năm xuất bản:</span>
@@ -173,7 +171,7 @@ export default function ProductDetail() {
             )}
             <div className="flex justify-between py-2 border-b border-gray-50 md:border-none">
               <span className="text-gray-400">Danh mục:</span>
-              <span className="font-bold text-gray-800">{product.danh_muc_san_pham?.tenDanhMuc || 'Khác'}</span>
+              <span className="font-bold text-gray-800">{product.danh_muc?.tenDanhMuc || product.danhMuc?.tenDanhMuc || 'Khác'}</span>
             </div>
           </div>
 
@@ -224,7 +222,6 @@ export default function ProductDetail() {
 
       {/* Reviews & Related */}
       <div className="space-y-20">
-        {/* Tabs or Sections */}
         <section className="bg-white rounded-[2rem] p-8 md:p-12 border border-gray-100 shadow-sm">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4 space-y-8">
@@ -318,3 +315,4 @@ export default function ProductDetail() {
     </div>
   );
 }
+

@@ -5,15 +5,15 @@ import { FiTrash2, FiMinus, FiPlus, FiArrowLeft, FiShoppingBag, FiShield, FiTruc
 import toast from 'react-hot-toast';
 
 export default function Cart() {
-  const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const { cart = [], removeFromCart, updateCartItem, total = 0 } = useCart();
   const { isAuthenticated } = useAuth();
 
   const handleUpdateQuantity = (id, newQty) => {
     if (newQty < 1) return;
-    updateQuantity(id, newQty);
+    updateCartItem(id, newQty);
   };
 
-  if (cartItems.length === 0) {
+  if (!Array.isArray(cart) || cart.length === 0) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <div className="w-24 h-24 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-5xl mx-auto mb-6">
@@ -35,7 +35,7 @@ export default function Cart() {
     <div className="container mx-auto px-4 py-12 max-w-7xl">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-3xl md:text-4xl font-black text-gray-900 italic tracking-tight">Giỏ hàng</h1>
-        <span className="text-sm font-bold text-gray-400 italic">({cartItems.length} sản phẩm)</span>
+        <span className="text-sm font-bold text-gray-400 italic">({cart.length} sản phẩm)</span>
       </div>
 
       {!isAuthenticated && (
@@ -60,7 +60,7 @@ export default function Cart() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {cartItems.map((item) => (
+                {cart.map((item) => (
                   <tr key={item.sanpham_id} className="group hover:bg-gray-50/50 transition-colors">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
@@ -140,7 +140,7 @@ export default function Cart() {
             <div className="space-y-4">
               <div className="flex justify-between text-sm font-bold text-gray-400 italic">
                 <span>Tạm tính</span>
-                <span className="text-gray-900">{cartTotal.toLocaleString('vi-VN')}₫</span>
+                <span className="text-gray-900">{total.toLocaleString('vi-VN')}₫</span>
               </div>
               <div className="flex justify-between text-sm font-bold text-gray-400 italic">
                 <span>Phí vận chuyển</span>
@@ -150,7 +150,7 @@ export default function Cart() {
               <div className="pt-6 border-t border-gray-50 flex justify-between items-end">
                 <span className="font-black text-gray-900">Tổng cộng</span>
                 <div className="text-right">
-                  <div className="text-3xl font-black text-primary italic leading-none">{cartTotal.toLocaleString('vi-VN')}₫</div>
+                  <div className="text-3xl font-black text-primary italic leading-none">{total.toLocaleString('vi-VN')}₫</div>
                   <p className="text-[10px] text-gray-400 font-bold uppercase mt-2 italic">Đã bao gồm VAT</p>
                 </div>
               </div>

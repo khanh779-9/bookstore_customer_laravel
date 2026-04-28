@@ -29,12 +29,12 @@ class SanPhamYeuThich extends Model
         return $this->belongsTo(KhachHang::class, 'khachhang_id', 'khachhang_id');
     }
 
-    public static function toggle(int $customerId, int $productId): string
+    public static function toggle(int $customerId, int $productId): array
     {
         $existing = self::where('khachhang_id', $customerId)->where('sanpham_id', $productId)->first();
         if ($existing) {
             $existing->delete();
-            return 'removed';
+            return ['message' => 'Đã xóa khỏi danh sách yêu thích', 'added' => false];
         }
 
         self::create([
@@ -42,6 +42,6 @@ class SanPhamYeuThich extends Model
             'sanpham_id' => $productId,
             'ngaythem' => now(),
         ]);
-        return 'added';
+        return ['message' => 'Đã thêm vào danh sách yêu thích', 'added' => true];
     }
 }
