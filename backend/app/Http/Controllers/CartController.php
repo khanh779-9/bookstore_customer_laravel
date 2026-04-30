@@ -2,42 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GioHang;
-use App\Models\SanPham;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
+    protected $cartService;
+
+    public function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
+    }
+
     /**
      * Display the shopping cart.
      */
     public function index(Request $request)
     {
-        $customerId = $this->getCustomerId();
+        $cart = $this->cartService->getCart($this->getCustomerId());
 
-        if ($customerId > 0) {
-            $cart = GioHang::getOrCreateForCustomer($customerId);
-            $items = $cart->chiTiet()->with('sanPham.sach', 'sanPham.vanPhongPham')->get()->map(function($item) {
-                return [
-                    'sanpham_id' => $item->sanpham_id,
-                    'name' => $item->sanPham->ten_hien_thi,
-                    'price' => (float) $item->dongia,
-                    'quantity' => $item->soluong,
-                    'subtotal' => (float) $item->thanhtien,
-                    'image' => $item->sanPham->hinhanh
-                ];
-            })->toArray();
-            $total = (float) $cart->chiTiet()->sum('thanhtien');
-        } else {
-            $items = session('cart', []);
-            $total = collect($items)->sum('subtotal');
-        }
-
-        if ($request->expectsJson()) {
-            return response()->json(['items' => array_values($items), 'total' => $total]);
-        }
-
-        return view('cart.index', ['cart' => $items, 'total' => $total]);
+        if ($request->expectsJson()) return response()->json($cart);
+        return view('cart.index', $cart);
     }
 
     /**
@@ -50,42 +35,16 @@ class CartController extends Controller
             'quantity' => ['required', 'integer', 'min:1']
         ]);
 
-        $product = SanPham::findOrFail($validated['sanpham_id']);
-        if (!$product->hasStock($validated['quantity'])) {
-            return $this->handleFailure($request, 'Số lượng tồn không đủ.');
-        }
-
-        $customerId = $this->getCustomerId();
-        if ($customerId > 0) {
-            $cart = GioHang::getOrCreateForCustomer($customerId);
-            $cart->addItem($product->sanpham_id, $validated['quantity']);
-            $items = $cart->chiTiet->count(); // Simplified for response
-        } else {
-            $cart = session('cart', []);
-            $id = (string) $product->sanpham_id;
-            $qty = ($cart[$id]['quantity'] ?? 0) + $validated['quantity'];
-
-            if ($qty > $product->soluongton) {
-                return $this->handleFailure($request, 'Số lượng vượt quá tồn kho.');
+        try {
+            $cart = $this->cartService->addItem($this->getCustomerId(), $validated['sanpham_id'], $validated['quantity']);
+            
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Đã thêm vào giỏ hàng.', 'cart' => $cart]);
             }
-
-            $cart[$id] = [
-                'sanpham_id' => $product->sanpham_id,
-                'name' => $product->ten_hien_thi,
-                'price' => (float) $product->gia,
-                'quantity' => $qty,
-                'subtotal' => (float) $product->gia * $qty,
-                'image' => $product->hinhanh
-            ];
-            session(['cart' => $cart]);
-            $items = array_values($cart);
+            return redirect()->route('customer.cart.index')->with('success', 'Đã thêm vào giỏ hàng.');
+        } catch (\Exception $e) {
+            return $this->handleFailure($request, $e->getMessage());
         }
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Đã thêm vào giỏ hàng.', 'cart' => $items]);
-        }
-
-        return redirect()->route('customer.cart.index')->with('success', 'Đã thêm vào giỏ hàng.');
     }
 
     /**
@@ -94,32 +53,15 @@ class CartController extends Controller
     public function update(Request $request, int $id)
     {
         $validated = $request->validate(['quantity' => ['required', 'integer', 'min:1']]);
-        $product = SanPham::findOrFail($id);
 
-        if ($validated['quantity'] > $product->soluongton) {
-            return $this->handleFailure($request, 'Số lượng vượt quá tồn kho.');
+        try {
+            $this->cartService->updateItem($this->getCustomerId(), $id, $validated['quantity']);
+            
+            if ($request->expectsJson()) return response()->json(['message' => 'Đã cập nhật giỏ hàng.']);
+            return back()->with('success', 'Đã cập nhật giỏ hàng.');
+        } catch (\Exception $e) {
+            return $this->handleFailure($request, $e->getMessage());
         }
-
-        $customerId = $this->getCustomerId();
-        if ($customerId > 0) {
-            $cart = GioHang::getOrCreateForCustomer($customerId);
-            $cart->updateItem($id, $validated['quantity']);
-        } else {
-            $cart = session('cart', []);
-            if (!isset($cart[(string)$id])) {
-                return $this->handleFailure($request, 'Sản phẩm không có trong giỏ.');
-            }
-
-            $cart[(string)$id]['quantity'] = $validated['quantity'];
-            $cart[(string)$id]['subtotal'] = $cart[(string)$id]['price'] * $validated['quantity'];
-            session(['cart' => $cart]);
-        }
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Đã cập nhật giỏ hàng.']);
-        }
-
-        return back()->with('success', 'Đã cập nhật giỏ hàng.');
     }
 
     /**
@@ -127,21 +69,31 @@ class CartController extends Controller
      */
     public function remove(Request $request, int $id)
     {
-        $customerId = $this->getCustomerId();
-        if ($customerId > 0) {
-            $cart = GioHang::getOrCreateForCustomer($customerId);
-            $cart->chiTiet()->where('sanpham_id', $id)->delete();
-        } else {
-            $cart = session('cart', []);
-            unset($cart[(string)$id]);
-            session(['cart' => $cart]);
-        }
+        $this->cartService->removeItem($this->getCustomerId(), $id);
 
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Đã xóa sản phẩm.']);
-        }
-
+        if ($request->expectsJson()) return response()->json(['message' => 'Đã xóa sản phẩm.']);
         return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng.');
+    }
+
+    /**
+     * Merge items from localStorage into database cart.
+     */
+    public function merge(Request $request)
+    {
+        $validated = $request->validate([
+            'items' => ['required', 'array'],
+            'items.*.sanpham_id' => ['required', 'integer'],
+            'items.*.quantity' => ['required', 'integer', 'min:1']
+        ]);
+
+        try {
+            foreach ($validated['items'] as $item) {
+                $this->cartService->addItem($this->getCustomerId(), $item['sanpham_id'], $item['quantity']);
+            }
+            return response()->json(['message' => 'Đã hợp nhất giỏ hàng.']);
+        } catch (\Exception $e) {
+            return $this->handleFailure($request, $e->getMessage());
+        }
     }
 
     private function getCustomerId(): int

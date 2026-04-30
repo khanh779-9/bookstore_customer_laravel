@@ -15,8 +15,7 @@ class EmployeeAccountController extends Controller
 
     public function profile(Request $request)
     {
-        $employeeId = session('employee_id');
-        $employee = NhanVien::find($employeeId);
+        $employee = $request->user();
         if (!$employee) return response()->json(['message' => 'Không tìm thấy nhân viên'], 404);
         return response()->json($employee);
     }

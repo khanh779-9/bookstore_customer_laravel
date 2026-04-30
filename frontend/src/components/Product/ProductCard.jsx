@@ -1,148 +1,126 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../../contexts/CartContext";
-import { FiShoppingCart, FiHeart } from "react-icons/fi";
-import toast from "react-hot-toast";
-import api from "../../api/client";
+import { FiShoppingCart, FiEye, FiHeart } from "react-icons/fi";
+import { motion } from "framer-motion";
+import { useToast } from "../../contexts/ToastContext";
 import { useState } from "react";
+import { cn } from "../../utils/cn";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
-  // Nếu product có isWishlisted thì dùng, nếu không thì mặc định false
-  const [isWishlisted, setIsWishlisted] = useState(!!product.isWishlisted);
-  const [loadingWishlist, setLoadingWishlist] = useState(false);
-
-  const name =
-    product?.tenSP ||
-    product?.sach?.tenSach ||
-    product?.ten_hien_thi ||
-    `SP #${product.sanpham_id}`;
-  const price = parseFloat(product.gia) || 0;
-  const image = product.hinhanh || "placeholder.jpg";
-  const stock = product.soluongton || 0;
-
-  // Calculate discount
-  const activePromotion = product.promotions && product.promotions[0];
-  const discountPercent = activePromotion
-    ? parseFloat(activePromotion.pivot.tilegiamgia)
-    : 0;
-  const discountedPrice =
-    discountPercent > 0 ? price * (1 - discountPercent / 100) : price;
+  const { showToast } = useToast();
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
-    addToCart(product.sanpham_id, 1);
-    toast.success("Đã thêm vào giỏ hàng");
+    e.stopPropagation();
+    addToCart(product, 1);
   };
 
-  const handleToggleWishlist = async (e) => {
+  const toggleWishlist = (e) => {
     e.preventDefault();
-    if (loadingWishlist) return;
-    setLoadingWishlist(true);
-    try {
-      const res = await api.post("/wishlist/toggle", {
-        sanpham_id: product.sanpham_id,
-      });
-      setIsWishlisted(!!res.data.added);
-      toast.success(
-        res.data.message ||
-          (res.data.added ? "Đã thêm vào yêu thích" : "Đã bỏ khỏi yêu thích"),
-      );
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Lỗi thao tác yêu thích");
-    } finally {
-      setLoadingWishlist(false);
-    }
+    e.stopPropagation();
+    const next = !isWishlisted;
+    setIsWishlisted(next);
+    showToast(
+      next ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích",
+      "success",
+    );
   };
+
+  const hasPromo = product.promo_price && product.promo_price < product.price;
+
+  const discountPercent = hasPromo
+    ? Math.round(((product.price - product.promo_price) / product.price) * 100)
+    : 0;
 
   return (
-    <div className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col relative">
-      {/* Wishlist Heart Icon */}
-      <button
-        className={`absolute top-2 left-2 z-20 p-2 rounded-full border-2 ${isWishlisted ? "bg-red-100 border-red-200 text-red-500" : "bg-white border-gray-200 text-gray-400"} hover:bg-red-50 hover:text-red-500 transition-all`}
-        style={{ outline: "none" }}
-        onClick={handleToggleWishlist}
-        disabled={loadingWishlist}
-        title={isWishlisted ? "Bỏ khỏi yêu thích" : "Thêm vào yêu thích"}
-      >
-        <FiHeart className="w-5 h-5" />
-      </button>
-      <Link
-        to={`/products/${product.sanpham_id}`}
-        className="relative block h-48 sm:h-56 overflow-hidden bg-gray-50"
-      >
-        <img
-          src={`/assets/images/products/${image}`}
-          alt={name}
-          className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
-          onError={(e) => {
-            e.target.src = "/assets/images/products/defaultProduct.png";
-          }}
-        />
-
-        {/* Discount Badge */}
-        {discountPercent > 0 && (
-          <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">
-            -{discountPercent}%
-          </span>
-        )}
-
-        {stock <= 5 && stock > 0 && (
-          <span className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">
-            Chỉ còn {stock}
-          </span>
-        )}
-
-        {stock <= 0 && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
-            <span className="bg-white/90 text-gray-900 text-xs font-bold px-3 py-1 rounded-full">
-              Hết hàng
-            </span>
-          </div>
-        )}
-      </Link>
-
-      <div className="p-4 flex flex-col flex-grow space-y-2">
+    <motion.article
+      layout
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.2 }}
+      className="group p-1 bg-white border border-slate-100 hover:border-primary/20 shadow-sm hover:shadow-md transition-all flex flex-col overflow-hidden"
+    >
+      {/* IMAGE */}
+      <div className="relative p-1.5">
         <Link
-          to={`/products/${product.sanpham_id}`}
-          className="text-sm font-bold text-gray-800 hover:text-primary line-clamp-2 min-h-[40px] transition-colors"
+          to={`/products/${product.id}`}
+          className="block w-full h-[180px] bg-slate-50 flex items-center justify-center p-2 overflow-hidden"
         >
-          {name}
+          <img
+            src={`/assets/images/products/${product.image || "defaultProduct.png"}`}
+            alt={product.display_name}
+            className="w-full h-full object-contain"
+            loading="lazy"
+          />
+
+          {hasPromo && (
+            <div className="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+              -{discountPercent}%
+            </div>
+          )}
         </Link>
 
-        <div className="space-y-1">
-          {discountPercent > 0 ? (
-            <div className="flex flex-col">
-              <span className="text-xs text-gray-400 line-through">
-                {price.toLocaleString("vi-VN")}₫
-              </span>
-              <span className="text-red-500 font-black text-lg">
-                {discountedPrice.toLocaleString("vi-VN")}₫
-              </span>
-            </div>
-          ) : (
-            <span className="text-primary font-black text-lg">
-              {price.toLocaleString("vi-VN")}₫
-            </span>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between mt-auto pt-2">
-          <div className="text-[10px] text-gray-400">
-            Đã bán:{" "}
-            <span className="text-gray-600 font-bold">
-              {product.soluongban || 0}
-            </span>
-          </div>
+        {/* ACTIONS */}
+        <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
           <button
+            type="button"
+            onClick={toggleWishlist}
+            className={cn(
+              "w-7 h-7 rounded-lg flex items-center justify-center shadow-sm transition",
+              isWishlisted
+                ? "bg-red-500 text-white"
+                : "bg-white text-slate-400 hover:text-red-500",
+            )}
+          >
+            <FiHeart className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div className="px-3 pt-5 pb-2.5 flex flex-col gap-1">
+        <Link to={`/products/${product.id}`}>
+          <h3 className="text-[14px] font-bold text-secondary line-clamp-1 hover:text-primary transition-colors leading-tight">
+            {product.display_name}
+          </h3>
+        </Link>
+
+        {/* PRICE + CART */}
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            {hasPromo ? (
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-sm font-black text-primary">
+                  {product.promo_price.toLocaleString("vi-VN")}₫
+                </span>
+                <span className="text-[10px] text-slate-400 line-through">
+                  {product.price.toLocaleString("vi-VN")}₫
+                </span>
+              </div>
+            ) : (
+              <span className="text-sm font-black text-secondary">
+                {product.price.toLocaleString("vi-VN")}₫
+              </span>
+            )}
+          </div>
+
+          <button
+            type="button"
             onClick={handleAddToCart}
-            disabled={stock <= 0}
-            className={`p-2 rounded-lg transition-all ${stock > 0 ? "bg-primary/10 text-primary hover:bg-primary hover:text-white" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
-            title="Thêm vào giỏ hàng"
+            className="w-8 h-8 flex items-center justify-center bg-slate-50 text-slate-500 hover:bg-primary hover:text-white rounded-lg transition shadow-sm"
           >
             <FiShoppingCart className="w-4 h-4" />
           </button>
         </div>
+
+        {/* SOLD */}
+        <div className="text-[10px] text-slate-400 font-medium">
+          Đã bán {product.sold_quantity || 0}
+        </div>
       </div>
-    </div>
+    </motion.article>
   );
 }

@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.2
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 24, 2026 at 03:05 AM
--- Server version: 8.4.6
+-- Generation Time: Apr 29, 2026 at 12:33 PM
+-- Server version: 8.4.3
 -- PHP Version: 8.3.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -20,6 +20,22 @@ SET time_zone = "+00:00";
 --
 -- Database: `db_nhasach`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `accounttoken`
+--
+
+CREATE TABLE `accounttoken` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `user_type` enum('customer','employee','admin','') NOT NULL,
+  `token` text NOT NULL,
+  `device` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `expires_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -563,181 +579,43 @@ CREATE TABLE `sanpham` (
 -- Dumping data for table `sanpham`
 --
 
--- 1) INSERT đúng cột
-INSERT INTO `sanpham`
-(`sanpham_id`, `danhmucSP_id`, `tenSP`, `hinhanh`, `mo_ta`, `soluongton`, `donvitinh_id`, `soluongban`, `gia`, `nhacungcap_id`) VALUES
-(1, 1, 'Sách giáo khoa Toán 10 – Bộ Cánh Diều (Tập 1)', 'toan10_canhdieu_tap_1.jpg', 'Sách giáo khoa Toán 10 – Bộ Cánh Diều (Tập 1) là tài liệu chính thống, được sử dụng rộng rãi tại nhiều trường THPT trên toàn quốc. Sách bám sát mục tiêu chất lượng và cập nhật kiến thức hiện đại, giúp học sinh phát triển tư duy logic và năng lực giải quyết vấn đề.
+INSERT INTO `sanpham` (`sanpham_id`, `tenSP`, `danhmucSP_id`, `hinhanh`, `mo_ta`, `soluongton`, `donvitinh_id`, `soluongban`, `gia`, `nhacungcap_id`) VALUES
+(1, 'Sách giáo khoa Toán 10 – Bộ Cánh Diều (Tập 1)', 1, 'toan10_canhdieu_tap_1.jpg', 'Sách giáo khoa Toán 10 – Bộ Cánh Diều (Tập 1) là tài liệu chính thống, được sử dụng rộng rãi tại nhiều trường THPT trên toàn quốc. Sách bám sát mục tiêu chất lượng và cập nhật kiến thức hiện đại, giúp học sinh phát triển tư duy logic và năng lực giải quyết vấn đề.\r\n\r\nNội dung được trình bày ngắn gọn, có ví dụ minh họa thực tế cùng các bài tập đa dạng từ cơ bản đến vận dụng. Hệ thống câu hỏi tự luận, trắc nghiệm và gợi ý phương pháp tiếp cận giúp học sinh rèn luyện kỹ năng giải toán một cách chủ động.\r\n\r\nCuốn sách phù hợp để giảng dạy chính khóa tại trường phổ thông và là tài liệu luyện tập hữu ích cho học sinh cũng như giáo viên trong quá trình học và ôn tập Toán 10.', 129, 1, 47, 45000.000, 1),
+(2, 'Ngữ văn 11 - Tập 1', 1, 'Ngu-Van-11-Tap-1-600x853.jpg', 'Ngữ văn 11 - Tập 1', 112, 1, 33, 50000.000, 1),
+(3, 'Tiếng Anh 12 - Sách học sinh', 1, 'ta12-global.png', 'Tiếng Anh 12 - Sách học sinh', 75, 1, 23, 52000.000, 2),
+(4, 'Tiếng Anh 12 - Sách bài tập', 1, 'sach_ta_12_bt.jpg', 'Tiếng Anh 12 - Sách bài tập', 195, 1, 85, 98000.000, 2),
+(5, 'Đắc Nhân Tâm - Dale Carnegie', 1, 'dac-nhan-tam-1.jpg', 'Đắc Nhân Tâm - Dale Carnegie', 298, 1, 120, 85000.000, 1),
+(6, 'Harry Potter và Hòn đá Phù Thủy', 1, 'Sach-Noi-Harry-Potter-Tap-1-J-K-Rowling-audio-book-sachnoi.cc-4.jpg', '“Harry Potter và Hòn đá Phù Thủy” là cuốn mở đầu trong loạt truyện nổi tiếng của J.K. Rowling, kể về hành trình cậu bé mồ côi Harry khám phá thân thế phù thủy của mình và bước vào Trường Pháp thuật Hogwarts. Tại đây, Harry kết bạn, đối mặt những thử thách đầu tiên và khám phá bí mật xoay quanh Hòn đá Phù Thủy cùng thế lực hắc ám đứng phía sau.\r\n\r\nVới câu chuyện hấp dẫn, giàu trí tưởng tượng và đầy cảm xúc, tập 1 mang lại sự khởi đầu hoàn hảo cho chuyến phiêu lưu huyền thoại của Harry Potter, phù hợp cho mọi lứa tuổi yêu thích thế giới phép thuật.', 88, 1, 61, 135000.000, 2),
+(7, 'Vở hồng hà 96 trang', 2, 'vo_hong_ha_96t.jpg', 'Vở Hồng Hà 96 trang được làm từ giấy trắng sáng, mịn, không lem mực và cho nét chữ rõ ràng. Bìa vở thiết kế bền đẹp, cứng cáp, thích hợp sử dụng hằng ngày cho học sinh, sinh viên và nhân viên văn phòng. Mỗi lốc gồm 10 quyển, tiết kiệm và tiện lợi cho việc học tập hoặc mua dùng dài hạn. Sản phẩm ghi chép tốt, phù hợp mọi loại bút.', 300, 2, 40, 82000.000, 3),
+(21, 'Thước nhôm 30cm', 2, 'thuoc_nhom_30cm.jpg', 'Thước nhôm 30cm là dụng cụ đo đạc bền bỉ, phù hợp cho học sinh, sinh viên, dân văn phòng và kỹ thuật. Thân thước được làm từ hợp kim nhôm cứng cáp, chống cong vênh và không dễ gãy như thước nhựa. Bề mặt thước được anod hóa hoặc phủ sơn mờ giúp hạn chế trầy xước và giữ thẩm mỹ lâu dài.\r\n\r\nVạch chia được khắc laser sắc nét, không phai theo thời gian, đảm bảo độ chính xác khi kẻ, đo hoặc làm việc kỹ thuật. Mép thước thẳng, bám mặt giấy tốt, hỗ trợ kẻ line nhanh và không bị trượt. Thiết kế mỏng, nhẹ, dễ cầm và dễ cất trong balo hoặc hộp bút. Một số mẫu còn có đệm chống trượt hoặc cạnh bo tròn để an toàn khi sử dụng.\r\n\r\nTính năng nổi bật:\r\n- Chất liệu nhôm cao cấp, cứng, bền.\r\n- Vạch chia khắc laser chính xác, không phai.\r\n- Không cong, không gãy, dùng lâu vẫn giữ form.\r\n- Thiết kế gọn nhẹ, dễ mang theo.\r\n- Chiều dài tiêu chuẩn 30cm, phù hợp học tập – văn phòng – kỹ thuật.', 29, 2, 44, 15000.000, 3),
+(24, 'Từ điển Y học – Sức khoẻ – Bệnh lý (Anh – Việt)', 1, 'td04.jpg', 'Từ điển Y học – Sức khoẻ – Bệnh lý (Anh – Việt) là tài liệu tổng hợp các thuật ngữ chuyên ngành liên quan đến cấu tạo cơ thể, triệu chứng, bệnh lý, xét nghiệm, điều trị, dược phẩm và chăm sóc sức khoẻ. Nội dung cung cấp từ vựng tiếng Anh kèm nghĩa tiếng Việt ngắn gọn, giúp người học, nhân viên y tế, sinh viên và người quan tâm dễ dàng tra cứu và hiểu đúng các khái niệm.\r\n\r\nTừ điển bao gồm các thuật ngữ từ cơ bản đến nâng cao, được sắp xếp theo bảng chữ cái, hỗ trợ tra cứu nhanh chóng. Đây là nguồn tài liệu hữu ích trong học tập, nghiên cứu, đọc tài liệu y học nước ngoài hoặc giao tiếp trong môi trường chăm sóc sức khỏe.', 1200, 1, 0, 35000.000, 12),
+(26, 'Từ điển Mẫu câu tiếng Nhật', 1, 'td01.jpg', 'Từ điển Mẫu câu tiếng Nhật là tài liệu tổng hợp các câu giao tiếp cơ bản đến nâng cao, được sử dụng thường xuyên trong học tập, công việc và đời sống hằng ngày. Nội dung bao gồm các mẫu câu thông dụng theo chủ đề như chào hỏi, hỏi đường, mua sắm, ăn uống, học tập, xin phép, bày tỏ cảm xúc và giao tiếp trong môi trường công việc.', 600, 1, 0, 54000.000, 11),
+(27, 'Kế toán Doanh nghiệp ACCESS', 1, 'th12.jpg', 'Cuốn sách “Kế toán Doanh nghiệp ACCESS” giới thiệu cách ứng dụng Microsoft Access vào việc xây dựng hệ thống kế toán đơn giản nhưng hiệu quả cho doanh nghiệp. Sách hướng dẫn người đọc cách thiết kế cơ sở dữ liệu kế toán, tạo bảng, truy vấn, biểu mẫu và báo cáo để quản lý các nghiệp vụ như thu – chi, bán hàng, mua hàng, công nợ và kho hàng.\r\n\r\nVới cách trình bày dễ hiểu, ví dụ trực quan và bài tập thực hành, sách phù hợp cho sinh viên kế toán – CNTT, người mới học Access, cũng như doanh nghiệp nhỏ muốn tự xây dựng công cụ kế toán tiết kiệm, linh hoạt và dễ sử dụng.', 700, 1, 0, 70000.000, 16),
+(28, 'Hộp tập giấy A4 – 400 tờ', 2, 'tap-giay-a4-400-to.jpg', 'Hộp tập giấy A4 – 400 tờ được sản xuất từ giấy chất lượng cao, bề mặt mịn, trắng sáng và viết rất êm tay. Giấy định lượng vừa phải, không lem mực, không thấm ngược, phù hợp cho viết tay, học tập, làm bài, ghi chép hoặc in tài liệu. Tập được đóng hộp gọn gàng, tiện bảo quản và mang theo. Đây là lựa chọn phù hợp cho học sinh, sinh viên và văn phòng cần sử dụng giấy thường xuyên.', 500, 1, 0, 100000.000, 14),
+(29, 'Từ điển Kinh doanh – Tiếp thị Hiện đại', 1, 'td02.gif', 'Quyển sách “Từ điển Kinh doanh – Tiếp thị Hiện đại” (Modern Business & Marketing Dictionary) của tác giả Cung Kim Tiến (Bút danh Anh Tuấn) trình bày các thuật ngữ đang sử dụng thịnh hành trong giao dịch kinh doanh và tiếp thị trong nước và quốc tế. Đặc điểm của quyển sách là các thuật ngữ được đặt trong các bối cảnh khác nhau, bằng cách dẫn các đoạn văn xuất hiện trong thực tiễn kinh doanh quốc tế, giúp bạn đọc hiểu rõ được ý nghĩa và cách sử dụng trong thực tiễn của các thuật ngữ chuyên biệt này, với các nội dung thú vị khác nhau.\r\nTác giả đã chọn lọc một cách công phu các đoạn văn đa dạng và phong phú, xuất hiện trên các ấn phẩm quốc tế khác nhau, giúp độc giả có cơ hội thuận lợi trong giao tiếp, soạn thảo, hoặc tham gia các buổi họp liên quan đến kinh doanh, đảm nhiệm các nhiệm vụ về kinh doanh, quản lý và tiếp thị trong các doanh nghiệp.\r\nQuyển sách này được kỳ vọng sẽ trợ giúp hiệu quả để bạn đọc tiếp cận một lĩnh vực tri thức kinh doanh bằng Anh ngữ, là bạn đồng hành trên con đường sự nghiệp trong thời kỳ quốc tế hóa.', 600, 1, 23, 23000.000, 1),
+(30, 'Đại từ điển tiếng Việt', 1, 'td03.jpg', 'Thêm yêu tiếng Việt\r\n\r\nTừ lâu chúng ta đã có nhiều công trình nghiên cứu về kho tàng tiếng Việt, thế nhưng “Đại từ điển tiếng Việt” (NXB Đại học Quốc gia TPHCM - Nguyễn Như Ý chủ biên) vừa ra mắt bạn đọc là công trình đầy đặn và đồ sộ nhất. Cuốn sách đã bắt nhịp cầu cho những ai yêu tiếng mẹ…\r\n\r\nCầm trên tay cuốn Đại từ điển dày gần 2.000 trang mới cảm nhận hết tâm huyết của những người làm sách. Cuốn từ điển này được in lần đầu tiên vào năm 1999, đến nay, đáp ứng nhu cầu của bạn đọc, các tác giả đã tiến hành nghiên cứu, bổ sung.\r\n\r\nTrong lần tái bản này, ban biên soạn đã chọn và đưa vào sách những từ ngữ mới xuất hiện và đã được dùng rộng rãi trong đời sống và trên các phương tiện thông tin đại chúng nhằm làm tăng tính mới mẻ và tiện ích cho người sử dụng.\r\n\r\nMột trong những ý tưởng chinh phục người đọc là tính đa dạng của Đại từ điển tiếng Việt. Bởi nó không chỉ đơn thuần là sự tra cứu nghĩa các từ mà mở ra chân trời kiến thức mới. Việc đan xen những kiến thức cơ bản về văn hóa, văn minh Việt Nam và thế giới, giới thiệu tổng quan và hệ thống các hiện vật văn hóa như: Đơn vị đo lường của Việt Nam và thế giới, đồng bạc Việt xưa và nay, các loại trống đồng hiện có ở Việt Nam, quốc kỳ các nước trên thế giới… Đây là những thông tin bổ ích đáp ứng nhu cầu bổ sung kiến thức cơ bản của học sinh - sinh viên và các bạn trẻ Việt Nam.', 600, 1, 23, 25000.000, 3),
+(31, 'Từ điển mới ...', 1, 'td05.jpg', 'Từ điển mới ...', 300, 1, 12, 50000.000, 2),
+(32, 'Từ điển địa danh hành chính Nam Bộ', 1, 'td06.jpg', 'Từ điển địa danh hành chính Nam Bộ do tác giả Nguyễn Đình Tư biên soạn hết sức công phu, tổng hợp được nhiều tư liệu quý, là công cụ giúp bạn đọc tra cứu một cách khoa học về địa danh hành chính. Đây là cuốn sách có giá trị không chỉ bởi nó cung cấp một lượng mục từ khá đồ sộ, mà còn bởi tác giả đã dành rất nhiều công sức và tâm huyết để sưu tầm, xử lý tư liệu về vùng đất có bề dày truyền thống lịch sử, nhưng cũng có sự thay đổi nhiều và phức tạp nhất về địa danh hành chính', 500, 1, 50, 300000.000, 2),
+(33, '100 thủ thuật ứng với 100 bài tập thực hành', 1, 'th01.gif', '100 thủ thuật ứng với 100 bài tập thực hành được hướng dẫn, giải thích theo bố cục chặt chẽ, cách trình bày rõ ràng, dễ sử dụng, bạn đọc có thể tự mình xử lý những vấn đề nảy sinh trong quá trình thực hành đồng thời giúp các bạn thao tác nhanh trên bảng tính.', 400, 1, 0, 60000.000, 2),
+(34, 'Lập trình Web bằng PHP 5.3 và cơ sở dữ liệu MySQL 5.1 - Tập 2', 1, 'th02.jpg', 'Tiếp theo tập 1, tập 2 của cuốn sách \"Lập trình Web bằng PHP 5.3 và cơ sở dữ liệu MySQL 5.1\" bao gồm 10 chương và ứng dụng đính kèm lần lượt giới thiệu cùng bạn đọc các kiến thức liên quan đến Session, Cookie, giỏ hàng trực tuyến, tìm kiếm và phân trang dữ liệu, lập trình hướng đối tượng và sử dụng Zend Framework.\r\n\r\nChương 8 trình bày kiến thức cơ bản của kịch bản trình chủ PHP và cơ sở dữ liệu MySQL.\r\n\r\nSang chương 9, bạn tiếp tục tìm hiểu cách thiết kế trang Web cho phép người sử dụng tìm kiếm và phân trang dữ liệu trình bày với nhiều hình thức khác nhau.\r\n\r\nĐể xây dựng ứng dụng thương mại điện tử hoàn chỉnh và mang tính chuyên nghiệp cao, bạn tiếp tục tìm hiểu cách sử dụng hàm Session và Cookie trong chương 10 để lưu trữ thông tin của người sử dụng nhằm vào mục đích quản lý tài nguyên của Website.\r\n\r\nMọi ứng dụng thương mại điện tử đều cung cấp chương giỏ hàng trực tuyến, bạn cũng được tìm hiểu cách xây dựng giỏ hàng bằng cách sử dụng Session lẫn Cookie trong chương 11.\r\n\r\nKhi có nhu cầu trình bày hình ảnh, đồ thị và âm thanh lẫn phim ảnh, bạn tìm hiểu cách sử dụng mã PHP trong chương 12.\r\n\r\nTiếp theo, bạn có thể tìm hiểu cú pháp của kịch bản PHP trong chương 13 và học cách lập trình hướng đối tượng và sử dụng lớp này vào ứng dụng trong chương 14.\r\n\r\nChương 15 giúp bạn sử dụng kịch bản trình khách Java Script để thay đổi góc nhìn và ứng xử của thẻ HTML trong trang Web.\r\n\r\nSang chương 16, bạn khám phá thư viện mã nguồn mở Zend viết bằng PHP dùng cho các loại cơ sở dữ liệu và học cách sử dụng các lớp trong thư viện này vào ứng dụng bán hàng trực tuyến trong chương 17.', 60, 1, 0, 80000.000, 2),
+(35, 'Lập trình Web bằng PHP 5.3 và cơ sở dữ liệu MySQL 5.1 - Tập 1', 1, 'th03.jpg', 'Tập 1 của cuốn sách \"Lập trình Web bằng PHP 5.3 và cơ sở dữ liệu MySQL 5.1\" bao gồm 7 chương và ứng dụng đính kèm. Chương 1 cung cấp cho bạn kiến thức từ chức năng của Website, cài đặt gói WamSever 2.0 và cấu hình để có thể vận hành ứng dụng Web bằng PHP, MySQL và Apache Web Sever.\r\n\r\nSang chương 2, bạn tiếp tục tìm hiểu cách tạo Website và thiết kế cấu trúc dùng cho doanh nghiệp bằng hệ quản trị nội dung mã nguồn mở Joomla. Nhằm thỏa mãn nội dung trình bày, bạn tiếp tục tìm hiểu cách thiết kế trang Web tĩnh hay động bằng mã tự sinh PHP với phần mềm Dreamweaver CS trong chương 3 và thẻ HTML trong chương 4.\r\n\r\nTiếp theo, bạn có thể tìm hiểu cú pháp của kịch bản PHP trong chương 5 và học cách sử dụng ứng dụng PhpMyAdmin để quản trị cơ sở dữ liệu MySQL trong chương 6. Sang chương 7 bạn tìm hiểu phát biểu SQL của cơ sở dữ liệu MySQL dùng để xây dựng ứng dụng bán hàng trực tuyến.', 100, 1, 0, 80000.000, 1),
+(36, 'Tin học thực hành cơ bản', 1, 'th04.jpg', 'Ngày nay với sự phát triển không ngừng của kinh tế nói chung và ngành công nghệ thông tin nói riêng, chúng ta có thể dễ dàng tiếp xúc và làm quen với máy vi tính. Tuy nhiên đây là một lĩnh vực mới lại chưa được phổ cập ở mọi cấp học nên các em sẽ có cảm giác bỡ ngỡ, thiếu tự tin khi lần đầu làm quen với chiếc máy tính đa năng. Mỗi bài học trong cuốn sách là một bài thực hành, được thực hiện qua từng bước cơ bản với hình ảnh minh họa trực quan và những lời giải thích chi tiết.', 100, 1, 0, 35000.000, 1),
+(37, 'Làm việc với máy tính qua desktop', 1, 'th05.jpg', 'Mục Lục:\r\n\r\nBài 1: Máy tính điện tử và hệ điều hành\r\n\r\nBài 2: Hệ điều hành Window XP\r\n\r\nBài 3: Làm việc với máy tính qua desktop\r\n\r\nBài 4: Tệp tin và thư mục\r\n\r\nBài 5: Sử dụng Window Explorer\r\n\r\nBài 6: Một số thao tác cần biết\r\n\r\nPhụ lục – Những tổ hợp phím tắt', 20, 1, 0, 35000.000, 1),
+(38, 'Windows Server 2008', 1, 'th06.jpg', 'Kế thừa những ưu điểm vượt trội và sự thành công của Windows Server 2003 cùng những phiên bản Windows trước đó, hãng Microsoft tiếp tục cho ra đời một phiên bản hệ điều hành dành cho máy chủ mới, Windows Server 2008. Phiên bản này đem đến cho người dùng sự nhanh chóng trong cài đặt; sự tiện lợi trong quản trị hệ thống, tương tác với các thành phần và dịch vụ vì được tập trung vài một công cụ duy nhất – Server Manager, những cải tiến đáng chú ý trên Windows Firewall; công nghệ ảo hoá…\r\n\r\nWindows Server 2008 còn cung cấp cho người sử dụng cách thức cài đặt Server Core, bao gồm những thành phần cơ bản nhất của Windows Server và giao diện dòng lệnh. Với kiểu cài đặt này, giao diện đồ hoạ quen thuộc của Windows cùng những dịch vụ không cần thiết sẽ không được cài đặt lên hệ thống. Nhờ đó nâng cao độ bảo mật và nâng cấp hệ thống.', 23, 1, 0, 65000.000, 2),
+(39, 'Lập trình C nâng cao', 1, 'th06.jpg', 'Cuốn sách này gồm những nội dung chính sau:\r\n# Chương 1: Các khái niệm cơ bản\r\n# Chương 2: Hằng biến và mảng\r\n# Chương 3: Biểu thức\r\n# Chương 4: Vào ra\r\n# Chương 5: Các toán tử điều khiển\r\n# Chương 6: Hàm và cấu trúc chương trình\r\n# Chương 7: Cấu trúc\r\n# Chương 8: Quản lý màn hình và cửa sổ\r\n# Chương 9: Đồ họa\r\n# Chương 10: Thao tác trên các tập tin\r\n# Chương 11: Lưu trữ dữ liệu và tổ chức bộ nhớ chương trình\r\n# Chương 12: Các chỉ thị tiền xử lý\r\n# Chương 13: Sử dụng ngắt trong C\r\n# Chương 14: Truy nhập trực tiếp vào bộ nhớ\r\n# Chương 15: Hàm xử ngắt và chương trình thường trú\r\n# Chương 16: Âm thanh, âm nhạc\r\n# Chương 17: Lập trình theo thời gian, theo sự kiện và trò chơi\r\n# Chương 18: Giao diện giữa C và Assembler\r\n# Phụ lục 1: Quy tắc xuống dòng và sử dụng các khoảng trống khi viết chương trình\r\n# Phụ lục 2: Tóm tắt các hàm chuẩn của Turbo C\r\n# Phụ lục 3: Bảng mã ASCII\r\n# Phụ lục 4: Cài đặt Turbo C vào đĩa cứng\r\n# Phụ lục 5: Hướng dẫn sử dụng môi trường kết hợp Turbo C\r\n# Phụ lục 6: Hệ soạn thảo của Turbo C\r\n# Phụ lục 7: Dùng menu project dịch chương trình trên nhiều tệp\r\n# Phụ lục 8: Dịch chương trình theo chế độ dòng lệnh TCC\r\n# Phụ lục 9: Sửa đổi cú pháp và gỡ rối chương trình\r\n# Phụ lục 10: Các mô hình bộ nhớ\r\n# Phụ lục 11: Danh sách các hàm của Turbo C theo thứ tự ABC\r\n# Phụ lục 12: Hàm với đối số bất định trong C\r\n# Phụ lục 13: Một số chương trình hữu ích', 100, 1, 0, 80000.000, 2),
+(40, 'Giáo trình học nhanh SQL Server 2008', 1, 'th08.jpg', 'Bộ sách “Giáo trình học nhanh SQL Server 2008” được biên soạn dành cho các nhà phát triển và các nhà quản trị cơ sở dữ liệu, những người đang công tác trong lĩnh vực quản lý dữ liệu doanh nghiệp và cho tất cả những ai quan tâm đến SQL Server 2008.\r\n\r\nVới cách thiết kế và bố cục rõ ràng theo từng chủ điểm cụ thể, bộ sách tập trung trình bày những tính năng chính của SQL Server 2008 nhằm mục đích giúp bạn đọc tăng cường kiến thức đồng thời nâng cao kỹ năng sử dụng sản phẩm mới rất tuyệt vời này. Bộ sách được chia thành 2 tập với bốn phần chính sau đây:', 100, 1, 0, 90000.000, 2),
+(41, '160 Vấn Đề Cần Nên Biết Khi Sử Dụng Đồ Họa Máy Vi Tính', 1, 'th09.jpg', '“160 Vấn Đề Cần Nên Biết Khi Sử Dụng Đồ Họa Máy Vi Tính” bao gồm những vấn đề cơ bản và thiết yếu mà những người đang học hay làm đồ họa máy vi tính thường quan tâm tìm hiểu nhằm làm việc hiệu quả hơn với các chương trình phần mềm như Photoshop, CorelDRAW và Illustrator.\r\n\r\nSách gồm 3 phần, được thiết kế và bố cục theo từng vấn đề cụ thể từ cơ bản đến chuyên nghiệp như tùy biến Photoshop cho các dự án mà bạn thực hiện, chỉnh sửa các bức ảnh chân dung, tạo nên điều kỳ diệu với những hiệu ứng số đặc biệt, trình bày hình ảnh một cách chuyên nghiệp, tạo các thiết kế và viết lời truyện tranh trong CorelDRAW, và áp dụng các hiệu ứng với Illustrator.\r\n\r\nSách được trình bày ngắn gọn, rõ ràng kèm hình ảnh minh họa. Ngoài ra sách còn bao gồm nhiều thủ thuật và lưu ý hữu ích.', 321, 1, 0, 100000.000, 2),
+(42, 'Giáo trình học nhanh SQL Server 2008', 1, 'th10.jpg', 'Bộ sách “Giáo trình học nhanh SQL Server 2008” được biên soạn dành cho các nhà phát triển và các nhà quản trị cơ sở dữ liệu, những người đang công tác trong lĩnh vực quản lý dữ liệu doanh nghiệp và cho tất cả những ai quan tâm đến SQL Server 2008.\r\n\r\nVới cách thiết kế và bố cục rõ ràng theo từng chủ điểm cụ thể, bộ sách tập trung trình bày những tính năng chính của SQL Server 2008 nhằm mục đích giúp bạn đọc tăng cường kiến thức đồng thời nâng cao kỹ năng sử dụng sản phẩm mới rất tuyệt vời này.', 500, 1, 0, 70000.000, 2),
+(43, 'Microsoft Word 2007 thủ thuật', 1, 'th11.jpg', 'Microsoft Word 2007 nói riêng và Microsoft Office 2007 nói chung có nhiều đổi mới. Microsoft chẳng những cung cấp cho người dùng giao diện đẹp mắt mà còn có nhiều tiện ích và trực quan hơn so với các phiên bản trước đây. Thay cho thanh menu và các thanh dụng cụ là một hệ thống Ribbon bao gồm các thẻ, các nhóm, trong từng menu lại có các menu phụ và các lệnh. Khi bạn trỏ chuột vào biểu tượng nào của hệ thống này sẽ hiển thị ScreenTip cho biết chức năng và công dụng của chúng. Chẳng những thế, Word còn thể hiện tức thời hiệu quả của từng lệnh để bạn xem, trước khi chọn chúng.\r\n\r\nTrong quyển sách này, chúng tôi trình bày tóm tắt lý thuyết căn bản về soạn thảo, chỉnh sửa, định dạng văn bản và một số thủ thuật mà bất cứ ai làm công tác văn phòng đều phải sử dụng. Nội dung sách gồm 6 bài: 1-Thủ thuật tổng quát, 2-Soạn thảo và chỉnh sửa văn bản, 3-Định dạng văn bản, 4-WordArt và xử lý hình ảnh, 5-Liên kết và Web, 6-Bảo mật & in ấn văn bản,. Từ bài 2 đến bài 4, trước khi trình bày thủ thuật, chúng tôi tóm tắt lý thuyết giống như giáo trình Word 2007 để bạn thực hành', 100, 1, 0, 75000.000, 1),
+(44, '', 1, 'th12.jpg', '', 50, 1, 0, 80000.000, 11),
+(45, 'C++ nâng cao', 1, 'th13.gif', 'Cuốn sách gồm 12 chương và 7 phụ lục:\r\n\r\nChương 1 hướng dẫn cách làm việc với phần mềm TC++ 3.0 để thử nghiệm các chương trình, trình bày sơ lược về các phương pháp lập trình và giới thiệu một số mở rộng đơn giản của C.\r\n\r\nChương 2 trình bày các khả năng mới trong việc xây dựng và sử dụng hàm trong C++ như biến tham chiếu, đối có kiểu tham chiếu, đối có giá trị mặc định, hàm trực tuyến, hàm trùng tên, hàm toán tử.\r\n\r\nChương 3 nói về một khái niệm trung tâm của lập trình hướng đối tượng là lớp gồm: Định nghĩa lớp, khai báo các biến, mảng đối tượng ( kiểu lớp ), phương pháp, dùng con trỏ this trong phương thức, phạm vi truy xuất của các thành phần, các phương thức toán tử.\r\n\r\nChương 4 trình bày các vấn đề tạo dựng, sao chép, huỷ bỏ các đối tượng và các vấn đề khác có liên quan như: Hàm tạo, hàm tạo sao chép, hàm huỷ, toán tử gán, cấp phát bộ nhớ cho đối tượng, hàm bạn, lớp bạn.\r\n\r\nChương 5 trình bày một khái niệm quan trong tạo nên khả năng mạnh của lập trình hướng đối tượng trong việc phát triển, mở rộng phầm mềm, đó là khả năng thừa kế củaw các lớp.\r\n\r\nChương 6 trình bày một khái niệm quan trọng khác cho phép xử lý các vấn đề khác nhau, các thực thể khác nhau, các thuật toán khác nhau theo cùng một lược đồ thống nhất, đó là tính tướng ứng bội và phương thức ảo. Các công cụ này cho phép dễ dàng tổ chức chương trình quản lý nhiều dạng đối tượng khác nhau.\r\n\r\nChương 7 trình bày các thao tác trên tệp như: tạo một tệp mới, ghi dữ liệu từ bộ nhớ lên tệp, đọc dữ liệu từ tệp vào bộ nhớ...\r\n\r\nChương 8 nói về việc tổ chức vào/ ra trong C++.C++ đưa vào một khái niệm mới gọi là các dòng tin ( Stream ), Các thao tác vào/ra sẽ thực hiện trao đổi dữ liệu giữa các bộ nhớ với dòng tin: Vào là chuyển dữ liệu từ dòng nhập vào bộ nhớ, ra là chuyển dữ liệu từ bộ nhớ lên dòng xuất. Để nhập xuất dữ liệu trên một thiết bị cụ thể nào, ta chỉ cần gắn dòng nhập xuất với thiết bị đó. Việc tổ chức vào ra theo cách như vậy là rất khoa học và tiện lợi vì nó có tính độc lập thiết bị.\r\n\r\nChương 9 trình bày các hàm đồ hoạ sử dụng trong C và C++. Các hàm này được sử dụng rải rác trong toàn bộ cuốn sách để xây dựng các đối tượng đồ hoạ.\r\n\r\nChương 10 trình bày các hàm truy xuất trực tiếp vào bộ nhớ của máy tính, trong đó có bộ nhớ màn hình. Các hàm này sẽ được sử dụng trong chương 11 để xây dựng các lớp menu và cửa sổ.\r\n\r\nChương 11 giới thiệu 5 chương trình tương đối hoàn chỉnh nhằm minh hoạ thêm khả năng và kỹ thuật lập trình hướng đối tượng trên C++.\r\n\r\nChương 12 trình bày thêm một số chương trình đối tượng trên C++. Đây là các chương trình tương đối phức tạp, hữu ích và sử dụng các công cụ mạnh của C++.', 200, 1, 0, 83000.000, 11),
+(46, 'Thủ thuật thiết kế Web nhanh', 1, 'th14.jpg', 'Cuốn sách này sẽ cung cấp các thông tin cần thiết để đẩy nhanh tốc độ thiết kế Web thông qua việc thực hành với các mẫu của nhiều chuyên gia thiết kế Web.\r\nCuốn sách tập trung vào các chi tiết để tạo ra các Web site tốt thông qua nhiều cách tiếp cận hiện đại để giải quyết các thách thức liên quan đến việc tạo Web site. Thay vì đi vào từng ngôn ngữ và công nghệ cụ thể, các bài học trong cuốn sách này được phân chia thành các \"thủ thuật\" nhằm giúp bạn:\r\n# Ngay lập tức cải thiện được Web site của mình\r\n# Xây dựng Web site mới thật sinh động, tương thích với nhiều môi trường khác nhau\r\n# Quản lý việc thiết kế lại\r\n# Đưa Web site từ khởi đầu đến thành công', 200, 1, 0, 100000.000, 12),
+(47, 'Tạo Website Hấp Dẫn Với HTML, XHTML Và CSS', 1, 'th15.jpg', 'Ngày nay, việc ứng dụng phát triển Website hấp dẫn không còn gói gọn bằng HTLM, cho dù bạn đang xây dựng một Website thương mại phức tạp hoặc chỉ đơn thuần là tạo ra một Website nhỏ cho bản thân. Với cuốn sách \"Tạo Website Hấp Dẫn Với HTML, XHTML Và CSS\" này sẽ cùng bạn khám phá các sắc thái của XHTML và CSS theo cách giúp bạn nắm được các vấn đề. Sách bao gồm nhiều thông tin mới cập nhật về XHTML, CSS, JavaScript...\r\n\r\nCuốn sách này không những giúp bạn tiết kiệm được thời gian học tập mà còn thích hợp với những ai muốn tò mò tạo một Website, vì sách cung cấp nhiều gợi ý, hướng dẫn rõ ràng trong việc chuẩn bị xuất bản những trang Web đầu tiên ngay sau khi bạn đọc qua vài chương.', 200, 1, 0, 90000.000, 1),
+(48, 'Tuyển Tập Thủ Thuật Javascript', 1, 'th16.jpg', '“Tuyển Tập Thủ Thuật Javascript” gồm 2 tập, là một tuyển tập các giải pháp cho những vấn đề phổ biến nhất trong JavaScript. Nó chứa đựng các thủ thuật, gợi ý và kỹ thuật tương thích chuẩn, đã được thử nghiệm và bạn có thể tùy biến để sử dụng trong các trình duyệt khác nhau.', 100, 1, 0, 72000.000, 16),
+(49, 'Thiết Kế Web Với CSS', 1, 'th17.jpg', 'Từ khi được giới thiệu năm 1996, bảng kiểu xếp tầng (CSS) đã làm thay đổi đáng kể thiết kế Web. Hiện nay, phần lớn trang Web đều sử dụng CSS và nhiều nhà thiết kế đã xây dựng các bố cục trang hoàn toàn dựa trên CSS. Để thực hiện điều này một cách thành công, đòi hỏi chúng ta phải hiểu biết kỹ về nội dung hoạt động của CSS. Sách Thiết Kế Web Với CSS cung cấp cho bạn những vấn đề cần thiết để sử dụng CSS.', 100, 1, 0, 90000.000, 12),
+(50, 'Thiết Kế Web Với JavaScript Và Dom', 1, 'th18.jpg', 'Nội dung cuốn sách \"Thiết Kế Web Với JavaScript Và Dom\" giới thiệu về ngôn ngữ lập trình, nhưng nó không chỉ dành riêng cho các lập trình viên, mà còn rất có ích cho các nhà thiết kế Web.', 299, 1, 0, 92000.000, 1),
+(51, 'sdsad', 2, '51-2.jpg', '', 1000, 1, 0, 230000.000, 1);
 
-Nội dung được trình bày ngắn gọn, có ví dụ minh họa thực tế cùng các bài tập đa dạng từ cơ bản đến vận dụng. Hệ thống câu hỏi tự luận, trắc nghiệm và gợi ý phương pháp tiếp cận giúp học sinh rèn luyện kỹ năng giải toán một cách chủ động.
-
-Cuốn sách phù hợp để giảng dạy chính khóa tại trường phổ thông và là tài liệu luyện tập hữu ích cho học sinh cũng như giáo viên trong quá trình học và ôn tập Toán 10.', 129, 1, 47, 45000.000, 1),
-(2, 1, 'Ngữ văn 11 - Tập 1', 'Ngu-Van-11-Tap-1-600x853.jpg', 'Ngữ văn 11 - Tập 1', 112, 1, 33, 50000.000, 1),
-(3, 1, 'Tiếng Anh 12 - Sách học sinh', 'ta12-global.png', 'Tiếng Anh 12 - Sách học sinh', 75, 1, 23, 52000.000, 2),
-(4, 1, 'Tiếng Anh 12 - Sách bài tập', 'sach_ta_12_bt.jpg', 'Tiếng Anh 12 - Sách bài tập', 195, 1, 85, 98000.000, 2),
-(5, 1, 'Đắc Nhân Tâm - Dale Carnegie', 'dac-nhan-tam-1.jpg', 'Đắc Nhân Tâm - Dale Carnegie', 298, 1, 120, 85000.000, 1),
-(6, 1, 'Harry Potter và Hòn đá Phù Thủy', 'Sach-Noi-Harry-Potter-Tap-1-J-K-Rowling-audio-book-sachnoi.cc-4.jpg', '“Harry Potter và Hòn đá Phù Thủy” là cuốn mở đầu trong loạt truyện nổi tiếng của J.K. Rowling, kể về hành trình cậu bé mồ côi Harry khám phá thân thế phù thủy của mình và bước vào Trường Pháp thuật Hogwarts. Tại đây, Harry kết bạn, đối mặt những thử thách đầu tiên và khám phá bí mật xoay quanh Hòn đá Phù Thủy cùng thế lực hắc ám đứng phía sau.
-
-Với câu chuyện hấp dẫn, giàu trí tưởng tượng và đầy cảm xúc, tập 1 mang lại sự khởi đầu hoàn hảo cho chuyến phiêu lưu huyền thoại của Harry Potter, phù hợp cho mọi lứa tuổi yêu thích thế giới phép thuật.', 88, 1, 61, 135000.000, 2),
-(7, 2, 'Vở hồng hà 96 trang', 'vo_hong_ha_96t.jpg', 'Vở Hồng Hà 96 trang được làm từ giấy trắng sáng, mịn, không lem mực và cho nét chữ rõ ràng. Bìa vở thiết kế bền đẹp, cứng cáp, thích hợp sử dụng hằng ngày cho học sinh, sinh viên và nhân viên văn phòng. Mỗi lốc gồm 10 quyển, tiết kiệm và tiện lợi cho việc học tập hoặc mua dùng dài hạn. Sản phẩm ghi chép tốt, phù hợp mọi loại bút.', 300, 2, 40, 82000.000, 3),
-(21, 2, 'Thước nhôm 30cm', 'thuoc_nhom_30cm.jpg', 'Thước nhôm 30cm là dụng cụ đo đạc bền bỉ, phù hợp cho học sinh, sinh viên, dân văn phòng và kỹ thuật. Thân thước được làm từ hợp kim nhôm cứng cáp, chống cong vênh và không dễ gãy như thước nhựa. Bề mặt thước được anod hóa hoặc phủ sơn mờ giúp hạn chế trầy xước và giữ thẩm mỹ lâu dài.
-
-Vạch chia được khắc laser sắc nét, không phai theo thời gian, đảm bảo độ chính xác khi kẻ, đo hoặc làm việc kỹ thuật. Mép thước thẳng, bám mặt giấy tốt, hỗ trợ kẻ line nhanh và không bị trượt. Thiết kế mỏng, nhẹ, dễ cầm và dễ cất trong balo hoặc hộp bút. Một số mẫu còn có đệm chống trượt hoặc cạnh bo tròn để an toàn khi sử dụng.
-
-Tính năng nổi bật:
-- Chất liệu nhôm cao cấp, cứng, bền.
-- Vạch chia khắc laser chính xác, không phai.
-- Không cong, không gãy, dùng lâu vẫn giữ form.
-- Thiết kế gọn nhẹ, dễ mang theo.
-- Chiều dài tiêu chuẩn 30cm, phù hợp học tập – văn phòng – kỹ thuật.', 29, 2, 44, 15000.000, 3),
-(24, 1, 'Từ điển Y học – Sức khoẻ – Bệnh lý (Anh – Việt)', 'td04.jpg', 'Từ điển Y học – Sức khoẻ – Bệnh lý (Anh – Việt) là tài liệu tổng hợp các thuật ngữ chuyên ngành liên quan đến cấu tạo cơ thể, triệu chứng, bệnh lý, xét nghiệm, điều trị, dược phẩm và chăm sóc sức khoẻ. Nội dung cung cấp từ vựng tiếng Anh kèm nghĩa tiếng Việt ngắn gọn, giúp người học, nhân viên y tế, sinh viên và người quan tâm dễ dàng tra cứu và hiểu đúng các khái niệm.
-
-Từ điển bao gồm các thuật ngữ từ cơ bản đến nâng cao, được sắp xếp theo bảng chữ cái, hỗ trợ tra cứu nhanh chóng. Đây là nguồn tài liệu hữu ích trong học tập, nghiên cứu, đọc tài liệu y học nước ngoài hoặc giao tiếp trong môi trường chăm sóc sức khỏe.', 1200, 1, 0, 35000.000, 12),
-(26, 1, 'Từ điển Mẫu câu tiếng Nhật', 'td01.jpg', 'Từ điển Mẫu câu tiếng Nhật là tài liệu tổng hợp các câu giao tiếp cơ bản đến nâng cao, được sử dụng thường xuyên trong học tập, công việc và đời sống hằng ngày. Nội dung bao gồm các mẫu câu thông dụng theo chủ đề như chào hỏi, hỏi đường, mua sắm, ăn uống, học tập, xin phép, bày tỏ cảm xúc và giao tiếp trong môi trường công việc.', 600, 1, 0, 54000.000, 11),
-(27, 1, 'Kế toán Doanh nghiệp ACCESS', 'th12.jpg', 'Cuốn sách “Kế toán Doanh nghiệp ACCESS” giới thiệu cách ứng dụng Microsoft Access vào việc xây dựng hệ thống kế toán đơn giản nhưng hiệu quả cho doanh nghiệp. Sách hướng dẫn người đọc cách thiết kế cơ sở dữ liệu kế toán, tạo bảng, truy vấn, biểu mẫu và báo cáo để quản lý các nghiệp vụ như thu – chi, bán hàng, mua hàng, công nợ và kho hàng.
-
-Với cách trình bày dễ hiểu, ví dụ trực quan và bài tập thực hành, sách phù hợp cho sinh viên kế toán – CNTT, người mới học Access, cũng như doanh nghiệp nhỏ muốn tự xây dựng công cụ kế toán tiết kiệm, linh hoạt và dễ sử dụng.', 700, 1, 0, 70000.000, 16),
-(28, 2, 'Hộp tập giấy A4 – 400 tờ', 'tap-giay-a4-400-to.jpg', 'Hộp tập giấy A4 – 400 tờ được sản xuất từ giấy chất lượng cao, bề mặt mịn, trắng sáng và viết rất êm tay. Giấy định lượng vừa phải, không lem mực, không thấm ngược, phù hợp cho viết tay, học tập, làm bài, ghi chép hoặc in tài liệu. Tập được đóng hộp gọn gàng, tiện bảo quản và mang theo. Đây là lựa chọn phù hợp cho học sinh, sinh viên và văn phòng cần sử dụng giấy thường xuyên.', 500, 1, 0, 100000.000, 14),
-(29, 1, 'Từ điển Kinh doanh – Tiếp thị Hiện đại', 'td02.gif', 'Quyển sách “Từ điển Kinh doanh – Tiếp thị Hiện đại” (Modern Business & Marketing Dictionary) của tác giả Cung Kim Tiến (Bút danh Anh Tuấn) trình bày các thuật ngữ đang sử dụng thịnh hành trong giao dịch kinh doanh và tiếp thị trong nước và quốc tế. Đặc điểm của quyển sách là các thuật ngữ được đặt trong các bối cảnh khác nhau, bằng cách dẫn các đoạn văn xuất hiện trong thực tiễn kinh doanh quốc tế, giúp bạn đọc hiểu rõ được ý nghĩa và cách sử dụng trong thực tiễn của các thuật ngữ chuyên biệt này, với các nội dung thú vị khác nhau.
-Tác giả đã chọn lọc một cách công phu các đoạn văn đa dạng và phong phú, xuất hiện trên các ấn phẩm quốc tế khác nhau, giúp độc giả có cơ hội thuận lợi trong giao tiếp, soạn thảo, hoặc tham gia các buổi họp liên quan đến kinh doanh, đảm nhiệm các nhiệm vụ về kinh doanh, quản lý và tiếp thị trong các doanh nghiệp.
-Quyển sách này được kỳ vọng sẽ trợ giúp hiệu quả để bạn đọc tiếp cận một lĩnh vực tri thức kinh doanh bằng Anh ngữ, là bạn đồng hành trên con đường sự nghiệp trong thời kỳ quốc tế hóa.', 600, 1, 23, 23000.000, 1),
-(30, 1, 'Đại từ điển tiếng Việt', 'td03.jpg', 'Thêm yêu tiếng Việt
-
-Từ lâu chúng ta đã có nhiều công trình nghiên cứu về kho tàng tiếng Việt, thế nhưng “Đại từ điển tiếng Việt” (NXB Đại học Quốc gia TPHCM - Nguyễn Như Ý chủ biên) vừa ra mắt bạn đọc là công trình đầy đặn và đồ sộ nhất. Cuốn sách đã bắt nhịp cầu cho những ai yêu tiếng mẹ…
-
-Cầm trên tay cuốn Đại từ điển dày gần 2.000 trang mới cảm nhận hết tâm huyết của những người làm sách. Cuốn từ điển này được in lần đầu tiên vào năm 1999, đến nay, đáp ứng nhu cầu của bạn đọc, các tác giả đã tiến hành nghiên cứu, bổ sung.
-
-Trong lần tái bản này, ban biên soạn đã chọn và đưa vào sách những từ ngữ mới xuất hiện và đã được dùng rộng rãi trong đời sống và trên các phương tiện thông tin đại chúng nhằm làm tăng tính mới mẻ và tiện ích cho người sử dụng.
-
-Một trong những ý tưởng chinh phục người đọc là tính đa dạng của Đại từ điển tiếng Việt. Bởi nó không chỉ đơn thuần là sự tra cứu nghĩa các từ mà mở ra chân trời kiến thức mới. Việc đan xen những kiến thức cơ bản về văn hóa, văn minh Việt Nam và thế giới, giới thiệu tổng quan và hệ thống các hiện vật văn hóa như: Đơn vị đo lường của Việt Nam và thế giới, đồng bạc Việt xưa và nay, các loại trống đồng hiện có ở Việt Nam, quốc kỳ các nước trên thế giới… Đây là những thông tin bổ ích đáp ứng nhu cầu bổ sung kiến thức cơ bản của học sinh - sinh viên và các bạn trẻ Việt Nam.', 600, 1, 23, 25000.000, 3),
-(31, 1, 'Từ điển mới ...', 'td05.jpg', 'Từ điển mới ...', 300, 1, 12, 50000.000, 2),
-(32, 1, 'Từ điển địa danh hành chính Nam Bộ', 'td06.jpg', 'Từ điển địa danh hành chính Nam Bộ do tác giả Nguyễn Đình Tư biên soạn hết sức công phu, tổng hợp được nhiều tư liệu quý, là công cụ giúp bạn đọc tra cứu một cách khoa học về địa danh hành chính. Đây là cuốn sách có giá trị không chỉ bởi nó cung cấp một lượng mục từ khá đồ sộ, mà còn bởi tác giả đã dành rất nhiều công sức và tâm huyết để sưu tầm, xử lý tư liệu về vùng đất có bề dày truyền thống lịch sử, nhưng cũng có sự thay đổi nhiều và phức tạp nhất về địa danh hành chính', 500, 1, 50, 300000.000, 2),
-(33, 1, '100 thủ thuật ứng với 100 bài tập thực hành', 'th01.gif', '100 thủ thuật ứng với 100 bài tập thực hành được hướng dẫn, giải thích theo bố cục chặt chẽ, cách trình bày rõ ràng, dễ sử dụng, bạn đọc có thể tự mình xử lý những vấn đề nảy sinh trong quá trình thực hành đồng thời giúp các bạn thao tác nhanh trên bảng tính.', 400, 1, 0, 60000.000, 2),
-(34, 1, 'Lập trình Web bằng PHP 5.3 và cơ sở dữ liệu MySQL 5.1 - Tập 2', 'th02.jpg', 'Tiếp theo tập 1, tập 2 của cuốn sách "Lập trình Web bằng PHP 5.3 và cơ sở dữ liệu MySQL 5.1" bao gồm 10 chương và ứng dụng đính kèm lần lượt giới thiệu cùng bạn đọc các kiến thức liên quan đến Session, Cookie, giỏ hàng trực tuyến, tìm kiếm và phân trang dữ liệu, lập trình hướng đối tượng và sử dụng Zend Framework.
-
-Chương 8 trình bày kiến thức cơ bản của kịch bản trình chủ PHP và cơ sở dữ liệu MySQL.
-
-Sang chương 9, bạn tiếp tục tìm hiểu cách thiết kế trang Web cho phép người sử dụng tìm kiếm và phân trang dữ liệu trình bày với nhiều hình thức khác nhau.
-
-Để xây dựng ứng dụng thương mại điện tử hoàn chỉnh và mang tính chuyên nghiệp cao, bạn tiếp tục tìm hiểu cách sử dụng hàm Session và Cookie trong chương 10 để lưu trữ thông tin của người sử dụng nhằm vào mục đích quản lý tài nguyên của Website.
-
-Mọi ứng dụng thương mại điện tử đều cung cấp chương giỏ hàng trực tuyến, bạn cũng được tìm hiểu cách xây dựng giỏ hàng bằng cách sử dụng Session lẫn Cookie trong chương 11.
-
-Khi có nhu cầu trình bày hình ảnh, đồ thị và âm thanh lẫn phim ảnh, bạn tìm hiểu cách sử dụng mã PHP trong chương 12.
-
-Tiếp theo, bạn có thể tìm hiểu cú pháp của kịch bản PHP trong chương 13 và học cách lập trình hướng đối tượng và sử dụng lớp này vào ứng dụng trong chương 14.
-
-Chương 15 giúp bạn sử dụng kịch bản trình khách Java Script để thay đổi góc nhìn và ứng xử của thẻ HTML trong trang Web.
-
-Sang chương 16, bạn khám phá thư viện mã nguồn mở Zend viết bằng PHP dùng cho các loại cơ sở dữ liệu và học cách sử dụng các lớp trong thư viện này vào ứng dụng bán hàng trực tuyến trong chương 17.', 60, 1, 0, 80000.000, 2),
-(35, 1, 'Lập trình Web bằng PHP 5.3 và cơ sở dữ liệu MySQL 5.1 - Tập 1', 'th03.jpg', 'Tập 1 của cuốn sách "Lập trình Web bằng PHP 5.3 và cơ sở dữ liệu MySQL 5.1" bao gồm 7 chương và ứng dụng đính kèm. Chương 1 cung cấp cho bạn kiến thức từ chức năng của Website, cài đặt gói WamSever 2.0 và cấu hình để có thể vận hành ứng dụng Web bằng PHP, MySQL và Apache Web Sever.
-
-Sang chương 2, bạn tiếp tục tìm hiểu cách tạo Website và thiết kế cấu trúc dùng cho doanh nghiệp bằng hệ quản trị nội dung mã nguồn mở Joomla. Nhằm thỏa mãn nội dung trình bày, bạn tiếp tục tìm hiểu cách thiết kế trang Web tĩnh hay động bằng mã tự sinh PHP với phần mềm Dreamweaver CS trong chương 3 và thẻ HTML trong chương 4.
-
-Tiếp theo, bạn có thể tìm hiểu cú pháp của kịch bản PHP trong chương 5 và học cách sử dụng ứng dụng PhpMyAdmin để quản trị cơ sở dữ liệu MySQL trong chương 6. Sang chương 7 bạn tìm hiểu phát biểu SQL của cơ sở dữ liệu MySQL dùng để xây dựng ứng dụng bán hàng trực tuyến.', 100, 1, 0, 80000.000, 1),
-(36, 1, 'Tin học thực hành cơ bản', 'th04.jpg', 'Ngày nay với sự phát triển không ngừng của kinh tế nói chung và ngành công nghệ thông tin nói riêng, chúng ta có thể dễ dàng tiếp xúc và làm quen với máy vi tính. Tuy nhiên đây là một lĩnh vực mới lại chưa được phổ cập ở mọi cấp học nên các em sẽ có cảm giác bỡ ngỡ, thiếu tự tin khi lần đầu làm quen với chiếc máy tính đa năng. Mỗi bài học trong cuốn sách là một bài thực hành, được thực hiện qua từng bước cơ bản với hình ảnh minh họa trực quan và những lời giải thích chi tiết.', 100, 1, 0, 35000.000, 1),
-(37, 1, 'Làm việc với máy tính qua desktop', 'th05.jpg', 'Mục Lục:
-
-Bài 1: Máy tính điện tử và hệ điều hành
-
-Bài 2: Hệ điều hành Window XP
-
-Bài 3: Làm việc với máy tính qua desktop
-
-Bài 4: Tệp tin và thư mục
-
-Bài 5: Sử dụng Window Explorer
-
-Bài 6: Một số thao tác cần biết
-
-Phụ lục – Những tổ hợp phím tắt', 20, 1, 0, 35000.000, 1),
-(38, 1, 'Windows Server 2008', 'th06.jpg', 'Kế thừa những ưu điểm vượt trội và sự thành công của Windows Server 2003 cùng những phiên bản Windows trước đó, hãng Microsoft tiếp tục cho ra đời một phiên bản hệ điều hành dành cho máy chủ mới, Windows Server 2008. Phiên bản này đem đến cho người dùng sự nhanh chóng trong cài đặt; sự tiện lợi trong quản trị hệ thống, tương tác với các thành phần và dịch vụ vì được tập trung vài một công cụ duy nhất – Server Manager, những cải tiến đáng chú ý trên Windows Firewall; công nghệ ảo hoá…
-
-Windows Server 2008 còn cung cấp cho người sử dụng cách thức cài đặt Server Core, bao gồm những thành phần cơ bản nhất của Windows Server và giao diện dòng lệnh. Với kiểu cài đặt này, giao diện đồ hoạ quen thuộc của Windows cùng những dịch vụ không cần thiết sẽ không được cài đặt lên hệ thống. Nhờ đó nâng cao độ bảo mật và nâng cấp hệ thống.', 23, 1, 0, 65000.000, 2),
-(39, 1, 'Lập trình C nâng cao', 'th06.jpg', 'Cuốn sách này gồm những nội dung chính sau:
-# Chương 1: Các khái niệm cơ bản
-# Chương 2: Hằng biến và mảng
-# Chương 3: Biểu thức
-# Chương 4: Vào ra
-# Chương 5: Các toán tử điều khiển
-# Chương 6: Hàm và cấu trúc chương trình
-# Chương 7: Cấu trúc
-# Chương 8: Quản lý màn hình và cửa sổ
-# Chương 9: Đồ họa
-# Chương 10: Thao tác trên các tập tin
-# Chương 11: Lưu trữ dữ liệu và tổ chức bộ nhớ chương trình
-# Chương 12: Các chỉ thị tiền xử lý
-# Chương 13: Sử dụng ngắt trong C
-# Chương 14: Truy nhập trực tiếp vào bộ nhớ
-# Chương 15: Hàm xử ngắt và chương trình thường trú
-# Chương 16: Âm thanh, âm nhạc
-# Chương 17: Lập trình theo thời gian, theo sự kiện và trò chơi
-# Chương 18: Giao diện giữa C và Assembler
-# Phụ lục 1: Quy tắc xuống dòng và sử dụng các khoảng trống khi viết chương trình
-# Phụ lục 2: Tóm tắt các hàm chuẩn của Turbo C
-# Phụ lục 3: Bảng mã ASCII
-# Phụ lục 4: Cài đặt Turbo C vào đĩa cứng
-# Phụ lục 5: Hướng dẫn sử dụng môi trường kết hợp Turbo C
-# Phụ lục 6: Hệ soạn thảo của Turbo C
-# Phụ lục 7: Dùng menu project dịch chương trình trên nhiều tệp
-# Phụ lục 8: Dịch chương trình theo chế độ dòng lệnh TCC
-# Phụ lục 9: Sửa đổi cú pháp và gỡ rối chương trình
-# Phụ lục 10: Các mô hình bộ nhớ
-# Phụ lục 11: Danh sách các hàm của Turbo C theo thứ tự ABC
-# Phụ lục 12: Hàm với đối số bất định trong C
-# Phụ lục 13: Một số chương trình hữu ích', 100, 1, 0, 80000.000, 2),
-(40, 1, 'Giáo trình học nhanh SQL Server 2008', 'th08.jpg', 'Bộ sách “Giáo trình học nhanh SQL Server 2008” được biên soạn dành cho các nhà phát triển và các nhà quản trị cơ sở dữ liệu, những người đang công tác trong lĩnh vực quản lý dữ liệu doanh nghiệp và cho tất cả những ai quan tâm đến SQL Server 2008.
-
-Với cách thiết kế và bố cục rõ ràng theo từng chủ điểm cụ thể, bộ sách tập trung trình bày những tính năng chính của SQL Server 2008 nhằm mục đích giúp bạn đọc tăng cường kiến thức đồng thời nâng cao kỹ năng sử dụng sản phẩm mới rất tuyệt vời này. Bộ sách được chia thành 2 tập với bốn phần chính sau đây:', 100, 1, 0, 90000.000, 2),
-(41, 1, '160 Vấn Đề Cần Nên Biết Khi Sử Dụng Đồ Họa Máy Vi Tính', 'th09.jpg', '“160 Vấn Đề Cần Nên Biết Khi Sử Dụng Đồ Họa Máy Vi Tính” bao gồm những vấn đề cơ bản và thiết yếu mà những người đang học hay làm đồ họa máy vi tính thường quan tâm tìm hiểu nhằm làm việc hiệu quả hơn với các chương trình phần mềm như Photoshop, CorelDRAW và Illustrator.
-
-Sách gồm 3 phần, được thiết kế và bố cục theo từng vấn đề cụ thể từ cơ bản đến chuyên nghiệp như tùy biến Photoshop cho các dự án mà bạn thực hiện, chỉnh sửa các bức ảnh chân dung, tạo nên điều kỳ diệu với những hiệu ứng số đặc biệt, trình bày hình ảnh một cách chuyên nghiệp, tạo các thiết kế và viết lời truyện tranh trong CorelDRAW, và áp dụng các hiệu ứng với Illustrator.
-
-Sách được trình bày ngắn gọn, rõ ràng kèm hình ảnh minh họa. Ngoài ra sách còn bao gồm nhiều thủ thuật và lưu ý hữu ích.', 321, 1, 0, 100000.000, 2),
-(42, 1, 'Giáo trình học nhanh SQL Server 2008', 'th10.jpg', 'Bộ sách “Giáo trình học nhanh SQL Server 2008” được biên soạn dành cho các nhà phát triển và các nhà quản trị cơ sở dữ liệu, những người đang công tác trong lĩnh vực quản lý dữ liệu doanh nghiệp và cho tất cả những ai quan tâm đến SQL Server 2008.
-
-Với cách thiết kế và bố cục rõ ràng theo từng chủ điểm cụ thể, bộ sách tập trung trình bày những tính năng chính của SQL Server 2008 nhằm mục đích giúp bạn đọc tăng cường kiến thức đồng thời nâng cao kỹ năng sử dụng sản phẩm mới rất tuyệt vời này.', 500, 1, 0, 70000.000, 2),
-(43, 1, 'Microsoft Word 2007 thủ thuật', 'th11.jpg', 'Microsoft Word 2007 nói riêng và Microsoft Office 2007 nói chung có nhiều đổi mới. Microsoft chẳng những cung cấp cho người dùng giao diện đẹp mắt mà còn có nhiều tiện ích và trực quan hơn so với các phiên bản trước đây. Thay cho thanh menu và các thanh dụng cụ là một hệ thống Ribbon bao gồm các thẻ, các nhóm, trong từng menu lại có các menu phụ và các lệnh. Khi bạn trỏ chuột vào biểu tượng nào của hệ thống này sẽ hiển thị ScreenTip cho biết chức năng và công dụng của chúng. Chẳng những thế, Word còn thể hiện tức thời hiệu quả của từng lệnh để bạn xem, trước khi chọn chúng.
-
-Trong quyển sách này, chúng tôi trình bày tóm tắt lý thuyết căn bản về soạn thảo, chỉnh sửa, định dạng văn bản và một số thủ thuật mà bất cứ ai làm công tác văn phòng đều phải sử dụng. Nội dung sách gồm 6 bài: 1-Thủ thuật tổng quát, 2-Soạn thảo và chỉnh sửa văn bản, 3-Định dạng văn bản, 4-WordArt và xử lý hình ảnh, 5-Liên kết và Web, 6-Bảo mật & in ấn văn bản,. Từ bài 2 đến bài 4, trước khi trình bày thủ thuật, chúng tôi tóm tắt lý thuyết giống như giáo trình Word 2007 để bạn thực hành', 100, 1, 0, 75000.000, 1),
-(44, 1, '', 'th12.jpg', '', 50, 1, 0, 80000.000, 11),
-(45, 1, 'C++ nâng cao', 'th13.gif', 'Cuốn sách gồm 12 chương và 7 phụ lục:
-
-Chương 1 hướng dẫn cách làm việc với phần mềm TC++ 3.0 để thử nghiệm các chương trình, trình bày sơ lược về các phương pháp lập trình và giới thiệu một số mở rộng đơn giản của C.
-
-Chương 2 trình bày các khả năng mới trong việc xây dựng và sử dụng hàm trong C++ như biến tham chiếu, đối có kiểu tham chiếu, đối có giá trị mặc định, hàm trực tuyến, hàm trùng tên, hàm toán tử.
-
-Chương 3 nói về một khái niệm trung tâm của lập trình hướng đối tượng là lớp gồm: Định nghĩa lớp, khai báo các biến, mảng đối tượng ( kiểu lớp ), phương pháp, dùng con trỏ this trong phương thức, phạm vi truy xuất của các thành phần, các phương thức toán tử.
-
-Chương 4 trình bày các vấn đề tạo dựng, sao chép, huỷ bỏ các đối tượng và các vấn đề khác có liên quan như: Hàm tạo, hàm tạo sao chép, hàm huỷ, toán tử gán, cấp phát bộ nhớ cho đối tượng, hàm bạn, lớp bạn.
-
-Chương 5 trình bày một khái niệm quan trong tạo nên khả năng mạnh của lập trình hướng đối tượng trong việc phát triển, mở rộng phầm mềm, đó là khả năng thừa kế củaw các lớp.
-
-Chương 6 trình bày một khái niệm quan trọng khác cho phép xử lý các vấn đề khác nhau, các thực thể khác nhau, các thuật toán khác nhau theo cùng một lược đồ thống nhất, đó là tính tướng ứng bội và phương thức ảo. Các công cụ này cho phép dễ dàng tổ chức chương trình quản lý nhiều dạng đối tượng khác nhau.
-
-Chương 7 trình bày các thao tác trên tệp như: tạo một tệp mới, ghi dữ liệu từ bộ nhớ lên tệp, đọc dữ liệu từ tệp vào bộ nhớ...
-
-Chương 8 nói về việc tổ chức vào/ ra trong C++.C++ đưa vào một khái niệm mới gọi là các dòng tin ( Stream ), Các thao tác vào/ra sẽ thực hiện trao đổi dữ liệu giữa các bộ nhớ với dòng tin: Vào là chuyển dữ liệu từ dòng nhập vào bộ nhớ, ra là chuyển dữ liệu từ bộ nhớ lên dòng xuất. Để nhập xuất dữ liệu trên một thiết bị cụ thể nào, ta chỉ cần gắn dòng nhập xuất với thiết bị đó. Việc tổ chức vào ra theo cách như vậy là rất khoa học và tiện lợi vì nó có tính độc lập thiết bị.
-
-Chương 9 trình bày các hàm đồ hoạ sử dụng trong C và C++. Các hàm này được sử dụng rải rác trong toàn bộ cuốn sách để xây dựng các đối tượng đồ hoạ.
-
-Chương 10 trình bày các hàm truy xuất trực tiếp vào bộ nhớ của máy tính, trong đó có bộ nhớ màn hình. Các hàm này sẽ được sử dụng trong chương 11 để xây dựng các lớp menu và cửa sổ.
-
-Chương 11 giới thiệu 5 chương trình tương đối hoàn chỉnh nhằm minh hoạ thêm khả năng và kỹ thuật lập trình hướng đối tượng trên C++.
-
-Chương 12 trình bày thêm một số chương trình đối tượng trên C++. Đây là các chương trình tương đối phức tạp, hữu ích và sử dụng các công cụ mạnh của C++.', 200, 1, 0, 83000.000, 11),
-(46, 1, 'Thủ thuật thiết kế Web nhanh', 'th14.jpg', 'Cuốn sách này sẽ cung cấp các thông tin cần thiết để đẩy nhanh tốc độ thiết kế Web thông qua việc thực hành với các mẫu của nhiều chuyên gia thiết kế Web.
-Cuốn sách tập trung vào các chi tiết để tạo ra các Web site tốt thông qua nhiều cách tiếp cận hiện đại để giải quyết các thách thức liên quan đến việc tạo Web site. Thay vì đi vào từng ngôn ngữ và công nghệ cụ thể, các bài học trong cuốn sách này được phân chia thành các "thủ thuật" nhằm giúp bạn:
-# Ngay lập tức cải thiện được Web site của mình
-# Xây dựng Web site mới thật sinh động, tương thích với nhiều môi trường khác nhau
-# Quản lý việc thiết kế lại
-# Đưa Web site từ khởi đầu đến thành công', 200, 1, 0, 100000.000, 12),
-(47, 1, 'Tạo Website Hấp Dẫn Với HTML, XHTML Và CSS', 'th15.jpg', 'Ngày nay, việc ứng dụng phát triển Website hấp dẫn không còn gói gọn bằng HTLM, cho dù bạn đang xây dựng một Website thương mại phức tạp hoặc chỉ đơn thuần là tạo ra một Website nhỏ cho bản thân. Với cuốn sách "Tạo Website Hấp Dẫn Với HTML, XHTML Và CSS" này sẽ cùng bạn khám phá các sắc thái của XHTML và CSS theo cách giúp bạn nắm được các vấn đề. Sách bao gồm nhiều thông tin mới cập nhật về XHTML, CSS, JavaScript...
-
-Cuốn sách này không những giúp bạn tiết kiệm được thời gian học tập mà còn thích hợp với những ai muốn tò mò tạo một Website, vì sách cung cấp nhiều gợi ý, hướng dẫn rõ ràng trong việc chuẩn bị xuất bản những trang Web đầu tiên ngay sau khi bạn đọc qua vài chương.', 200, 1, 0, 90000.000, 1),
-(48, 1, 'Tuyển Tập Thủ Thuật Javascript', 'th16.jpg', '“Tuyển Tập Thủ Thuật Javascript” gồm 2 tập, là một tuyển tập các giải pháp cho những vấn đề phổ biến nhất trong JavaScript. Nó chứa đựng các thủ thuật, gợi ý và kỹ thuật tương thích chuẩn, đã được thử nghiệm và bạn có thể tùy biến để sử dụng trong các trình duyệt khác nhau.', 100, 1, 0, 72000.000, 16),
-(49, 1, 'Thiết Kế Web Với CSS', 'th17.jpg', 'Từ khi được giới thiệu năm 1996, bảng kiểu xếp tầng (CSS) đã làm thay đổi đáng kể thiết kế Web. Hiện nay, phần lớn trang Web đều sử dụng CSS và nhiều nhà thiết kế đã xây dựng các bố cục trang hoàn toàn dựa trên CSS. Để thực hiện điều này một cách thành công, đòi hỏi chúng ta phải hiểu biết kỹ về nội dung hoạt động của CSS. Sách Thiết Kế Web Với CSS cung cấp cho bạn những vấn đề cần thiết để sử dụng CSS.', 100, 1, 0, 90000.000, 12),
-(50, 1, 'Thiết Kế Web Với JavaScript Và Dom', 'th18.jpg', 'Nội dung cuốn sách "Thiết Kế Web Với JavaScript Và Dom" giới thiệu về ngôn ngữ lập trình, nhưng nó không chỉ dành riêng cho các lập trình viên, mà còn rất có ích cho các nhà thiết kế Web.', 299, 1, 0, 92000.000, 1),
-(51, 2, 'sdsad', '51-2.jpg', '', 1000, 1, 0, 230000.000, 1);
 -- --------------------------------------------------------
 
 --
@@ -900,6 +778,12 @@ INSERT INTO `vanphongpham` (`vpp_id`, `sanpham_id`) VALUES
 --
 
 --
+-- Indexes for table `accounttoken`
+--
+ALTER TABLE `accounttoken`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `chitietgiohang`
 --
 ALTER TABLE `chitietgiohang`
@@ -1052,6 +936,12 @@ ALTER TABLE `vanphongpham`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `accounttoken`
+--
+ALTER TABLE `accounttoken`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `chitietgiohang`
@@ -1221,7 +1111,7 @@ ALTER TABLE `giohang`
 -- Constraints for table `hoadon`
 --
 ALTER TABLE `hoadon`
-  ADD CONSTRAINT `hoadon_ibfk_1` FOREIGN KEY (`khachhang_id`) REFERENCES `khachhang` (`khachhang_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `hoadon_ibfk_1` FOREIGN KEY (`khachhang_id`) REFERENCES `khachhang` (`khachhang_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `hoadon_ibfk_2` FOREIGN KEY (`nhanvien_id`) REFERENCES `nhanvien` (`nhanvien_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `hoadon_ibfk_3` FOREIGN KEY (`dcgh_id`) REFERENCES `diachi_giaohang` (`dcgh_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -1252,7 +1142,7 @@ ALTER TABLE `sanphamyeuthich`
 -- Constraints for table `thongbao`
 --
 ALTER TABLE `thongbao`
-  ADD CONSTRAINT `fk_khid` FOREIGN KEY (`khachhang_id`) REFERENCES `khachhang` (`khachhang_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `fk_khid` FOREIGN KEY (`khachhang_id`) REFERENCES `khachhang` (`khachhang_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `vanphongpham`

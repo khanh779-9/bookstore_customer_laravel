@@ -1,123 +1,119 @@
 import { Link } from 'react-router-dom';
-import { FiMapPin, FiPhone, FiMail, FiFacebook, FiInstagram, FiTwitter, FiYoutube } from 'react-icons/fi';
+import { 
+  FiMail, FiPhone, FiMapPin, FiFacebook, 
+  FiInstagram, FiTwitter, FiYoutube, FiArrowUp 
+} from 'react-icons/fi';
 
 export default function Footer() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="bg-white border-t border-gray-100 pt-20 pb-10 relative overflow-hidden">
-      {/* Decorative background blobs */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
-      
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
+    <footer className="bg-white border-t border-slate-100 pt-16 pb-8">
+      <div className="container mx-auto px-4 max-w-[1600px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-16">
           
-          {/* Brand & Info */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="flex items-center gap-3">
-              <img src="/assets/images/bookstoreLogo.png" alt="BookZone Logo" className="h-12 w-auto object-contain" />
-              <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 tracking-tight">BookZone</span>
-            </div>
-            <p className="text-gray-500 leading-relaxed max-w-sm">
-              Khám phá tri thức, khơi nguồn sáng tạo. BookZone tự hào là nhà sách trực tuyến cung cấp sách, văn phòng phẩm và phụ kiện học tập chất lượng cao hàng đầu Việt Nam.
+          {/* Logo & Info */}
+          <div className="space-y-6">
+            <Link to="/" className="flex items-center gap-2 group">
+              <img src="/assets/images/bookstoreLogo.png" alt="BookZone Logo" className="h-10 w-auto object-contain" />
+              <span className="text-2xl font-bold text-secondary tracking-tight">BookZone</span>
+            </Link>
+            <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
+              Nhà sách trực tuyến chuyên cung cấp các loại sách, văn phòng phẩm chính hãng và các phụ kiện học tập chất lượng cao.
             </p>
-            <div className="flex items-center gap-4 pt-2">
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:-translate-y-1 transition-all">
-                <FiFacebook className="text-lg" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-pink-50 hover:text-pink-600 hover:-translate-y-1 transition-all">
-                <FiInstagram className="text-lg" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-400 hover:-translate-y-1 transition-all">
-                <FiTwitter className="text-lg" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-600 hover:-translate-y-1 transition-all">
-                <FiYoutube className="text-lg" />
-              </a>
+            <div className="flex items-center gap-3">
+              <SocialLink icon={FiFacebook} href="#" />
+              <SocialLink icon={FiInstagram} href="#" />
+              <SocialLink icon={FiTwitter} href="#" />
+              <SocialLink icon={FiYoutube} href="#" />
             </div>
           </div>
 
-          {/* Categories */}
-          <div className="lg:col-span-2 space-y-6">
-            <h4 className="text-sm font-black uppercase tracking-widest text-gray-900 relative inline-block">
-              Danh mục
-              <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-primary rounded-full"></span>
-            </h4>
+          {/* Dịch vụ */}
+          <div>
+            <h4 className="text-sm font-bold text-secondary uppercase tracking-widest mb-6">Dịch vụ</h4>
             <ul className="space-y-4">
-              <li><Link to="/products?danhmucSP_id=1" className="text-gray-500 hover:text-primary hover:translate-x-1 inline-block transition-all font-medium">Sách Quốc Tế</Link></li>
-              <li><Link to="/products?danhmucSP_id=2" className="text-gray-500 hover:text-primary hover:translate-x-1 inline-block transition-all font-medium">Sách Tiếng Việt</Link></li>
-              <li><Link to="/products?danhmucSP_id=3" className="text-gray-500 hover:text-primary hover:translate-x-1 inline-block transition-all font-medium">Văn phòng phẩm</Link></li>
-              <li><Link to="/products?promoted_only=1" className="text-gray-500 hover:text-primary hover:translate-x-1 inline-block transition-all font-medium">Khuyến mãi</Link></li>
+              <FooterLink to="/return-policy">Chính sách đổi trả</FooterLink>
+              <FooterLink to="/warranty-policy">Chính sách bảo hành</FooterLink>
+              <FooterLink to="/shipping-policy">Chính sách vận chuyển</FooterLink>
+              <FooterLink to="/privacy-policy">Chính sách bảo mật</FooterLink>
             </ul>
           </div>
 
-          {/* Policies */}
-          <div className="lg:col-span-3 space-y-6">
-            <h4 className="text-sm font-black uppercase tracking-widest text-gray-900 relative inline-block">
-              Chính sách
-              <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-primary rounded-full"></span>
-            </h4>
+          {/* Hỗ trợ */}
+          <div>
+            <h4 className="text-sm font-bold text-secondary uppercase tracking-widest mb-6">Hỗ trợ</h4>
             <ul className="space-y-4">
-              <li><Link to="/privacy-policy" className="text-gray-500 hover:text-primary hover:translate-x-1 inline-block transition-all font-medium">Chính sách bảo mật</Link></li>
-              <li><Link to="/return-policy" className="text-gray-500 hover:text-primary hover:translate-x-1 inline-block transition-all font-medium">Chính sách đổi trả</Link></li>
-              <li><Link to="/warranty-policy" className="text-gray-500 hover:text-primary hover:translate-x-1 inline-block transition-all font-medium">Chính sách bảo hành</Link></li>
-              <li><Link to="/shipping-delivery" className="text-gray-500 hover:text-primary hover:translate-x-1 inline-block transition-all font-medium">Vận chuyển & Giao hàng</Link></li>
+              <FooterLink to="/contact">Liên hệ</FooterLink>
+              <FooterLink to="/about">Về chúng tôi</FooterLink>
+              <FooterLink to="/products">Tìm sản phẩm</FooterLink>
+              <FooterLink to="/faq">Câu hỏi thường gặp</FooterLink>
             </ul>
           </div>
 
-          {/* Contact */}
-          <div className="lg:col-span-3 space-y-6">
-            <h4 className="text-sm font-black uppercase tracking-widest text-gray-900 relative inline-block">
-              Liên hệ
-              <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-primary rounded-full"></span>
-            </h4>
-            <ul className="space-y-5">
-              <li className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <FiMapPin className="text-lg" />
-                </div>
-                <div>
-                  <h5 className="font-bold text-gray-900 text-sm mb-1">Địa chỉ</h5>
-                  <p className="text-sm text-gray-500 leading-relaxed">180 Cao Lỗ, Phường 4, Quận 8, TP.HCM</p>
-                </div>
+          {/* Liên hệ */}
+          <div>
+            <h4 className="text-sm font-bold text-secondary uppercase tracking-widest mb-6">Liên hệ</h4>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 text-sm text-slate-500">
+                <FiPhone className="mt-1 text-primary shrink-0" />
+                <a href="tel:0239482958" className="hover:text-primary transition-colors">0239 482 958</a>
               </li>
-              <li className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <FiPhone className="text-lg" />
-                </div>
-                <div>
-                  <h5 className="font-bold text-gray-900 text-sm mb-1">Điện thoại</h5>
-                  <p className="text-sm text-gray-500 font-medium">0329 675 483</p>
-                </div>
+              <li className="flex items-start gap-3 text-sm text-slate-500">
+                <FiMail className="mt-1 text-primary shrink-0" />
+                <a href="mailto:qkhanh12.duration060@passinbox.com" className="hover:text-primary transition-colors break-all">qkhanh12.duration060@passinbox.com</a>
               </li>
-              <li className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <FiMail className="text-lg" />
-                </div>
-                <div>
-                  <h5 className="font-bold text-gray-900 text-sm mb-1">Email hỗ trợ</h5>
-                  <p className="text-sm text-gray-500 font-medium">support@bookzone.vn</p>
-                </div>
+              <li className="flex items-start gap-3 text-sm text-slate-500">
+                <FiMapPin className="mt-1 text-primary shrink-0" />
+                <span>180 Cao Lỗ, Quận 8, TP.HCM</span>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Newsletter & Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-sm text-gray-400 font-medium text-center md:text-left">
-            © {new Date().getFullYear()} BookZone. Bản quyền thuộc về đội ngũ phát triển.
+        <div className="pt-8 border-t border-slate-50 flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-xs font-medium text-slate-400 italic">
+            © 2025 BookZone. Tất cả quyền được bảo lưu.
           </p>
           
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500 font-medium hidden sm:block">Thanh toán an toàn qua:</span>
-            <div className="flex items-center gap-2">
-              <div className="w-12 h-8 bg-gray-50 rounded border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-400">VISA</div>
-              <div className="w-12 h-8 bg-gray-50 rounded border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-400">MOMO</div>
-              <div className="w-12 h-8 bg-gray-50 rounded border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-400">COD</div>
+          <button 
+            onClick={scrollToTop}
+            className="group flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-primary transition-all uppercase tracking-widest"
+          >
+            Lên đầu trang
+            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+              <FiArrowUp />
             </div>
-          </div>
+          </button>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterLink({ to, children }) {
+  return (
+    <li>
+      <Link 
+        to={to} 
+        className="text-sm text-slate-500 hover:text-primary transition-all flex items-center gap-2 group"
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-primary group-hover:scale-125 transition-all"></span>
+        {children}
+      </Link>
+    </li>
+  );
+}
+
+function SocialLink({ icon: Icon, href }) {
+  return (
+    <a 
+      href={href} 
+      className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-sm"
+    >
+      <Icon className="w-5 h-5" />
+    </a>
   );
 }

@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class DanhMucResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->danhmucSP_id,
+            'name' => $this->tenDanhMuc,
+            'description' => $this->mo_ta,
+        ];
+    }
+}

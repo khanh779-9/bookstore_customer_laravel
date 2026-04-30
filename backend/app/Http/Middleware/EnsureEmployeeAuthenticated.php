@@ -10,10 +10,9 @@ class EnsureEmployeeAuthenticated
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! session()->has('employee')) {
-            return redirect()->route('employee.login')->with('error', 'Vui lòng đăng nhập tài khoản nhân viên.');
+        if (!$request->user()) {
+            return response()->json(['message' => 'Vui lòng đăng nhập tài khoản nhân viên.'], 401);
         }
-
         return $next($request);
     }
 }

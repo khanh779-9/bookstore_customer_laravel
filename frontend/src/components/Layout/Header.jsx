@@ -1,309 +1,299 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
-import { FiShoppingCart, FiHeart, FiUser, FiBell, FiSearch, FiMenu, FiX, FiList, FiChevronDown, FiLogOut } from 'react-icons/fi';
+import { 
+  FiShoppingCart, FiHeart, FiUser, FiBell, FiSearch, 
+  FiMenu, FiX, FiList, FiChevronDown, FiLogOut, FiShoppingBag, FiChevronRight 
+} from 'react-icons/fi';
 import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
 import { categoryService } from '../../services/categoryService';
 import { notificationService } from '../../services/notificationService';
+import { cn } from '../../utils/cn';
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { count } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [searchQuery, setSearchQuery] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  const [showCatMenu, setShowCatMenu] = useState(false);
-  const [showNotifMenu, setShowNotifMenu] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  
-  const catRef = useRef(null);
-  const notifRef = useRef(null);
-  const userRef = useRef(null);
+  const [activeDropdown, setActiveDropdown] = useState(null); 
+  const dropdownRef = useRef(null);
 
   // Queries
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: () => categoryService.getAllCategories(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const { data: notifications = [] } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => notificationService.getNotifications(),
     enabled: isAuthenticated,
-    refetchInterval: 30000, // Refetch every 30s
+    refetchInterval: 60000,
   });
 
   const unreadCount = notifications.filter(n => n.trang_thai === 'chua_doc').length;
 
-  // Click outside to close dropdowns
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (catRef.current && !catRef.current.contains(event.target)) setShowCatMenu(false);
-      if (notifRef.current && !notifRef.current.contains(event.target)) setShowNotifMenu(false);
-      if (userRef.current && !userRef.current.contains(event.target)) setShowUserMenu(false);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setActiveDropdown(null);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
+
+  useEffect(() => {
+    setActiveDropdown(null);
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
-      setMenuOpen(false);
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
-
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all duration-300">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-6">
-        
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 shrink-0 group">
-          <img src="/assets/images/bookstoreLogo.png" alt="BookStore Logo" className="h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300" />
-          <span className="hidden sm:block text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 tracking-tight">
-            BookZone
-          </span>
-        </Link>
+    <>
+      <header 
+        className={cn(
+          "sticky top-0 z-[100] transition-all duration-300 p-3",
+          isScrolled ? "bg-white shadow-md py-2" : "bg-white border-b border-slate-100 py-3"
+        )}
+      >
+        <div className="container mx-auto px-4 max-w-[1600px] flex items-center justify-between gap-4 md:gap-8">
+          
+          {/* Left: Logo & Category Dropdown */}
+          <div className="flex items-center gap-6 shrink-0">
+            <Link to="/" className="flex items-center gap-2 group">
+              <img src="/assets/images/bookstoreLogo.png" alt="Logo" className="h-9 w-auto object-contain" />
+              <span className="hidden sm:block text-xl font-bold text-secondary tracking-tight">BookZone</span>
+            </Link>
 
-        {/* Desktop Nav Items */}
-        <div className="hidden lg:flex items-center gap-6">
-          {/* Categories Dropdown */}
-          <div className="relative" ref={catRef}>
-            <button 
-              onClick={() => setShowCatMenu(!showCatMenu)}
-              className="flex items-center gap-2 font-semibold text-gray-700 hover:text-primary transition-colors py-2"
-            >
-              <FiList className="text-lg" />
-              <span>Danh mục</span>
-              <FiChevronDown className={`transition-transform duration-300 ${showCatMenu ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {/* Mega Menu style for Categories */}
-            <div className={`absolute top-full left-0 mt-4 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 origin-top-left ${showCatMenu ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
-              <div className="py-2 max-h-96 overflow-y-auto custom-scrollbar">
-                {Array.isArray(categories) && categories.length > 0 ? categories.map(cat => (
-                  <Link 
-                    key={cat.danhmucSP_id || Math.random()} 
-                    to={`/products?danhmucSP_id=${cat.danhmucSP_id}`}
-                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary font-medium transition-colors border-b border-gray-50 last:border-0"
-                    onClick={() => setShowCatMenu(false)}
+            <div className="hidden lg:block relative" ref={activeDropdown === 'categories' ? dropdownRef : null}>
+              <button 
+                onClick={() => setActiveDropdown(activeDropdown === 'categories' ? null : 'categories')}
+                className="flex items-center gap-2 font-bold text-slate-600 hover:text-primary transition-colors text-sm"
+              >
+                <FiList className="text-lg" />
+                <span>Danh mục</span>
+                <FiChevronDown className={cn("transition-transform duration-200", activeDropdown === 'categories' && "rotate-180")} />
+              </button>
+              
+              <AnimatePresence>
+                {activeDropdown === 'categories' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }}
+                    className="absolute top-full left-0 mt-4 w-60 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-50"
                   >
-                    {cat.tenDanhMuc}
-                  </Link>
-                )) : (
-                  <div className="px-5 py-3 text-sm text-gray-500">Đang tải...</div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <Link to="/products" className="font-semibold text-gray-700 hover:text-primary transition-colors">Tất cả sản phẩm</Link>
-          <Link to="/about" className="font-semibold text-gray-700 hover:text-primary transition-colors">Giới thiệu</Link>
-          <Link to="/contact" className="font-semibold text-gray-700 hover:text-primary transition-colors">Liên hệ</Link>
-        </div>
-
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md relative group">
-          <input
-            type="text"
-            className="w-full bg-gray-50/50 border-2 border-gray-100 rounded-full py-2.5 px-6 pl-12 focus:outline-none focus:bg-white focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all text-sm font-medium"
-            placeholder="Tìm kiếm sách, văn phòng phẩm..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary text-lg transition-colors" />
-          <button type="submit" className="hidden">Tìm</button>
-        </form>
-
-        {/* Actions Menu */}
-        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-          
-          {/* Notifications */}
-          {isAuthenticated && (
-            <div className="relative" ref={notifRef}>
-              <button 
-                onClick={() => setShowNotifMenu(!showNotifMenu)}
-                className="p-2.5 text-gray-600 hover:text-primary hover:bg-primary/10 rounded-full transition-all relative"
-              >
-                <FiBell className="w-5 h-5" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
-              
-              <div className={`absolute top-full right-0 mt-4 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 origin-top-right ${showNotifMenu ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
-                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                  <span className="font-bold text-gray-800">Thông báo mới</span>
-                  {unreadCount > 0 && <span className="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-full">{unreadCount} mới</span>}
-                </div>
-                <div className="max-h-80 overflow-y-auto">
-                  {notifications.length > 0 ? (
-                    notifications.slice(0, 5).map(n => (
+                    {categories.map(cat => (
                       <Link 
-                        key={n.id} 
-                        to="/notifications" 
-                        className={`block p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors ${n.trang_thai === 'chua_doc' ? 'bg-primary/5' : ''}`}
-                        onClick={() => setShowNotifMenu(false)}
+                        key={cat.id} to={`/products?danhmucSP_id=${cat.id}`}
+                        className="px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition-all flex items-center justify-between"
                       >
-                        <div className="flex gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${n.trang_thai === 'chua_doc' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-500'}`}>
-                            <FiBell />
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-semibold text-gray-800 line-clamp-1">{n.tieu_de || 'Thông báo'}</h4>
-                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{n.noi_dung}</p>
-                            <span className="text-[10px] text-gray-400 mt-2 block">{n.ngay_tao ? new Date(n.ngay_tao).toLocaleDateString('vi-VN') : ''}</span>
-                          </div>
-                        </div>
+                        {cat.name}
+                        <FiChevronRight className="text-slate-300 w-3 h-3" />
                       </Link>
-                    ))
-                  ) : (
-                    <div className="p-8 text-center text-gray-500">
-                      <FiBell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                      <p className="text-sm">Không có thông báo nào</p>
-                    </div>
-                  )}
-                </div>
-                <Link to="/notifications" onClick={() => setShowNotifMenu(false)} className="block p-3 text-center text-sm font-semibold text-primary bg-gray-50 hover:bg-gray-100 transition-colors">
-                  Xem tất cả
-                </Link>
-              </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          )}
-
-          {/* Wishlist */}
-          <Link to="/wishlist" className="p-2.5 hidden sm:block text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-full transition-all relative">
-            <FiHeart className="w-5 h-5" />
-          </Link>
-
-          {/* Cart */}
-          <Link to="/cart" className="p-2.5 text-gray-600 hover:text-primary hover:bg-primary/10 rounded-full transition-all relative">
-            <FiShoppingCart className="w-5 h-5" />
-            {count > 0 && (
-              <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
-                {count > 99 ? '99+' : count}
-              </span>
-            )}
-          </Link>
-
-          {/* User Account */}
-          {isAuthenticated ? (
-            <div className="relative ml-2" ref={userRef}>
-              <button 
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 p-1.5 pr-4 bg-gray-50 hover:bg-gray-100 rounded-full border border-gray-200 hover:border-gray-300 transition-all"
-              >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-blue-500 flex items-center justify-center text-white font-bold shadow-inner">
-                  {user?.ho_ten ? user.ho_ten.charAt(0).toUpperCase() : <FiUser />}
-                </div>
-                <span className="hidden md:block text-sm font-bold text-gray-700 max-w-[100px] truncate">{user?.ho_ten || 'Tài khoản'}</span>
-                <FiChevronDown className="hidden md:block text-gray-500 text-sm" />
-              </button>
-              
-              <div className={`absolute right-0 top-full mt-4 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 origin-top-right ${showUserMenu ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
-                <div className="p-4 bg-gray-50/50 border-b border-gray-100">
-                  <p className="text-sm font-bold text-gray-800 truncate">{user?.ho_ten}</p>
-                  <p className="text-xs text-gray-500 truncate mt-0.5">{user?.email}</p>
-                </div>
-                <div className="py-2">
-                  <Link to="/account" onClick={() => setShowUserMenu(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors">
-                    <FiUser className="text-lg" /> Hồ sơ cá nhân
-                  </Link>
-                  <Link to="/orders" onClick={() => setShowUserMenu(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors">
-                    <FiShoppingCart className="text-lg" /> Đơn hàng của tôi
-                  </Link>
-                </div>
-                <div className="p-2 border-t border-gray-100">
-                  <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors">
-                    <FiLogOut className="text-lg" /> Đăng xuất
-                  </button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="hidden sm:flex items-center gap-3 ml-2">
-              <Link to="/login" className="text-sm font-bold text-gray-600 hover:text-primary transition-colors px-2">
-                Đăng nhập
-              </Link>
-              <Link to="/register" className="bg-primary hover:bg-primary/90 text-white text-sm font-bold py-2.5 px-6 rounded-full shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5">
-                Đăng ký
-              </Link>
-            </div>
-          )}
-
-          {/* Mobile Menu Toggle */}
-          <button className="lg:hidden p-2 text-gray-600 hover:text-primary transition-colors ml-1" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      <div className={`fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm lg:hidden transition-opacity duration-300 ${menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} onClick={() => setMenuOpen(false)}>
-        <div className={`absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`} onClick={e => e.stopPropagation()}>
-          
-          <div className="p-6 flex items-center justify-between border-b border-gray-100">
-            <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">Menu</span>
-            <button onClick={() => setMenuOpen(false)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
-              <FiX className="w-5 h-5 text-gray-600" />
-            </button>
           </div>
-          
-          <div className="p-6 flex-1 overflow-y-auto">
-            {/* Mobile Search */}
-            <form onSubmit={handleSearch} className="mb-8 relative">
+
+          {/* Middle: Integrated Search & Main Nav */}
+          <div className="flex-1 max-w-2xl flex items-center gap-6">
+            <form onSubmit={handleSearch} className="flex-1 relative group">
               <input
                 type="text"
-                className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 pl-11 pr-4 focus:outline-none focus:border-primary/50 focus:bg-white transition-colors"
+                className="w-full bg-slate-100 border-none rounded-xl py-2 px-10 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium placeholder:text-slate-400"
                 placeholder="Tìm sản phẩm..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
+              <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
             </form>
 
-            <nav className="flex flex-col gap-2">
-              <Link to="/" className="text-lg font-bold text-gray-800 p-3 rounded-xl hover:bg-gray-50 transition-colors" onClick={() => setMenuOpen(false)}>Trang chủ</Link>
-              <Link to="/products" className="text-lg font-bold text-gray-800 p-3 rounded-xl hover:bg-gray-50 transition-colors" onClick={() => setMenuOpen(false)}>Sản phẩm</Link>
-              
-              {/* Mobile Categories */}
-              <div className="pl-3 py-2">
-                <div className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-2">Danh mục</div>
-                <div className="flex flex-col gap-1 border-l-2 border-gray-100 ml-2 pl-4">
-                  {Array.isArray(categories) && categories.map(cat => (
-                    <Link key={cat.danhmucSP_id || Math.random()} to={`/products?danhmucSP_id=${cat.danhmucSP_id}`} className="py-2 text-gray-600 font-medium" onClick={() => setMenuOpen(false)}>
-                      {cat.tenDanhMuc}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <Link to="/about" className="text-lg font-bold text-gray-800 p-3 rounded-xl hover:bg-gray-50 transition-colors" onClick={() => setMenuOpen(false)}>Giới thiệu</Link>
-              <Link to="/contact" className="text-lg font-bold text-gray-800 p-3 rounded-xl hover:bg-gray-50 transition-colors" onClick={() => setMenuOpen(false)}>Liên hệ</Link>
+            <nav className="hidden xl:flex items-center gap-6">
+              <NavLink to="/products">Tất cả sản phẩm</NavLink>
+              <NavLink to="/contact">Liên hệ</NavLink>
+              <NavLink to="/about">Về BookZone</NavLink>
             </nav>
           </div>
 
-          {!isAuthenticated && (
-            <div className="p-6 border-t border-gray-100 bg-gray-50">
-              <Link to="/login" onClick={() => setMenuOpen(false)} className="block w-full py-3 text-center text-primary font-bold bg-primary/10 rounded-xl mb-3">Đăng nhập</Link>
-              <Link to="/register" onClick={() => setMenuOpen(false)} className="block w-full py-3 text-center text-white font-bold bg-primary rounded-xl shadow-lg shadow-primary/30">Đăng ký</Link>
-            </div>
-          )}
+          {/* Right: User Actions */}
+          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+            {/* Notifications */}
+            {isAuthenticated && (
+              <div className="relative" ref={activeDropdown === 'notifications' ? dropdownRef : null}>
+                <button 
+                  onClick={() => setActiveDropdown(activeDropdown === 'notifications' ? null : 'notifications')}
+                  className="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-xl transition-all relative"
+                >
+                  <FiBell className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-2 right-2 bg-red-500 w-2 h-2 rounded-full border-2 border-white"></span>
+                  )}
+                </button>
+                <AnimatePresence>
+                  {activeDropdown === 'notifications' && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }}
+                      className="absolute right-0 top-full mt-4 w-80 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-50"
+                    >
+                      <div className="p-3 border-b border-slate-50 flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Thông báo</span>
+                        {unreadCount > 0 && <span className="bg-red-50 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full">{unreadCount} mới</span>}
+                      </div>
+                      <div className="max-h-80 overflow-y-auto">
+                        {notifications.length > 0 ? (
+                          notifications.slice(0, 5).map(n => (
+                            <div key={n.id} className="p-3 hover:bg-slate-50 rounded-lg transition-colors border-b border-slate-50 last:border-none">
+                              <p className={cn("text-sm font-bold", n.trang_thai === 'chua_doc' ? "text-secondary" : "text-slate-500")}>{n.tieu_de}</p>
+                              <p className="text-xs text-slate-400 mt-1 line-clamp-2 font-medium">{n.noi_dung}</p>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-8 text-center text-slate-400 text-xs font-medium">Không có thông báo nào</div>
+                        )}
+                      </div>
+                      <Link to="/notifications" className="block text-center p-3 text-xs font-bold text-primary hover:underline border-t border-slate-50">Xem tất cả</Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            {/* Cart */}
+            <Link to="/cart" className="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-xl transition-all relative">
+              <FiShoppingCart className="w-5 h-5" />
+              {count > 0 && (
+                <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                  {count > 9 ? '9+' : count}
+                </span>
+              )}
+            </Link>
+
+            {/* User */}
+            {isAuthenticated ? (
+              <div className="relative" ref={activeDropdown === 'user' ? dropdownRef : null}>
+                <button 
+                  onClick={() => setActiveDropdown(activeDropdown === 'user' ? null : 'user')}
+                  className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-xs shadow-md shadow-primary/20">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </div>
+                  <FiChevronDown className={cn("text-slate-300 transition-transform", activeDropdown === 'user' && "rotate-180")} />
+                </button>
+                <AnimatePresence>
+                  {activeDropdown === 'user' && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }}
+                      className="absolute right-0 top-full mt-4 w-56 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-50"
+                    >
+                      <div className="p-3 border-b border-slate-50 mb-1">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Chào bạn,</p>
+                        <p className="text-sm font-bold text-secondary truncate mt-1">{user?.name}</p>
+                      </div>
+                      <UserMenuItem to="/account" icon={FiUser}>Hồ sơ</UserMenuItem>
+                      <UserMenuItem to="/orders" icon={FiShoppingBag}>Đơn hàng</UserMenuItem>
+                      <div className="h-[1px] bg-slate-50 my-1"></div>
+                      <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                        <FiLogOut /> Đăng xuất
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link to="/login" className="flex items-center gap-2 p-2.5 text-slate-600 hover:text-primary transition-all font-bold text-sm">
+                <FiUser className="w-5 h-5" />
+                <span className="hidden sm:block">Đăng nhập</span>
+              </Link>
+            )}
+
+            {/* Mobile Toggle */}
+            <button className="lg:hidden p-2 text-slate-500" onClick={() => setMobileMenuOpen(true)}>
+              <FiMenu className="w-6 h-6" />
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm lg:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <motion.div 
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+              className="h-full w-[80%] max-w-xs bg-white p-6 shadow-2xl flex flex-col"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-8">
+                <span className="text-xl font-bold text-secondary">BookZone</span>
+                <button onClick={() => setMobileMenuOpen(false)} className="p-2 bg-slate-50 rounded-lg">
+                  <FiX className="w-5 h-5 text-slate-400" />
+                </button>
+              </div>
+              <div className="flex flex-col gap-2 flex-1 overflow-y-auto">
+                <Link to="/" className="p-3 text-lg font-bold text-secondary hover:text-primary">Trang chủ</Link>
+                <Link to="/products" className="p-3 text-lg font-bold text-secondary hover:text-primary">Sản phẩm</Link>
+                <Link to="/contact" className="p-3 text-lg font-bold text-secondary hover:text-primary">Liên hệ</Link>
+                <Link to="/about" className="p-3 text-lg font-bold text-secondary hover:text-primary">Giới thiệu</Link>
+                <div className="h-[1px] bg-slate-50 my-2"></div>
+                <p className="px-3 text-[10px] font-bold text-slate-300 uppercase tracking-widest">Danh mục</p>
+                {categories.map(cat => (
+                  <Link key={cat.id} to={`/products?danhmucSP_id=${cat.id}`} className="px-3 py-2 text-slate-600 font-bold text-sm" onClick={() => setMobileMenuOpen(false)}>
+                    {cat.name}
+                  </Link>
+                ))}
+              </div>
+              {!isAuthenticated && (
+                <div className="pt-6 border-t border-slate-50 flex flex-col gap-3">
+                  <Link to="/login" className="w-full btn-secondary py-3">Đăng nhập</Link>
+                  <Link to="/register" className="w-full btn-primary py-3">Tham gia ngay</Link>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+function NavLink({ to, children }) {
+  return (
+    <Link to={to} className="text-sm font-bold text-slate-500 hover:text-primary transition-colors whitespace-nowrap">
+      {children}
+    </Link>
+  );
+}
+
+function UserMenuItem({ to, icon: Icon, children }) {
+  return (
+    <Link to={to} className="flex items-center gap-3 px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition-all">
+      <Icon className="w-4 h-4" /> {children}
+    </Link>
   );
 }

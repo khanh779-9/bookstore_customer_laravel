@@ -12,7 +12,9 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
-    const { user: userData, token } = res.data;
+    // Backend returns { data: user, token: '...', message: '...' }
+    const { data: userData, token } = res.data;
+    
     localStorage.setItem('auth_token', token);
     localStorage.setItem('auth_user', JSON.stringify(userData));
     setUser(userData);
@@ -21,8 +23,12 @@ export function AuthProvider({ children }) {
 
   const register = async (data) => {
     const res = await api.post('/auth/register', data);
-    const { user: userData, token } = res.data;
-    localStorage.setItem('auth_token', token);
+    // Backend returns { data: user, token: '...', message: '...' }
+    const { data: userData, token } = res.data;
+    
+    if (token) {
+      localStorage.setItem('auth_token', token);
+    }
     localStorage.setItem('auth_user', JSON.stringify(userData));
     setUser(userData);
     return res.data;

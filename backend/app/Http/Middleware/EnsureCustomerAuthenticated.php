@@ -10,10 +10,9 @@ class EnsureCustomerAuthenticated
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! session()->has('customer')) {
-            return redirect()->route('customer.login')->with('error', 'Vui lòng đăng nhập tài khoản khách hàng.');
+        if (!$request->user()) {
+            return response()->json(['message' => 'Vui lòng đăng nhập tài khoản khách hàng.'], 401);
         }
-
         return $next($request);
     }
 }

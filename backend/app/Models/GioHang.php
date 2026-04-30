@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GioHang extends Model
 {
@@ -25,7 +26,7 @@ class GioHang extends Model
         return $this->hasMany(ChiTietGioHang::class, 'giohang_id', 'giohang_id');
     }
 
-    public function khachHang()
+    public function khachHang(): BelongsTo
     {
         return $this->belongsTo(KhachHang::class, 'khachhang_id', 'khachhang_id');
     }
@@ -47,52 +48,5 @@ class GioHang extends Model
     {
         $count = $this->chiTiet()->sum('soluong');
         $this->update(['soluong' => $count]);
-    }
-
-    public function getTotalAttribute(): float
-    {
-        return (float) $this->chiTiet()->sum('thanhtien');
-    }
-
-    public function addItem(int $productId, int $quantity, float $price): void
-    {
-        $item = $this->chiTiet()->where('sanpham_id', $productId)->first();
-        if ($item) {
-            $newQty = $item->soluong + $quantity;
-            $item->update([
-                'soluong' => $newQty,
-                'thanhtien' => $newQty * $item->dongia,
-            ]);
-        } else {
-            $this->chiTiet()->create([
-                'sanpham_id' => $productId,
-                'soluong' => $quantity,
-                'dongia' => $price,
-                'thanhtien' => $quantity * $price,
-            ]);
-        }
-        $this->refreshCount();
-    }
-
-    public function updateItem(int $productId, int $quantity): void
-    {
-        if ($quantity <= 0) {
-            $this->chiTiet()->where('sanpham_id', $productId)->delete();
-        } else {
-            $item = $this->chiTiet()->where('sanpham_id', $productId)->first();
-            if ($item) {
-                $item->update([
-                    'soluong' => $quantity,
-                    'thanhtien' => $quantity * $item->dongia,
-                ]);
-            }
-        }
-        $this->refreshCount();
-    }
-
-    public function clear(): void
-    {
-        $this->chiTiet()->delete();
-        $this->refreshCount();
     }
 }

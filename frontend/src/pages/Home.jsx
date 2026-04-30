@@ -1,395 +1,379 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { productService } from "../services/productService";
-import { categoryService } from "../services/categoryService";
 import ProductCard from "../components/Product/ProductCard";
 import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useReducedMotion,
+} from "framer-motion";
+import { useEffect, useState } from "react";
+import {
   FiArrowRight,
-  FiZap,
+  FiChevronLeft,
+  FiChevronRight,
+  FiShield,
   FiStar,
-  FiPackage,
-  FiTrendingUp,
-  FiShoppingBag,
-  FiBookOpen,
-  FiGift,
+  FiTruck,
+  FiZap,
 } from "react-icons/fi";
 
 const BANNERS = [
   {
+    id: 1,
+    title: "Tri Thức Cho Mọi Nhà",
+    desc: "Giảm đến 50% cho học sinh - sinh viên toàn quốc.",
     image: "/assets/banners/1600w-iUbywlem9dU.jpg",
-    title: "Khuyến mãi sách học tập",
-    desc: "Giảm đến 50% cho học sinh - sinh viên. Bắt đầu năm học mới với đầy đủ hành trang.",
-    link: "/products?danhmucSP_id=1",
-    color: "from-blue-600/80 to-blue-900/90",
+    alt: "Banner khuyến mãi tri thức cho mọi nhà",
   },
   {
-    image: "/assets/banners/VPBANK-T10-Web1920x450.webp",
-    title: "Văn phòng phẩm tiết kiệm",
-    desc: "Mua càng nhiều - Giá càng rẻ! Trang bị góc làm việc với những món đồ xinh xắn.",
-    link: "/products?danhmucSP_id=2",
-    color: "from-emerald-600/80 to-emerald-900/90",
-  },
-  {
+    id: 2,
+    title: "Flash Sale Cuối Tuần",
+    desc: "Sách mới đồng giá chỉ từ 49k. Số lượng có hạn!",
     image: "/assets/banners/ROHTO_Main-Banner-Web.webp",
-    title: "Flash Sale cuối tuần",
-    desc: "Giảm sốc toàn bộ sách nổi bật. Đừng bỏ lỡ cơ hội sở hữu những tựa sách hay.",
-    link: "/products",
-    color: "from-purple-600/80 to-purple-900/90",
+    alt: "Banner flash sale cuối tuần",
   },
   {
+    id: 3,
+    title: "Sách Kim Đồng",
+    desc: "Khám phá những cuốn sách Kim Đồng đã cập bến cửa hàng.",
     image:
       "/assets/banners/banner-fb-post-1800_1200-px_b670871b6d974df8bca2fbfa4dc558f6_1024x1024.png",
-    title: "Đại tiệc sách Kim Đồng",
-    desc: "Ưu đãi lớn giảm từ 15% đến 70% các dòng truyện tranh, thiếu nhi.",
-    link: "/products?publisher_id=1",
-    color: "from-red-600/80 to-red-900/90",
+    alt: "Banner sách Kim Đồng",
+  },
+  {
+    id: 4,
+    title: "Ưu đãi VP Bank",
+    desc: "Khám phá những cuốn sách Kim Đồng đã cập bến cửa hàng.",
+    image: "/assets/banners/VPBANK-T10-Web1920x450.png",
+    alt: "Banner ưu đãi VP Bank",
   },
 ];
 
 export default function Home() {
-  const [activeBanner, setActiveBanner] = useState(0);
+  const [currentBanner, setCurrentBanner] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
 
-  // Queries
-  const { data: promotedProducts = [], isLoading: loadingPromoted } = useQuery({
-    queryKey: ["products", "promoted"],
-    queryFn: () => productService.getPromotedProducts(8),
+  const {
+    data: discountedProducts = [],
+    isLoading: loadingDiscounted,
+    isError: discountedError,
+  } = useQuery({
+    queryKey: ["discounted-products"],
+    queryFn: async () => {
+      const res = await productService.getProducts({
+        promoted_only: true,
+        limit: 8,
+      });
+      return res.data;
+    },
   });
 
-  const { data: bestSellers = [], isLoading: loadingBestSellers } = useQuery({
-    queryKey: ["products", "bestSellers"],
-    queryFn: () => productService.getBestSellers(8),
+  const {
+    data: bestSellers = [],
+    isLoading: loadingBestSellers,
+    isError: bestSellersError,
+  } = useQuery({
+    queryKey: ["best-sellers"],
+    queryFn: async () => {
+      const res = await productService.getProducts({
+        sort_by: "best_selling",
+        limit: 8,
+      });
+      return res.data;
+    },
   });
 
-  const { data: featuredProducts = [], isLoading: loadingFeatured } = useQuery({
-    queryKey: ["products", "featured"],
-    queryFn: () => productService.getNewArrivals(8),
-  });
-
-  const { data: categories = [], isLoading: loadingCategories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => categoryService.getAllCategories(),
-  });
-
-  const loading =
-    loadingPromoted ||
-    loadingBestSellers ||
-    loadingFeatured ||
-    loadingCategories;
-
-  // Banner timer
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveBanner((prev) => (prev + 1) % BANNERS.length);
+      setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
     }, 6000);
+
     return () => clearInterval(timer);
   }, []);
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-[70vh]">
-        <div className="relative w-20 h-20">
-          <div className="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
-          <div className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin"></div>
-          <FiBookOpen className="absolute inset-0 m-auto text-primary text-2xl animate-pulse" />
-        </div>
-      </div>
-    );
+  const goPrev = () => {
+    setCurrentBanner((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
+  };
+
+  const goNext = () => {
+    setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
+  };
 
   return (
-    <div className="bg-gray-50/30 pb-24">
-      {/* Hero Banner Section */}
-      <section className="relative px-4 pt-6 pb-12 overflow-hidden">
-        <div className="container mx-auto">
-          <div className="relative h-[380px] md:h-[520px] rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.18)] group bg-slate-100">
-            {BANNERS.map((banner, index) => (
-              <div
-                key={index}
-                className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-                  index === activeBanner
-                    ? "opacity-100 scale-100 z-10"
-                    : "opacity-0 scale-105 z-0"
-                }`}
-              >
-                <img
-                  src={banner.image}
-                  alt={banner.title}
-                  className="w-full h-full object-cover object-center"
-                />
+    <MotionConfig reducedMotion={shouldReduceMotion ? "user" : "never"}>
+      <div className="bg-background min-h-screen">
+        <main>
+          <section className="py-6">
+            <div className="container mx-auto px-4 max-w-[1600px]">
+              <h1 className="sr-only">Trang chủ cửa hàng sách</h1>
 
-                {/* Overlay mềm hơn */}
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-900/45 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+              <div className="relative aspect-[21/9] md:aspect-[3/1] rounded-2xl overflow-hidden shadow-sm group">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentBanner}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute inset-0"
+                  >
+                    <img
+                      src={BANNERS[currentBanner].image}
+                      alt={BANNERS[currentBanner].alt}
+                      className="w-full h-full object-cover"
+                      loading="eager"
+                      fetchPriority="high"
+                    />
 
-                <div className="absolute inset-0 flex items-center px-6 sm:px-10 md:px-16">
-                  <div className="max-w-xl">
-                    <div
-                      className={`transition-all duration-700 transform ${
-                        index === activeBanner
-                          ? "translate-y-0 opacity-100 delay-200"
-                          : "translate-y-8 opacity-0"
-                      }`}
-                    >
-                      <div className="inline-flex items-center gap-2 mb-4 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 backdrop-blur-md">
-                        <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                        <span className="text-white text-sm font-semibold tracking-wide">
-                          Nổi bật hôm nay
-                        </span>
-                      </div>
-
-                      <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-4 drop-shadow">
-                        {banner.title}
-                      </h2>
-
-                      <p className="text-white/85 text-base md:text-lg leading-relaxed max-w-lg mb-7">
-                        {banner.desc}
-                      </p>
-
-                      <Link
-                        to={banner.link}
-                        className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 font-bold text-slate-900 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-xl group/btn"
+                    <div className="absolute inset-0 bg-gradient-to-r from-secondary/85 via-secondary/60 to-transparent flex flex-col justify-center px-6 sm:px-10 md:px-20 text-white">
+                      <motion.h2
+                        initial={{ y: 14, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="text-2xl md:text-4xl font-bold mb-3 serif max-w-xl"
                       >
-                        Khám phá ngay
-                        <FiArrowRight className="transition-transform group-hover/btn:translate-x-1" />
-                      </Link>
+                        {BANNERS[currentBanner].title}
+                      </motion.h2>
+
+                      <motion.p
+                        initial={{ y: 14, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.08 }}
+                        className="text-sm md:text-lg opacity-90 mb-7 max-w-lg"
+                      >
+                        {BANNERS[currentBanner].desc}
+                      </motion.p>
+
+                      <motion.div
+                        initial={{ y: 14, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.16 }}
+                      >
+                        <Link
+                          to="/products"
+                          className="btn-primary py-3 px-8 text-sm uppercase tracking-widest inline-flex items-center gap-2"
+                        >
+                          Khám phá ngay <FiArrowRight />
+                        </Link>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+
+                <button
+                  type="button"
+                  aria-label="Ảnh trước"
+                  onClick={goPrev}
+                  className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/35 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"
+                >
+                  <FiChevronLeft className="w-6 h-6" />
+                </button>
+
+                <button
+                  type="button"
+                  aria-label="Ảnh tiếp theo"
+                  onClick={goNext}
+                  className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/35 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"
+                >
+                  <FiChevronRight className="w-6 h-6" />
+                </button>
+
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                  {BANNERS.map((banner, idx) => (
+                    <button
+                      key={banner.id}
+                      type="button"
+                      aria-label={`Chuyển đến banner ${idx + 1}`}
+                      onClick={() => setCurrentBanner(idx)}
+                      className={`h-2 rounded-full transition-all ${
+                        idx === currentBanner
+                          ? "w-6 bg-white"
+                          : "w-2 bg-white/50"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="py-8">
+            <div className="container mx-auto px-4 max-w-[1600px]">
+              <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <li>
+                  <FeatureItem
+                    icon={FiTruck}
+                    title="Giao hàng nhanh"
+                    desc="Toàn quốc 2-3 ngày"
+                  />
+                </li>
+                <li>
+                  <FeatureItem
+                    icon={FiShield}
+                    title="Bảo mật tuyệt đối"
+                    desc="Thanh toán an toàn"
+                  />
+                </li>
+                <li>
+                  <FeatureItem
+                    icon={FiStar}
+                    title="Sách chất lượng"
+                    desc="Tuyển chọn kỹ lưỡng"
+                  />
+                </li>
+                <li>
+                  <FeatureItem
+                    icon={FiZap}
+                    title="Hỗ trợ 24/7"
+                    desc="Giải đáp mọi thắc mắc"
+                  />
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section className="py-12">
+            <div className="container mx-auto px-4 max-w-[1600px]">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-8 bg-red-500 rounded-full" />
+                  <h2 className="text-2xl font-bold text-secondary">
+                    Đang khuyến mãi
+                  </h2>
+                </div>
+
+                <Link
+                  to="/products?promoted_only=1"
+                  className="text-sm font-bold text-red-500 hover:underline flex items-center gap-1"
+                >
+                  Xem tất cả <FiArrowRight />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {loadingDiscounted ? (
+                  [...Array(4)].map((_, i) => (
+                    <div key={i} className="aspect-[3/4] rounded-xl shimmer" />
+                  ))
+                ) : discountedError ? (
+                  <div className="col-span-full py-10 text-center text-slate-400 font-medium">
+                    Không tải được sản phẩm khuyến mãi.
+                  </div>
+                ) : discountedProducts.length === 0 ? (
+                  <div className="col-span-full py-10 text-center text-slate-400 font-medium">
+                    Hiện chưa có sản phẩm khuyến mãi mới.
+                  </div>
+                ) : (
+                  discountedProducts.map((p) => (
+                    <ProductCard key={p.id} product={p} />
+                  ))
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section className="py-12">
+            <div className="container mx-auto px-4 max-w-[1600px]">
+              <div className="bg-secondary rounded-2xl overflow-hidden shadow-sm flex flex-col md:flex-row items-center">
+                <div className="p-8 md:p-16 flex-1 text-white">
+                  <span className="text-xs font-bold uppercase tracking-[0.3em] text-primary mb-4 block">
+                    Flash Sale
+                  </span>
+
+                  <h2 className="text-3xl md:text-5xl font-bold mb-6 serif leading-tight">
+                    Đăng ký thành viên - Nhận ngay ưu đãi 20%
+                  </h2>
+
+                  <p className="text-slate-300 mb-10 max-w-md">
+                    Nhận thông báo về những đầu sách mới nhất và các chương
+                    trình khuyến mãi độc quyền chỉ dành cho thành viên.
+                  </p>
+
+                  <form
+                    className="flex flex-col sm:flex-row items-stretch gap-4"
+                    onSubmit={(e) => e.preventDefault()}
+                  >
+                    <label htmlFor="email" className="sr-only">
+                      Email của bạn
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder="Email của bạn..."
+                      className="bg-white/10 border border-white/20 rounded-xl py-3 px-6 text-sm flex-1 outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    />
+                    <button
+                      type="submit"
+                      className="btn-primary whitespace-nowrap"
+                    >
+                      Đăng ký
+                    </button>
+                  </form>
+                </div>
+
+                <div className="hidden md:block w-1/3 p-12">
+                  <div className="aspect-square rounded-full border-[1.5rem] border-primary/20 flex items-center justify-center p-8 animate-float">
+                    <div className="w-full h-full bg-primary rounded-full flex items-center justify-center text-white text-6xl font-black shadow-2xl shadow-primary/40">
+                      20%
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
-
-            {/* Navigation */}
-            <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2.5 rounded-full border border-white/15 bg-black/20 px-3 py-2 backdrop-blur-md">
-              {BANNERS.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveBanner(i)}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${
-                    i === activeBanner
-                      ? "w-10 bg-white shadow-[0_0_12px_rgba(255,255,255,0.7)]"
-                      : "w-2.5 bg-white/45 hover:bg-white/75"
-                  }`}
-                  aria-label={`Go to slide ${i + 1}`}
-                />
-              ))}
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      {/* Quick Stats/Features */}
-      <section className="container mx-auto px-4 -mt-16 relative z-30 mb-16">
-        <div className="bg-white rounded-2xl shadow-xl shadow-primary/5 border border-gray-100 p-6 grid grid-cols-2 md:grid-cols-4 gap-6 divide-x divide-gray-100">
-          <div className="flex flex-col items-center text-center px-4">
-            <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-xl mb-3">
-              <FiBookOpen />
-            </div>
-            <h3 className="font-bold text-gray-900">10,000+ Tựa sách</h3>
-            <p className="text-xs text-gray-500 mt-1">Đa dạng mọi thể loại</p>
-          </div>
-          <div className="flex flex-col items-center text-center px-4">
-            <div className="w-12 h-12 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-xl mb-3">
-              <FiTrendingUp />
-            </div>
-            <h3 className="font-bold text-gray-900">100% Chính hãng</h3>
-            <p className="text-xs text-gray-500 mt-1">Cam kết chất lượng</p>
-          </div>
-          <div className="flex flex-col items-center text-center px-4">
-            <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center text-xl mb-3">
-              <FiGift />
-            </div>
-            <h3 className="font-bold text-gray-900">Ưu đãi mỗi ngày</h3>
-            <p className="text-xs text-gray-500 mt-1">
-              Nhiều mã giảm giá hấp dẫn
-            </p>
-          </div>
-          <div className="flex flex-col items-center text-center px-4">
-            <div className="w-12 h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center text-xl mb-3">
-              <FiPackage />
-            </div>
-            <h3 className="font-bold text-gray-900">Giao hàng toàn quốc</h3>
-            <p className="text-xs text-gray-500 mt-1">Nhanh chóng & an toàn</p>
-          </div>
-        </div>
-      </section>
+          <section className="py-12 pb-24">
+            <div className="container mx-auto px-4 max-w-[1600px]">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-8 bg-amber-500 rounded-full" />
+                  <h2 className="text-2xl font-bold text-secondary">
+                    Bán chạy nhất
+                  </h2>
+                </div>
 
-      {/* Promoted Products Section */}
-      {promotedProducts.length > 0 && (
-        <section className="container mx-auto px-4 py-8">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-black text-gray-900 mb-2 flex items-center gap-3">
-                <span className="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center shadow-inner">
-                  <FiZap className="text-xl" />
-                </span>
-                Đang Khuyến Mãi
-              </h2>
-              <p className="text-gray-500 font-medium ml-14">
-                Cơ hội vàng săn sách hay giá siêu hời
-              </p>
-            </div>
-            <Link
-              to="/products?promoted_only=1"
-              className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-50 text-red-600 font-bold hover:bg-red-500 hover:text-white transition-all group"
-            >
-              Xem tất cả{" "}
-              <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {promotedProducts.map((product) => (
-              <ProductCard key={product.sanpham_id} product={product} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Best Sellers Section */}
-      {bestSellers.length > 0 && (
-        <section className="container mx-auto px-4 py-8 mt-4">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-black text-gray-900 mb-2 flex items-center gap-3">
-                <span className="w-10 h-10 rounded-full bg-yellow-100 text-yellow-500 flex items-center justify-center shadow-inner">
-                  <FiStar className="text-xl" />
-                </span>
-                Bán Chạy Nhất
-              </h2>
-              <p className="text-gray-500 font-medium ml-14">
-                Những tựa sách được độc giả săn đón nhiều nhất
-              </p>
-            </div>
-            <Link
-              to="/products?sort_by=best_selling"
-              className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full bg-yellow-50 text-yellow-600 font-bold hover:bg-yellow-500 hover:text-white transition-all group"
-            >
-              Xem tất cả{" "}
-              <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {bestSellers.map((product) => (
-              <ProductCard key={product.sanpham_id} product={product} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Explore Categories */}
-      <section className="py-16 mt-8 relative overflow-hidden bg-white border-y border-gray-100 shadow-[0_0_40px_rgba(0,0,0,0.02)]">
-        {/* Background decors */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">
-              Khám Phá Danh Mục
-            </h2>
-            <p className="text-gray-500 text-lg">
-              Tìm kiếm những cuốn sách yêu thích của bạn theo chủ đề, thể loại
-              đa dạng và phong phú.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {categories.map((cat, i) => {
-              const icons = ["📚", "✏️", "🎨", "💼", "🎁", "🎓", "📖", "🧩"];
-              const colors = [
-                "bg-blue-50 text-blue-600 border-blue-100 group-hover:bg-blue-500",
-                "bg-emerald-50 text-emerald-600 border-emerald-100 group-hover:bg-emerald-500",
-                "bg-purple-50 text-purple-600 border-purple-100 group-hover:bg-purple-500",
-                "bg-orange-50 text-orange-600 border-orange-100 group-hover:bg-orange-500",
-                "bg-pink-50 text-pink-600 border-pink-100 group-hover:bg-pink-500",
-                "bg-cyan-50 text-cyan-600 border-cyan-100 group-hover:bg-cyan-500",
-              ];
-              const colorClass = colors[i % colors.length];
-              const icon = icons[i % icons.length];
-
-              return (
                 <Link
-                  key={cat.danhmucSP_id}
-                  to={`/products?danhmucSP_id=${cat.danhmucSP_id}`}
-                  className="bg-white p-6 rounded-3xl border border-gray-100 text-center hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:border-transparent hover:-translate-y-2 transition-all duration-300 group"
+                  to="/products?sort_by=best_selling"
+                  className="text-sm font-bold text-amber-600 hover:underline flex items-center gap-1"
                 >
-                  <div
-                    className={`w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center text-4xl shadow-sm border transition-colors duration-300 ${colorClass}`}
-                  >
-                    <span className="group-hover:scale-110 transition-transform duration-300 group-hover:text-white">
-                      {icon}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-gray-800 line-clamp-2 leading-tight group-hover:text-primary transition-colors">
-                    {cat.tenDanhMuc}
-                  </h3>
+                  Khám phá tất cả <FiArrowRight />
                 </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+              </div>
 
-      {/* Featured Products (New Arrivals) */}
-      {featuredProducts.length > 0 && (
-        <section className="container mx-auto px-4 py-8 mt-8">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-black text-gray-900 mb-2 flex items-center gap-3">
-                <span className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shadow-inner">
-                  <FiShoppingBag className="text-xl" />
-                </span>
-                Sản Phẩm Mới
-              </h2>
-              <p className="text-gray-500 font-medium ml-14">
-                Cập nhật ngay những tựa sách mới nhất trên kệ
-              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {loadingBestSellers ? (
+                  [...Array(8)].map((_, i) => (
+                    <div key={i} className="aspect-[3/4] rounded-xl shimmer" />
+                  ))
+                ) : bestSellersError ? (
+                  <div className="col-span-full py-10 text-center text-slate-400 font-medium">
+                    Không tải được sản phẩm bán chạy.
+                  </div>
+                ) : (
+                  bestSellers.map((p) => <ProductCard key={p.id} product={p} />)
+                )}
+              </div>
             </div>
-            <Link
-              to="/products"
-              className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/5 text-primary font-bold hover:bg-primary hover:text-white transition-all group"
-            >
-              Xem tất cả{" "}
-              <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.sanpham_id} product={product} />
-            ))}
-          </div>
-        </section>
-      )}
+          </section>
+        </main>
+      </div>
+    </MotionConfig>
+  );
+}
 
-      {/* Call to action */}
-      <section className="container mx-auto px-4 mt-16">
-        <div className="bg-gradient-to-r from-primary to-blue-600 rounded-3xl p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl shadow-primary/20 relative overflow-hidden">
-          {/* Decors */}
-          <div className="absolute top-0 right-0 w-full h-full bg-[url('/assets/images/pattern.svg')] opacity-10 pointer-events-none"></div>
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
-
-          <div className="relative z-10 max-w-2xl">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-              Đăng ký nhận tin tức mới nhất
-            </h2>
-            <p className="text-white/80 text-lg mb-0">
-              Nhận ngay thông tin về các chương trình khuyến mãi, sự kiện ra mắt
-              sách và ưu đãi đặc biệt dành riêng cho bạn.
-            </p>
-          </div>
-          <div className="w-full md:w-auto relative z-10 flex-shrink-0">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                placeholder="Nhập email của bạn..."
-                className="px-6 py-4 rounded-full min-w-[280px] focus:outline-none focus:ring-4 focus:ring-white/30 text-gray-900 font-medium"
-              />
-              <button className="px-8 py-4 rounded-full bg-gray-900 text-white font-bold hover:bg-gray-800 transition-colors shadow-lg hover:-translate-y-1">
-                Đăng ký ngay
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+function FeatureItem({ icon: Icon, title, desc }) {
+  return (
+    <div className="flex items-center gap-4 p-4 rounded-xl border border-slate-50 bg-white shadow-sm">
+      <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-primary shrink-0">
+        <Icon className="w-5 h-5" aria-hidden="true" />
+      </div>
+      <div>
+        <h3 className="text-sm font-bold text-secondary leading-none mb-1">
+          {title}
+        </h3>
+        <p className="text-[11px] text-slate-400 font-medium">{desc}</p>
+      </div>
     </div>
   );
 }

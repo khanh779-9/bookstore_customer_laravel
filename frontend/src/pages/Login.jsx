@@ -1,123 +1,189 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiArrowLeft } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useCart } from "../contexts/CartContext";
+import {
+  FiMail,
+  FiLock,
+  FiEye,
+  FiEyeOff,
+  FiArrowRight,
+} from "react-icons/fi";
+import { FcGoogle } from "react-icons/fc";
+import { useToast } from "../contexts/ToastContext";
+import { cn } from "../utils/cn";
 
 export default function Login() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const { login } = useAuth();
+  const { mergeCart } = useCart();
+  const { showToast } = useToast();
   const navigate = useNavigate();
+
+  const handleChange = (key, value) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       await login(form.email, form.password);
-      toast.success('Đăng nhập thành công!');
-      navigate('/account');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Email hoặc mật khẩu không chính xác');
+      await mergeCart();
+      showToast("Đăng nhập thành công", "success");
+      navigate("/account");
+    } catch {
+      showToast("Email hoặc mật khẩu không đúng", "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-20 min-h-[80vh] flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-gray-200 border border-gray-100 relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-          
-          <div className="text-center mb-10 space-y-2">
-            <h1 className="text-3xl font-black text-gray-900 italic tracking-tight">Đăng Nhập</h1>
-            <p className="text-sm text-gray-400 font-bold italic">Chào mừng bạn quay trở lại với BookZone</p>
+
+        {/* CARD */}
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-lg p-6 md:p-8">
+
+          {/* HEADER */}
+          <div className="text-center mb-8">
+            <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-lg">
+              <FiLock />
+            </div>
+            <h1 className="text-2xl font-bold text-secondary">
+              Đăng nhập
+            </h1>
+            <p className="text-sm text-slate-400 mt-1">
+              Chào mừng bạn quay lại
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Email</label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                  <FiMail />
-                </div>
-                <input 
-                  type="email" 
-                  required 
-                  className="w-full pl-14 pr-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold"
-                  placeholder="Nhập email của bạn"
-                  value={form.email}
-                  onChange={e => setForm({...form, email: e.target.value})}
-                />
-              </div>
-            </div>
+          {/* FORM */}
+          <form onSubmit={handleSubmit} className="space-y-5">
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center px-1">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Mật khẩu</label>
-                <Link to="/forgot-password" size="sm" className="text-[10px] font-black text-primary hover:underline italic">Quên mật khẩu?</Link>
-              </div>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                  <FiLock />
-                </div>
-                <input 
-                  type={showPassword ? 'text' : 'password'} 
-                  required 
-                  className="w-full pl-14 pr-14 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold"
-                  placeholder="••••••••"
-                  value={form.password}
-                  onChange={e => setForm({...form, password: e.target.value})}
-                />
-                <button 
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-6 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+            <Input
+              icon={<FiMail />}
+              type="email"
+              placeholder="Email"
+              value={form.email}
+              onChange={(v) => handleChange("email", v)}
+            />
+
+            <div>
+              <Input
+                icon={<FiLock />}
+                type={showPassword ? "text" : "password"}
+                placeholder="Mật khẩu"
+                value={form.password}
+                onChange={(v) => handleChange("password", v)}
+                rightIcon={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                }
+              />
+
+              <div className="flex justify-end mt-2">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-primary hover:underline"
                 >
-                  {showPassword ? <FiEyeOff /> : <FiEye />}
-                </button>
+                  Quên mật khẩu?
+                </Link>
               </div>
             </div>
 
-            <button 
-              type="submit" 
+            {/* BUTTON */}
+            <button
+              type="submit"
               disabled={loading}
-              className="w-full bg-primary text-white font-black py-5 rounded-2xl shadow-xl shadow-green-100 flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:-translate-y-[1px] transition-all disabled:opacity-50"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
-                <>ĐĂNG NHẬP <FiArrowRight /></>
+                <>
+                  Đăng nhập <FiArrowRight />
+                </>
               )}
             </button>
-          </form>
 
-          <div className="mt-10 space-y-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100"></div></div>
-              <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.2em]"><span className="px-4 bg-white text-gray-300">Hoặc</span></div>
+            {/* REGISTER */}
+            <p className="text-center text-sm text-slate-500">
+              Chưa có tài khoản?{" "}
+              <Link to="/register" className="text-primary font-medium hover:underline">
+                Đăng ký
+              </Link>
+            </p>
+
+            {/* DIVIDER */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-slate-200" />
+              <span className="text-xs text-slate-400">Hoặc</span>
+              <div className="flex-1 h-px bg-slate-200" />
             </div>
 
-            <button className="w-full border-2 border-gray-100 py-4 rounded-2xl flex items-center justify-center gap-3 font-black text-sm text-gray-600 hover:bg-gray-50 transition-all">
-              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/smartlock/google.svg" className="w-5 h-5" alt="Google" />
+            {/* GOOGLE */}
+            <button
+              type="button"
+              className="w-full border border-slate-200 py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+            >
+              <FcGoogle />
               Tiếp tục với Google
             </button>
-
-            <div className="text-center text-sm font-bold italic text-gray-400">
-              Chưa có tài khoản? <Link to="/register" className="text-primary hover:underline ml-1">Đăng ký ngay</Link>
-            </div>
-          </div>
+          </form>
         </div>
 
-        <div className="mt-8 text-center">
-          <Link to="/" className="text-xs font-black text-gray-400 hover:text-gray-600 flex items-center justify-center gap-2 transition-colors">
-            <FiArrowLeft /> QUAY LẠI TRANG CHỦ
+        {/* BACK */}
+        <div className="mt-6 text-center">
+          <Link
+            to="/"
+            className="text-xs text-slate-400 hover:text-slate-600"
+          >
+            ← Quay lại trang chủ
           </Link>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ===== INPUT ===== */
+
+function Input({ icon, rightIcon, onChange, ...props }) {
+  return (
+    <div className="relative">
+      {icon && (
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+          {icon}
+        </span>
+      )}
+
+      <input
+        {...props}
+        onChange={(e) => onChange(e.target.value)}
+        className={cn(
+          "w-full border border-slate-200 rounded-lg py-2.5 text-sm outline-none transition",
+          "focus:ring-2 focus:ring-primary/20 focus:border-primary",
+          "bg-white hover:border-slate-300",
+          icon ? "pl-9" : "px-3",
+          rightIcon && "pr-9"
+        )}
+      />
+
+      {rightIcon && (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          {rightIcon}
+        </span>
+      )}
     </div>
   );
 }

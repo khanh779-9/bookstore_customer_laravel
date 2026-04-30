@@ -81,6 +81,9 @@ Route::prefix('v1')->group(function () {
         // Reviews
         Route::post('/products/{id}/reviews', [ProductController::class, 'submitReview']);
 
+        // Cart Merge
+        Route::post('/cart/merge', [CartController::class, 'merge']);
+
         // Notifications
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::post('/notifications/mark-all', [NotificationController::class, 'markAllRead']);

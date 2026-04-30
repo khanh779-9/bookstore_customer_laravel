@@ -53,63 +53,8 @@ class HoaDon extends Model
         return $this->belongsTo(DiaChiGiaoHang::class, 'dcgh_id', 'dcgh_id');
     }
 
-    public static function createWithItems(int $customerId, array $items, string $paymentMethod = 'tien_mat', ?int $addressId = null, string $status = self::STATUS_PENDING_CONFIRMATION): ?self
+    public function nhanVien()
     {
-        return \DB::transaction(function () use ($customerId, $items, $paymentMethod, $addressId, $status) {
-            $total = 0;
-            foreach ($items as $item) {
-                $total += $item['soluong'] * $item['dongia'];
-            }
-
-            $order = self::create([
-                'khachhang_id' => $customerId,
-                'ngaytao' => now(),
-                'tongtien' => $total,
-                'phuongthuc_thanhtoan' => $paymentMethod,
-                'trangthai' => $status,
-                'dcgh_id' => $addressId,
-            ]);
-
-            foreach ($items as $item) {
-                $order->chiTiet()->create([
-                    'sanpham_id' => $item['sanpham_id'],
-                    'soluong' => $item['soluong'],
-                    'dongia' => $item['dongia'],
-                    'thanhtien' => $item['soluong'] * $item['dongia'],
-                ]);
-
-                // Update stock
-                $product = SanPham::lockForUpdate()->find($item['sanpham_id']);
-                if ($product) {
-                    $product->decrement('soluongton', $item['soluong']);
-                    // Note: we don't increment soluongban here, 
-                    // in backup it happens when status changes to 'da_giao_hang'
-                }
-            }
-
-            return $order;
-        });
-    }
-
-    public function updateStatus(string $newStatus, ?int $employeeId = null): bool
-    {
-        return \DB::transaction(function () use ($newStatus, $employeeId) {
-            $oldStatus = $this->trangthai;
-            
-            $this->trangthai = $newStatus;
-            if ($employeeId) {
-                $this->nhanvien_id = $employeeId;
-            }
-            $this->save();
-
-            // If changing to delivered, increment best selling count
-            if ($newStatus === self::STATUS_DELIVERED && $oldStatus !== self::STATUS_DELIVERED) {
-                foreach ($this->chiTiet as $item) {
-                    $item->sanpham()->increment('soluongban', $item->soluong);
-                }
-            }
-
-            return true;
-        });
+        return $this->belongsTo(NhanVien::class, 'nhanvien_id', 'nhanvien_id');
     }
 }

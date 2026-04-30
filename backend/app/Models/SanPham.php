@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SanPham extends Model
 {
@@ -30,11 +32,18 @@ class SanPham extends Model
 
     protected $casts = [
         'gia' => 'decimal:3',
+        'soluongton' => 'integer',
+        'soluongban' => 'integer',
+        'danhmucSP_id' => 'integer',
+        'donvitinh_id' => 'integer',
+        'nhacungcap_id' => 'integer',
     ];
 
     protected $appends = [
         'ten_hien_thi',
     ];
+
+    // ── Relationships ────────────────────────────────────
 
     public function sach(): HasOne
     {
@@ -46,39 +55,46 @@ class SanPham extends Model
         return $this->hasOne(VanPhongPham::class, 'sanpham_id', 'sanpham_id');
     }
 
-    public function danhMuc()
+    public function danhMuc(): BelongsTo
     {
         return $this->belongsTo(DanhMucSanPham::class, 'danhmucSP_id', 'danhmucSP_id');
     }
 
-    public function donViTinh()
+    public function donViTinh(): BelongsTo
     {
         return $this->belongsTo(DonViTinh::class, 'donvitinh_id', 'donvitinh_id');
     }
 
-    public function nhaCungCap()
+    public function nhaCungCap(): BelongsTo
     {
         return $this->belongsTo(NhaCungCap::class, 'nhacungcap_id', 'nhacungcap_id');
     }
 
-    public function chiTietKhuyenMai()
+    public function chiTietKhuyenMai(): HasMany
     {
         return $this->hasMany(ChiTietKhuyenMai::class, 'sanpham_id', 'sanpham_id');
     }
 
-    public function getActivePromotion()
+    public function danhGia(): HasMany
     {
-        return $this->chiTietKhuyenMai()
-            ->whereHas('khuyenMai', fn($q) => $q->active())
-            ->first();
+        return $this->hasMany(DanhGia::class, 'sanpham_id', 'sanpham_id');
     }
+
+    // ── Accessors ────────────────────────────────────────
 
     public function getGiaKhuyenMaiAttribute(): float
     {
-        $promo = $this->getActivePromotion();
+        $promo = $this->chiTietKhuyenMai()
+            ->whereHas('khuyenMai', function($query) {
+                $query->where('ngaybatdau', '<=', now())
+                      ->where('ngayketthuc', '>=', now());
+            })
+            ->first();
+
         if ($promo) {
             return (float) ($this->gia * (1 - $promo->tilegiamgia / 100));
         }
+
         return (float) $this->gia;
     }
 
@@ -95,26 +111,7 @@ class SanPham extends Model
         return 'Sản phẩm #' . $this->sanpham_id;
     }
 
-    public function scopeFeatured($query, $limit = 8)
-    {
-        return $query->where('soluongton', '>', 0)
-            ->orderByDesc('soluongban')
-            ->limit($limit);
-    }
-
-    public function scopeNewArrivals($query, $limit = 8)
-    {
-        return $query->where('soluongton', '>', 0)
-            ->orderByDesc('sanpham_id')
-            ->limit($limit);
-    }
-
-    public function scopeBestSelling($query, $limit = 8)
-    {
-        return $query->where('soluongton', '>', 0)
-            ->orderByDesc('soluongban')
-            ->limit($limit);
-    }
+    // ── Scopes ───────────────────────────────────────────
 
     public function scopeFilter($query, array $filters)
     {
@@ -154,8 +151,19 @@ class SanPham extends Model
             default: $query->orderByDesc('sanpham_id'); break;
         }
 
+        if (!empty($filters['promoted_only'])) {
+            $query->whereHas('chiTietKhuyenMai', function($q) {
+                $q->whereHas('khuyenMai', function($kq) {
+                    $kq->where('ngaybatdau', '<=', now())
+                       ->where('ngayketthuc', '>=', now());
+                });
+            });
+        }
+
         return $query;
     }
+
+    // ── Helpers ──────────────────────────────────────────
 
     public function hasStock(int $quantity): bool
     {

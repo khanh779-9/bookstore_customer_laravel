@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ThongBaoResource;
 use App\Models\ThongBao;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,7 @@ class NotificationController extends Controller
             ->orderByDesc('thongbao_id')
             ->paginate(12);
 
-        if ($request->expectsJson()) return response()->json($notifications);
+        if ($request->expectsJson()) return ThongBaoResource::collection($notifications);
         return view('customer.notifications', compact('notifications'));
     }
 
@@ -53,7 +54,9 @@ class NotificationController extends Controller
             
         $note->update(['trang_thai' => $newStatus]);
 
-        if ($request->expectsJson()) return response()->json(['message' => 'Đã cập nhật trạng thái.', 'trang_thai' => $newStatus]);
+        if ($request->expectsJson()) {
+            return (new ThongBaoResource($note))->additional(['message' => 'Đã cập nhật trạng thái.']);
+        }
         return back()->with('success', 'Đã cập nhật trạng thái thông báo.');
     }
 
@@ -64,9 +67,8 @@ class NotificationController extends Controller
     {
         $customerId = $this->getCustomerId();
 
-        ThongBao::where('thongbao_id', $id)
-            ->where('khachhang_id', $customerId)
-            ->update(['trang_thai' => notification_archived_code()]);
+        $note = ThongBao::where('thongbao_id', $id)->where('khachhang_id', $customerId)->firstOrFail();
+        $note->update(['trang_thai' => notification_archived_code()]);
 
         if ($request->expectsJson()) return response()->json(['message' => 'Đã lưu trữ thông báo.']);
         return back()->with('success', 'Đã lưu trữ thông báo.');

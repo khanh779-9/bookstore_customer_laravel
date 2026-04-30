@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
 import { productService } from "../services/productService";
 import { categoryService } from "../services/categoryService";
 import { lookupService } from "../services/lookupService";
@@ -10,32 +11,50 @@ import {
   FiX,
   FiChevronDown,
   FiSearch,
-  FiBook,
-  FiBriefcase,
+  FiRefreshCcw,
+  FiZap,
+  FiChevronLeft,
+  FiChevronRight,
+  FiChevronsLeft,
+  FiChevronsRight,
 } from "react-icons/fi";
+import { cn } from "../utils/cn";
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [showFilter, setShowFilter] = useState(false);
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
 
   const q = searchParams.get("q") || "";
   const categoryId = searchParams.get("danhmucSP_id") || "";
   const providerId = searchParams.get("provider_id") || "";
   const publisherId = searchParams.get("publisher_id") || "";
+  const promotedOnly = searchParams.get("promoted_only") === "1";
   const sortBy = searchParams.get("sort_by") || "newest";
   const page = parseInt(searchParams.get("page") || "1");
 
-  const { data: productsData, isLoading: loadingProducts } = useQuery({
+  const updateFilter = (key, value) => {
+    const params = new URLSearchParams(searchParams);
+    if (value) params.set(key, value);
+    else params.delete(key);
+    if (key !== "page") params.delete("page");
+    setSearchParams(params);
+  };
+
+  const clearFilters = () => setSearchParams({});
+
+  // ===== API =====
+  const { data: productsData, isLoading } = useQuery({
     queryKey: [
       "products",
-      { q, categoryId, providerId, publisherId, sortBy, page },
+      { q, categoryId, providerId, publisherId, promotedOnly, sortBy, page },
     ],
     queryFn: () =>
       productService.getProducts({
-        q,
-        danhmucSP_id: categoryId,
-        provider_id: providerId,
-        publisher_id: publisherId,
+        q: q || undefined,
+        danhmucSP_id: categoryId || undefined,
+        provider_id: providerId || undefined,
+        publisher_id: publisherId || undefined,
+        promoted_only: promotedOnly ? 1 : undefined,
         sort_by: sortBy,
         page,
       }),
@@ -43,344 +62,429 @@ export default function Products() {
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => categoryService.getAllCategories(),
+    queryFn: categoryService.getAllCategories,
   });
 
   const { data: publishers = [] } = useQuery({
     queryKey: ["publishers"],
-    queryFn: () => lookupService.getPublishers(),
+    queryFn: lookupService.getPublishers,
   });
 
   const { data: providers = [] } = useQuery({
     queryKey: ["providers"],
-    queryFn: () => lookupService.getProviders(),
+    queryFn: lookupService.getProviders,
   });
 
   const products = productsData?.data || [];
+  const meta = productsData?.meta || {};
   const pagination = {
-    currentPage: productsData?.current_page || 1,
-    lastPage: productsData?.last_page || 1,
-    total: productsData?.total || 0,
+    currentPage: meta.current_page || 1,
+    lastPage: meta.last_page || 1,
+    total: meta.total || 0,
   };
-
-  const updateFilter = (key, value) => {
-    const params = new URLSearchParams(searchParams);
-    if (value) params.set(key, value);
-    else params.delete(key);
-    
-    // Reset to page 1 only if we're not explicitly changing the page
-    if (key !== "page") {
-      params.delete("page");
-    }
-    
-    setSearchParams(params);
-  };
-
-  const clearFilters = () => {
-    setSearchParams({});
-  };
-
-  const categoryButtonClass = (active) =>
-    `w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
-      active
-        ? "bg-primary/10 text-primary font-semibold ring-1 ring-primary/10"
-        : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
-    }`;
-
-  const mobileCategoryButtonClass = (active) =>
-    `px-4 py-3 rounded-xl text-left text-sm font-medium transition-all ${
-      active
-        ? "bg-primary text-white"
-        : "bg-gray-50 text-gray-700 hover:bg-gray-100"
-    }`;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
-            {q ? `Kết quả cho: "${q}"` : "Tất cả sản phẩm"}
-          </h1>
-          <p className="text-gray-500 mt-2 flex items-center gap-2">
-            <span className="w-6 h-[2px] bg-primary rounded-full"></span>
-            <span className="font-medium">
-              Tìm thấy {pagination.total || products.length} sản phẩm phù hợp
-            </span>
-          </p>
-        </div>
+    <div className="bg-background min-h-screen pb-24">
+      <div className="container mx-auto py-8 ">
+        {/* HEADER */}
+        <div className="mb-8 flex justify-between items-end gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-secondary">
+              {q ? `Kết quả: "${q}"` : "Tất cả sản phẩm"}
+            </h1>
+            <p className="text-xs text-slate-400 font-semibold uppercase">
+              {pagination.total} sản phẩm
+            </p>
+          </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowFilter(!showFilter)}
-            className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition"
-          >
-            <FiFilter /> Lọc
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowMobileFilter(true)}
+              className="lg:hidden px-4 py-2 bg-white border rounded-lg text-sm"
+            >
+              <FiFilter /> Lọc
+            </button>
 
-          <div className="relative group">
             <select
               value={sortBy}
               onChange={(e) => updateFilter("sort_by", e.target.value)}
-              className="appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-4 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 transition cursor-pointer"
+              className="bg-white border rounded-lg px-3 py-2 text-sm"
             >
               <option value="newest">Mới nhất</option>
-              <option value="price_asc">Giá tăng dần</option>
-              <option value="price_desc">Giá giảm dần</option>
-              <option value="best_selling">Bán chạy nhất</option>
+              <option value="price_asc">Giá tăng</option>
+              <option value="price_desc">Giá giảm</option>
+              <option value="best_selling">Bán chạy</option>
             </select>
-            <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover:text-primary transition-colors" />
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 xl:gap-10">
-        <aside className="hidden lg:block w-72 shrink-0 space-y-8">
-          <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 mb-4 flex items-center gap-2">
-              <FiFilter className="text-primary" /> Danh mục
-            </h3>
-
-            <div className="space-y-2">
-              <button
-                onClick={() => updateFilter("danhmucSP_id", "")}
-                className={categoryButtonClass(!categoryId)}
-              >
-                Tất cả sản phẩm
-              </button>
-
-              {Array.isArray(categories) &&
-                categories.map((c) => (
-                  <button
-                    key={c.danhmucSP_id}
-                    onClick={() => updateFilter("danhmucSP_id", c.danhmucSP_id)}
-                    className={categoryButtonClass(
-                      categoryId == c.danhmucSP_id,
-                    )}
-                  >
-                    {c.tenDanhMuc}
-                  </button>
-                ))}
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 mb-4 flex items-center gap-2">
-              <FiBook className="text-primary" /> Nhà xuất bản
-            </h3>
-
-            <select
-              value={publisherId}
-              onChange={(e) => updateFilter("publisher_id", e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
-            >
-              <option value="">Tất cả NXB</option>
-              {Array.isArray(publishers) &&
-                publishers.map((p) => (
-                  <option key={p.nhaxuatban_id} value={p.nhaxuatban_id}>
-                    {p.ten}
-                  </option>
-                ))}
-            </select>
-          </section>
-
-          <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 mb-4 flex items-center gap-2">
-              <FiBriefcase className="text-primary" /> Nhà cung cấp
-            </h3>
-
-            <select
-              value={providerId}
-              onChange={(e) => updateFilter("provider_id", e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
-            >
-              <option value="">Tất cả NCC</option>
-              {Array.isArray(providers) &&
-                providers.map((p) => (
-                  <option key={p.nhacungcap_id} value={p.nhacungcap_id}>
-                    {p.ten}
-                  </option>
-                ))}
-            </select>
-          </section>
-
-          <button
-            onClick={clearFilters}
-            className="w-full py-3.5 border border-dashed border-gray-300 rounded-2xl text-gray-500 font-medium hover:border-primary hover:text-primary hover:bg-primary/5 transition-all text-sm"
-          >
-            Đặt lại bộ lọc
-          </button>
-        </aside>
-
-        {showFilter && (
-          <div
-            className="fixed inset-0 z-[100] bg-black/50 lg:hidden backdrop-blur-sm"
-            onClick={() => setShowFilter(false)}
-          >
-            <div
-              className="absolute left-0 top-0 h-full w-[88%] max-w-sm bg-white p-6 shadow-2xl flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-gray-900">Bộ lọc</h3>
+        <div className="flex gap-8">
+          {/* ===== FILTER PANEL ===== */}
+          <aside className="hidden lg:block w-72 shrink-0 sticky top-24 h-fit">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-6">
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <h3 className="font-bold text-sm">Bộ lọc</h3>
                 <button
-                  onClick={() => setShowFilter(false)}
-                  className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full text-gray-700"
+                  onClick={clearFilters}
+                  className="text-xs text-slate-400 hover:text-primary"
                 >
-                  <FiX className="w-5 h-5" />
+                  Reset
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto space-y-6 pr-1">
-                <div className="rounded-2xl border border-gray-100 bg-white p-4">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
-                    Theo danh mục
-                  </p>
-                  <div className="grid grid-cols-1 gap-2">
+              {/* Promo */}
+              <button
+                onClick={() =>
+                  updateFilter("promoted_only", promotedOnly ? "" : "1")
+                }
+                className={cn(
+                  "w-full flex justify-between px-3 py-2 border rounded-lg text-sm",
+                  promotedOnly
+                    ? "bg-red-50 border-red-200 text-red-600"
+                    : "border-slate-200 text-slate-500",
+                )}
+              >
+                <span className="flex items-center gap-2">
+                  <FiZap /> Giảm giá
+                </span>
+              </button>
+
+              <Divider />
+
+              {/* Category */}
+              <Section title="Danh mục">
+                <FilterButton
+                  active={!categoryId}
+                  onClick={() => updateFilter("danhmucSP_id", "")}
+                >
+                  Tất cả
+                </FilterButton>
+
+                {categories.map((c) => (
+                  <FilterButton
+                    key={c.id}
+                    active={categoryId == c.id}
+                    onClick={() => updateFilter("danhmucSP_id", c.id)}
+                  >
+                    {c.name}
+                  </FilterButton>
+                ))}
+              </Section>
+
+              <Divider />
+
+              {/* Publisher */}
+              <Section title="Nhà xuất bản">
+                <Select
+                  value={publisherId}
+                  onChange={(v) => updateFilter("publisher_id", v)}
+                  options={publishers}
+                />
+              </Section>
+
+              <Divider />
+
+              {/* Provider */}
+              <Section title="Nhà cung cấp">
+                <Select
+                  value={providerId}
+                  onChange={(v) => updateFilter("provider_id", v)}
+                  options={providers}
+                />
+              </Section>
+            </div>
+          </aside>
+
+          <AnimatePresence>
+            {showMobileFilter && (
+              <>
+                {/* Overlay */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowMobileFilter(false)}
+                  className="fixed inset-0 bg-black/40 z-[100]"
+                />
+
+                {/* Drawer */}
+                <motion.div
+                  initial={{ x: "-100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "-100%" }}
+                  transition={{ type: "spring", stiffness: 260, damping: 25 }}
+                  className="fixed top-0 left-0 h-full w-[85%] max-w-sm bg-white z-[110] flex flex-col"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between p-4 border-b">
+                    <h3 className="font-bold text-secondary">Bộ lọc</h3>
+                    <button
+                      onClick={() => setShowMobileFilter(false)}
+                      className="p-2 bg-slate-100 rounded-lg"
+                    >
+                      <FiX />
+                    </button>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                    {/* PROMO */}
+                    <button
+                      onClick={() =>
+                        updateFilter("promoted_only", promotedOnly ? "" : "1")
+                      }
+                      className={cn(
+                        "w-full flex justify-between px-3 py-2 border rounded-lg text-sm",
+                        promotedOnly
+                          ? "bg-red-50 border-red-200 text-red-600"
+                          : "border-slate-200 text-slate-500",
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <FiZap /> Giảm giá
+                      </span>
+                    </button>
+
+                    {/* CATEGORY */}
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 mb-2">
+                        Danh mục
+                      </h4>
+                      <div className="space-y-1">
+                        <FilterButton
+                          active={!categoryId}
+                          onClick={() => updateFilter("danhmucSP_id", "")}
+                        >
+                          Tất cả
+                        </FilterButton>
+
+                        {categories.map((c) => (
+                          <FilterButton
+                            key={c.id}
+                            active={categoryId == c.id}
+                            onClick={() => updateFilter("danhmucSP_id", c.id)}
+                          >
+                            {c.name}
+                          </FilterButton>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* PUBLISHER */}
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 mb-2">
+                        Nhà xuất bản
+                      </h4>
+                      <Select
+                        value={publisherId}
+                        onChange={(v) => updateFilter("publisher_id", v)}
+                        options={publishers}
+                      />
+                    </div>
+
+                    {/* PROVIDER */}
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 mb-2">
+                        Nhà cung cấp
+                      </h4>
+                      <Select
+                        value={providerId}
+                        onChange={(v) => updateFilter("provider_id", v)}
+                        options={providers}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="p-4 border-t space-y-2">
                     <button
                       onClick={() => {
-                        updateFilter("danhmucSP_id", "");
-                        setShowFilter(false);
+                        clearFilters();
+                        setShowMobileFilter(false);
                       }}
-                      className={mobileCategoryButtonClass(!categoryId)}
+                      className="w-full border border-slate-200 py-2 rounded-lg text-sm"
                     >
-                      Tất cả
+                      Xóa bộ lọc
                     </button>
-                    {Array.isArray(categories) &&
-                      categories.map((c) => (
-                        <button
-                          key={c.danhmucSP_id}
-                          onClick={() => {
-                            updateFilter("danhmucSP_id", c.danhmucSP_id);
-                            setShowFilter(false);
-                          }}
-                          className={mobileCategoryButtonClass(
-                            categoryId == c.danhmucSP_id,
-                          )}
-                        >
-                          {c.tenDanhMuc}
-                        </button>
-                      ))}
+
+                    <button
+                      onClick={() => setShowMobileFilter(false)}
+                      className="w-full bg-primary text-white py-2 rounded-lg text-sm font-semibold"
+                    >
+                      Áp dụng
+                    </button>
                   </div>
-                </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
 
-                <div className="rounded-2xl border border-gray-100 bg-white p-4">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
-                    Nhà xuất bản
-                  </p>
-                  <select
-                    value={publisherId}
-                    onChange={(e) => {
-                      updateFilter("publisher_id", e.target.value);
-                      setShowFilter(false);
-                    }}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
-                  >
-                    <option value="">Tất cả</option>
-                    {Array.isArray(publishers) &&
-                      publishers.map((p) => (
-                        <option key={p.nhaxuatban_id} value={p.nhaxuatban_id}>
-                          {p.ten}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-
-                <div className="rounded-2xl border border-gray-100 bg-white p-4">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
-                    Nhà cung cấp
-                  </p>
-                  <select
-                    value={providerId}
-                    onChange={(e) => {
-                      updateFilter("provider_id", e.target.value);
-                      setShowFilter(false);
-                    }}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
-                  >
-                    <option value="">Tất cả</option>
-                    {Array.isArray(providers) &&
-                      providers.map((p) => (
-                        <option key={p.nhacungcap_id} value={p.nhacungcap_id}>
-                          {p.ten}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  clearFilters();
-                  setShowFilter(false);
-                }}
-                className="mt-6 w-full py-4 bg-gray-900 text-white font-medium rounded-2xl shadow-lg active:scale-[0.98] transition"
-              >
-                Xóa tất cả bộ lọc
-              </button>
-            </div>
-          </div>
-        )}
-
-        <main className="flex-1 min-w-0">
-          {loadingProducts ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {[...Array(8)].map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-gray-100 rounded-3xl h-80 animate-pulse"
-                />
-              ))}
-            </div>
-          ) : products.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-              <div className="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center mb-5">
-                <FiSearch className="text-primary text-3xl" />
-              </div>
-              <h3 className="text-2xl font-semibold text-gray-900">
-                Không tìm thấy sản phẩm
-              </h3>
-              <p className="text-gray-500 mt-2 max-w-sm">
-                Thử đổi từ khóa hoặc giảm bớt bộ lọc để xem thêm kết quả.
-              </p>
-              <button
-                onClick={clearFilters}
-                className="mt-6 bg-gray-900 text-white font-medium py-3 px-6 rounded-xl hover:bg-gray-800 transition"
-              >
-                Làm mới tất cả
-              </button>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {products.map((p) => (
-                  <ProductCard key={p.sanpham_id} product={p} />
+          {/* ===== PRODUCTS ===== */}
+          <main className="flex-1">
+            {isLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="aspect-[3/4] bg-slate-100 animate-pulse rounded-xl"
+                  />
                 ))}
               </div>
-
-              {pagination.lastPage > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-14 flex-wrap">
-                  {Array.from(
-                    { length: pagination.lastPage },
-                    (_, i) => i + 1,
-                  ).map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => updateFilter("page", p > 1 ? p : "")}
-                      className={`w-11 h-11 rounded-xl text-sm font-medium transition-all ${
-                        p === pagination.currentPage
-                          ? "bg-primary text-white"
-                          : "bg-white border border-gray-200 text-gray-600 hover:border-primary hover:text-primary"
-                      }`}
-                    >
-                      {p}
-                    </button>
+            ) : products.length === 0 ? (
+              <div className="text-center py-20">
+                <FiSearch className="text-4xl text-slate-200 mb-3" />
+                <p className="text-slate-500">Không có sản phẩm</p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {products.map((p) => (
+                    <ProductCard key={p.id} product={p} />
                   ))}
                 </div>
-              )}
-            </>
-          )}
-        </main>
+
+                {/* PAGINATION */}
+                {pagination.lastPage > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-16">
+                    {/* First Page */}
+                    <PaginationButton
+                      onClick={() => updateFilter("page", 1)}
+                      disabled={pagination.currentPage === 1}
+                      icon={<FiChevronsLeft className="w-4 h-4" />}
+                      label="Trang đầu"
+                    />
+
+                    {/* Prev Page */}
+                    <PaginationButton
+                      onClick={() => updateFilter("page", Math.max(1, pagination.currentPage - 1))}
+                      disabled={pagination.currentPage === 1}
+                      icon={<FiChevronLeft className="w-4 h-4" />}
+                      label="Trang trước"
+                    />
+
+                    {/* Page Numbers */}
+                    <div className="flex items-center gap-1.5 px-2">
+                      {Array.from({ length: pagination.lastPage }, (_, i) => i + 1).map((p) => {
+                        // Logic to show only a few pages if many
+                        if (
+                          pagination.lastPage > 7 &&
+                          p !== 1 &&
+                          p !== pagination.lastPage &&
+                          Math.abs(p - pagination.currentPage) > 1
+                        ) {
+                          if (Math.abs(p - pagination.currentPage) === 2) {
+                            return <span key={p} className="text-slate-300 px-1">...</span>;
+                          }
+                          return null;
+                        }
+
+                        return (
+                          <button
+                            key={p}
+                            onClick={() => {
+                              updateFilter("page", p);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className={cn(
+                              "w-10 h-10 rounded-xl text-sm font-bold transition-all duration-200",
+                              p === pagination.currentPage
+                                ? "bg-primary text-white shadow-lg shadow-primary/25 scale-110"
+                                : "bg-white text-slate-500 hover:bg-slate-50 hover:text-primary border border-slate-100"
+                            )}
+                          >
+                            {p}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Next Page */}
+                    <PaginationButton
+                      onClick={() => updateFilter("page", Math.min(pagination.lastPage, pagination.currentPage + 1))}
+                      disabled={pagination.currentPage === pagination.lastPage}
+                      icon={<FiChevronRight className="w-4 h-4" />}
+                      label="Trang sau"
+                    />
+
+                    {/* Last Page */}
+                    <PaginationButton
+                      onClick={() => updateFilter("page", pagination.lastPage)}
+                      disabled={pagination.currentPage === pagination.lastPage}
+                      icon={<FiChevronsRight className="w-4 h-4" />}
+                      label="Trang cuối"
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </main>
+        </div>
       </div>
     </div>
+  );
+}
+
+/* ===== COMPONENTS ===== */
+
+function Divider() {
+  return <div className="border-t border-slate-100" />;
+}
+
+function Section({ title, children }) {
+  return (
+    <div className="space-y-2">
+      <h4 className="text-xs font-bold text-slate-400 uppercase">{title}</h4>
+      <div className="space-y-1">{children}</div>
+    </div>
+  );
+}
+
+function FilterButton({ active, onClick, children }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "w-full text-left px-3 py-2 rounded-lg text-sm font-semibold",
+        active ? "bg-primary text-white" : "text-slate-500 hover:bg-slate-50",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Select({ value, onChange, options }) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm"
+    >
+      <option value="">Tất cả</option>
+      {options.map((o) => (
+        <option key={o.id} value={o.id}>
+          {o.name}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function PaginationButton({ onClick, disabled, icon, label }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={label}
+      className={cn(
+        'w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200',
+        disabled
+          ? 'text-slate-200 cursor-not-allowed'
+          : 'bg-white text-slate-500 hover:bg-slate-50 hover:text-primary border border-slate-100 shadow-sm active:scale-95'
+      )}
+    >
+      {icon}
+    </button>
   );
 }
