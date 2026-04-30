@@ -30,9 +30,9 @@ export default function EmployeeLogin() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-10 space-y-8">
+      <div className="max-w-md w-full bg-white rounded-none shadow-none p-10 space-y-8">
         <div className="text-center">
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary text-3xl mb-4">
+          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-none flex items-center justify-center text-primary text-3xl mb-4">
             <FiLock />
           </div>
           <h1 className="text-2xl font-black text-gray-900">Quản Trị Viên</h1>
@@ -49,7 +49,7 @@ export default function EmployeeLogin() {
                 value={form.email} 
                 onChange={e => setForm({...form, email: e.target.value})} 
                 required 
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white outline-none transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-none focus:ring-2 focus:ring-primary focus:bg-white outline-none transition-all"
                 placeholder="email@bookzone.vn"
               />
             </div>
@@ -64,7 +64,7 @@ export default function EmployeeLogin() {
                 value={form.password} 
                 onChange={e => setForm({...form, password: e.target.value})} 
                 required 
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white outline-none transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-none focus:ring-2 focus:ring-primary focus:bg-white outline-none transition-all"
                 placeholder="••••••••"
               />
             </div>
@@ -73,10 +73,10 @@ export default function EmployeeLogin() {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full bg-primary hover:bg-green-500 text-white font-black py-4 rounded-xl shadow-lg shadow-green-100 flex items-center justify-center gap-3 transition-all hover:-translate-y-1 active:translate-y-0 disabled:bg-gray-300 disabled:shadow-none"
+            className="w-full bg-primary hover:bg-green-500 text-white font-black py-4 rounded-none shadow-none shadow-green-100 flex items-center justify-center gap-3 transition-all  active:translate-y-0 disabled:bg-gray-300 disabled:shadow-none"
           >
             {loading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+              <div className="animate-spin rounded-none h-5 w-5 border-2 border-white border-t-transparent"></div>
             ) : (
               <>
                 <FiLogIn /> Đăng nhập hệ thống
@@ -95,3 +95,6 @@ export default function EmployeeLogin() {
     </div>
   );
 }
+
+
+

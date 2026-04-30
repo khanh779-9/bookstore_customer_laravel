@@ -40,7 +40,7 @@ export default function ProductDetail() {
     isLoading: loading,
     error,
   } = useQuery({
-    queryKey: ["product", id],
+    queryKey: ["product", id, isAuthenticated],
     queryFn: () => productService.getProductById(id),
   });
 
@@ -54,7 +54,7 @@ export default function ProductDetail() {
 
   if (error || !response) {
     return (
-      <div className="text-center py-24 bg-white rounded-3xl my-12 shadow-sm border border-slate-100 mx-4">
+      <div className="text-center py-24 bg-white rounded-none my-12 shadow-none border border-slate-100 mx-4">
         <div className="text-6xl mb-6">📚</div>
         <h2 className="text-3xl font-bold text-secondary mb-4">
           Không tìm thấy sản phẩm
@@ -114,7 +114,7 @@ export default function ProductDetail() {
 
   return (
     <div className="bg-background min-h-screen pb-24">
-      <div className="container mx-auto px-4 pt-6 max-w-7xl">
+      <div className="container mx-auto px-2 sm:px-4 pt-6 max-w-7xl">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-3 text-xs font-bold text-slate-400 mb-8 uppercase tracking-widest overflow-x-auto whitespace-nowrap">
           <Link to="/" className="hover:text-primary transition-colors">
@@ -128,18 +128,17 @@ export default function ProductDetail() {
           <span className="text-secondary truncate max-w-[220px]">{name}</span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-16">
           {/* Left */}
-          <div className="lg:col-span-5 space-y-5">
+          <div className="lg:col-span-5 space-y-6">
             <motion.div
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-white rounded-3xl p-5 md:p-8 border border-slate-100 shadow-sm relative overflow-hidden"
+              className="bg-white rounded-xl p-5 md:p-8 border border-slate-100 shadow-lg relative overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-slate-50 to-transparent opacity-70" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-slate-50 to-transparent opacity-70 rounded-xl" />
               <div className="relative aspect-square flex items-center justify-center">
                 <motion.img
-                  whileHover={{ scale: 1.04 }}
                   transition={{ duration: 0.4 }}
                   src={
                     product.image?.startsWith("http")
@@ -147,14 +146,13 @@ export default function ProductDetail() {
                       : `/assets/images/products/${product.image || "defaultProduct.png"}`
                   }
                   alt={name}
-                  className="max-w-full max-h-full object-contain relative z-10"
+                  className="max-w-full max-h-full object-contain relative z-10 rounded-lg shadow-md"
                   onError={(e) => {
                     e.target.src = "/assets/images/products/defaultProduct.png";
                   }}
                 />
-
                 {hasDiscount && (
-                  <div className="absolute top-3 right-3 bg-red-500 text-white font-black px-4 py-2 rounded-2xl shadow-lg shadow-red-500/20 rotate-6 z-20 text-sm">
+                  <div className="absolute top-3 right-3 bg-red-500 text-white font-black px-4 py-2 rounded-lg shadow-md shadow-red-500/20 rotate-6 z-20 text-sm">
                     -{discountPercent}%
                   </div>
                 )}
@@ -162,13 +160,13 @@ export default function ProductDetail() {
             </motion.div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center gap-3">
+              <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center gap-3 shadow-sm">
                 <FiShield className="text-emerald-500 text-2xl shrink-0" />
                 <span className="text-sm font-bold text-emerald-900">
                   100% Chính hãng
                 </span>
               </div>
-              <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100 flex items-center gap-3">
+              <div className="p-4 rounded-lg bg-blue-50 border border-blue-100 flex items-center gap-3 shadow-sm">
                 <FiTruck className="text-blue-500 text-2xl shrink-0" />
                 <span className="text-sm font-bold text-blue-900">
                   Giao hàng nhanh
@@ -182,25 +180,15 @@ export default function ProductDetail() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-7"
+              className="space-y-8"
             >
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">
-                    {product.category_name || "Danh mục"}
-                  </span>
-
-                  <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px] font-black uppercase tracking-widest">
-                    <FiStar className="fill-current" />
-                    <span>{avgRating.toFixed(1)} / 5</span>
-                  </div>
-                </div>
-
+              <div className="space-y-5">
+      
                 <h1 className="text-3xl md:text-5xl font-black text-secondary leading-tight">
                   {name}
                 </h1>
 
-                <div className="flex flex-wrap items-center gap-6 text-sm">
+                <div className="flex flex-wrap items-center gap-8 text-sm">
                   <div className="flex flex-col">
                     <span className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">
                       Tình trạng
@@ -242,7 +230,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Price */}
-              <div className="bg-slate-50 rounded-3xl p-5 md:p-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="bg-slate-50 rounded-xl p-5 md:p-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow-sm">
                 <div className="flex flex-col gap-1">
                   <span className="text-xs text-slate-400 font-bold uppercase tracking-widest">
                     Giá hiện tại
@@ -265,7 +253,7 @@ export default function ProductDetail() {
                 </div>
 
                 {hasDiscount && (
-                  <div className="bg-red-100 text-red-600 font-black px-4 py-2 rounded-2xl text-sm w-fit">
+                  <div className="bg-red-100 text-red-600 font-black px-4 py-2 rounded-lg text-sm w-fit">
                     Tiết kiệm {(price - promoPrice).toLocaleString("vi-VN")}₫
                   </div>
                 )}
@@ -273,11 +261,11 @@ export default function ProductDetail() {
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <div className="flex items-center bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm w-fit">
+                <div className="flex items-center bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm w-fit">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-50 text-slate-500 transition-colors"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors focus:ring-2 focus:ring-primary"
                   >
                     <FiMinus />
                   </button>
@@ -288,7 +276,7 @@ export default function ProductDetail() {
                     onChange={(e) =>
                       setQuantity(Math.max(1, parseInt(e.target.value) || 1))
                     }
-                    className="w-16 text-center font-bold text-lg focus:outline-none bg-transparent border-none focus:ring-0 px-0"
+                    className="w-14 text-center font-bold text-lg focus:outline-none bg-transparent border-none focus:ring-0 px-0"
                     containerClassName="w-auto"
                   />
 
@@ -299,14 +287,14 @@ export default function ProductDetail() {
                         Math.min(product.stock_quantity || 99, q + 1),
                       )
                     }
-                    className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-50 text-slate-500 transition-colors"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors focus:ring-2 focus:ring-primary"
                   >
                     <FiPlus />
                   </button>
                 </div>
 
                 <button
-                  className="flex-1 btn-primary py-5 text-base shadow-xl shadow-primary/20"
+                  className="flex-1 btn-primary py-5 text-base rounded-lg shadow-md shadow-primary/10 hover:scale-[1.03] transition-transform"
                   onClick={handleAddToCart}
                   disabled={product.stock_quantity <= 0}
                 >
@@ -318,14 +306,15 @@ export default function ProductDetail() {
                   type="button"
                   onClick={toggleWishlist}
                   className={cn(
-                    "w-16 h-16 rounded-2xl border transition-all flex items-center justify-center shrink-0",
+                    "w-14 h-14 border transition-all flex items-center justify-center shrink-0 focus:ring-2 focus:ring-red-300",
                     isWishlisted
-                      ? "bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/20"
+                      ? "bg-red-500 border-red-500 text-white shadow-md shadow-red-500/20 scale-105"
                       : "border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50",
                   )}
+                  aria-label={isWishlisted ? "Bỏ khỏi yêu thích" : "Thêm vào yêu thích"}
                 >
                   <FiHeart
-                    className={cn("w-6 h-6", isWishlisted && "fill-current")}
+                    className={cn("w-7 h-7", isWishlisted && "fill-current")}
                   />
                 </button>
               </div>
@@ -353,7 +342,7 @@ export default function ProductDetail() {
                       {activeTab === tab.id && (
                         <motion.div
                           layoutId="tab-active"
-                          className="absolute bottom-0 left-0 w-full h-1 bg-primary rounded-full"
+                          className="absolute bottom-0 left-0 w-full h-1 bg-primary rounded-none"
                         />
                       )}
                     </button>
@@ -368,7 +357,7 @@ export default function ProductDetail() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="bg-white border border-slate-100 rounded-3xl p-5 md:p-6"
+                        className="bg-white border border-slate-100 rounded-xl p-5 md:p-6 shadow-sm"
                       >
                         <h3 className="font-bold text-secondary mb-4">
                           Mô tả sản phẩm
@@ -428,7 +417,7 @@ export default function ProductDetail() {
                         exit={{ opacity: 0, y: -10 }}
                         className="space-y-6"
                       >
-                        <div className="flex flex-col md:flex-row items-stretch gap-6 p-6 md:p-8 bg-slate-50 rounded-3xl">
+                        <div className="flex flex-col md:flex-row items-stretch gap-6 p-6 md:p-8 bg-slate-50 rounded-xl shadow-sm">
                           <div className="text-center md:w-52 md:border-r border-slate-200 md:pr-6">
                             <div className="text-5xl md:text-6xl font-bold text-secondary mb-2">
                               {avgRating.toFixed(1)}
@@ -480,11 +469,11 @@ export default function ProductDetail() {
                             reviews.map((r) => (
                               <div
                                 key={r.id}
-                                className="group p-5 rounded-3xl border border-slate-100 hover:shadow-sm transition-all bg-white"
+                                className="group p-5 rounded-none border border-slate-100 hover:shadow-none transition-all bg-white"
                               >
                                 <div className="flex items-center justify-between mb-4 gap-4">
                                   <div className="flex items-center gap-4 min-w-0">
-                                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500 shrink-0">
+                                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500 shrink-0 shadow-sm">
                                       {r.customer_name?.charAt(0) || "K"}
                                     </div>
                                     <div className="min-w-0">
@@ -535,7 +524,7 @@ export default function ProductDetail() {
                       >
                         <form
                           onSubmit={handleReview}
-                          className="p-5 md:p-8 bg-white border border-slate-100 rounded-3xl shadow-sm space-y-6"
+                          className="p-5 md:p-8 bg-white border border-slate-100 rounded-xl shadow-md space-y-6"
                         >
                           <div className="flex flex-col items-center gap-3">
                             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
@@ -612,7 +601,7 @@ export default function ProductDetail() {
 
 function DetailRow({ label, value }) {
   return (
-    <div className="flex items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+    <div className="flex items-center justify-between gap-4 p-4 bg-white rounded-lg border border-slate-100 shadow-sm">
       <span className="text-xs font-bold text-slate-400 uppercase tracking-widest shrink-0">
         {label}
       </span>
@@ -622,3 +611,6 @@ function DetailRow({ label, value }) {
     </div>
   );
 }
+
+
+

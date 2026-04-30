@@ -64,7 +64,7 @@ export default function Checkout() {
     <div className="bg-background min-h-screen pb-24">
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         <div className="flex items-center gap-4 mb-12">
-          <Link to="/cart" className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/20 transition-all shadow-sm">
+          <Link to="/cart" className="w-12 h-12 rounded-none bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/20 transition-all shadow-none">
             <FiArrowLeft />
           </Link>
           <h1 className="text-4xl font-black text-secondary serif">Thanh toán</h1>
@@ -82,14 +82,14 @@ export default function Checkout() {
                 className="space-y-6"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-none bg-blue-50 text-blue-500 flex items-center justify-center">
                     <FiMapPin />
                   </div>
                   <h2 className="text-xl font-black text-secondary serif">Địa chỉ giao hàng</h2>
                 </div>
 
                 {addresses.length === 0 ? (
-                  <div className="p-8 bg-amber-50 border border-amber-100 rounded-3xl text-amber-700 text-sm font-bold flex flex-col items-center text-center gap-4">
+                  <div className="p-8 bg-amber-50 border border-amber-100 rounded-none text-amber-700 text-sm font-bold flex flex-col items-center text-center gap-4">
                     <p>Bạn chưa có địa chỉ giao hàng nào được lưu.</p>
                     <Link to="/account" className="btn-dark py-3 px-8 text-xs">Thêm địa chỉ ngay</Link>
                   </div>
@@ -99,9 +99,9 @@ export default function Checkout() {
                       <label 
                         key={addr.dcgh_id} 
                         className={cn(
-                          "relative p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex items-center gap-4",
+                          "relative p-6 rounded-none border-2 transition-all cursor-pointer flex items-center gap-4",
                           form.dcgh_id == addr.dcgh_id 
-                            ? "bg-white border-primary shadow-xl shadow-primary/5" 
+                            ? "bg-white border-primary shadow-none shadow-primary/5" 
                             : "bg-white border-slate-50 hover:border-slate-200"
                         )}
                       >
@@ -134,7 +134,7 @@ export default function Checkout() {
                 className="space-y-6"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-none bg-emerald-50 text-emerald-500 flex items-center justify-center">
                     <FiCreditCard />
                   </div>
                   <h2 className="text-xl font-black text-secondary serif">Phương thức thanh toán</h2>
@@ -175,7 +175,7 @@ export default function Checkout() {
 
               <button 
                 type="submit" 
-                className="w-full btn-dark py-6 text-lg shadow-2xl shadow-slate-200" 
+                className="w-full btn-dark py-6 text-lg shadow-none shadow-slate-200" 
                 disabled={loading || addresses.length === 0}
               >
                 {loading ? 'Đang xử lý...' : 'Xác nhận đặt hàng'} <FiChevronRight />
@@ -188,14 +188,14 @@ export default function Checkout() {
             <motion.aside 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-premium sticky top-24"
+              className="bg-white rounded-none p-10 border border-slate-100 shadow-none sticky top-24"
             >
               <h3 className="text-2xl font-black text-secondary serif mb-8">Tóm tắt đơn hàng</h3>
               
               <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 mb-8 custom-scrollbar">
                 {cart.map(item => (
                   <div key={item.sanpham_id} className="flex gap-4">
-                    <div className="w-16 h-20 bg-slate-50 rounded-xl overflow-hidden p-2 flex-shrink-0">
+                    <div className="w-16 h-20 bg-slate-50 rounded-none overflow-hidden p-2 flex-shrink-0">
                       <img src={`/assets/images/products/${item.image || 'defaultProduct.png'}`} className="w-full h-full object-contain" />
                     </div>
                     <div className="flex-grow min-w-0">
@@ -216,7 +216,7 @@ export default function Checkout() {
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="font-bold text-slate-400 uppercase tracking-widest">Phí giao hàng</span>
-                  <span className="font-black text-emerald-500 uppercase tracking-widest text-[10px] bg-emerald-50 px-2 py-1 rounded-md">Miễn phí</span>
+                  <span className="font-black text-emerald-500 uppercase tracking-widest text-[10px] bg-emerald-50 px-2 py-1 rounded-none">Miễn phí</span>
                 </div>
                 <div className="h-[1px] bg-slate-50 my-2"></div>
                 <div className="flex justify-between items-end">
@@ -250,8 +250,8 @@ function PaymentOption({ active, onClick, icon, title, desc }) {
     <div 
       onClick={onClick}
       className={cn(
-        "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5",
-        active ? "bg-white border-primary shadow-xl shadow-primary/5" : "bg-white border-slate-50 hover:border-slate-100"
+        "p-6 rounded-none border-2 cursor-pointer transition-all flex items-center gap-5",
+        active ? "bg-white border-primary shadow-none shadow-primary/5" : "bg-white border-slate-50 hover:border-slate-100"
       )}
     >
       <div className="text-3xl">{icon}</div>
@@ -262,3 +262,6 @@ function PaymentOption({ active, onClick, icon, title, desc }) {
     </div>
   );
 }
+
+
+

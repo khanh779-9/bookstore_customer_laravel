@@ -19,15 +19,15 @@ const ConfirmModal = ({
   const typeStyles = {
     danger: {
       icon: "bg-red-50 text-red-500",
-      button: "bg-red-500 hover:bg-red-600 shadow-red-500/20",
+      button: "bg-red-500 hover:bg-red-600",
     },
     warning: {
       icon: "bg-amber-50 text-amber-500",
-      button: "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20",
+      button: "bg-amber-500 hover:bg-amber-600",
     },
     info: {
       icon: "bg-blue-50 text-blue-500",
-      button: "bg-primary hover:bg-primary/90 shadow-primary/20",
+      button: "bg-primary hover:bg-primary/90",
     }
   };
 
@@ -50,12 +50,12 @@ const ConfirmModal = ({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md bg-white rounded-[10px] shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md bg-white border border-slate-200 overflow-hidden"
         >
           {/* Close Button */}
           <button 
             onClick={onClose}
-            className="absolute top-6 right-6 p-2 text-slate-400 hover:text-secondary hover:bg-slate-50 rounded-xl transition-all cursor-pointer"
+            className="absolute top-6 right-6 p-2 text-slate-400 hover:text-secondary hover:bg-slate-50 transition-all cursor-pointer"
           >
             <FiX className="w-5 h-5" />
           </button>
@@ -63,7 +63,7 @@ const ConfirmModal = ({
           <div className="p-8 pt-10">
             {/* Icon Header */}
             <div className={cn(
-              "w-16 h-16 rounded-3xl flex items-center justify-center text-2xl mb-6 mx-auto",
+              "w-16 h-16 flex items-center justify-center text-2xl mb-6 mx-auto",
               currentStyle.icon
             )}>
               <FiAlertTriangle />
@@ -85,7 +85,7 @@ const ConfirmModal = ({
                 type="button"
                 onClick={onClose}
                 disabled={isLoading}
-                className="flex-1 px-6 py-4 rounded-2xl bg-slate-50 text-slate-600 font-bold text-sm hover:bg-slate-100 transition-all active:scale-95 disabled:opacity-50"
+                className="flex-1 px-6 py-4 bg-slate-50 text-slate-600 font-bold text-sm hover:bg-slate-100 transition-all active:scale-95 disabled:opacity-50"
               >
                 {cancelText}
               </button>
@@ -94,12 +94,12 @@ const ConfirmModal = ({
                 onClick={onConfirm}
                 disabled={isLoading}
                 className={cn(
-                  "flex-1 px-6 py-4 rounded-2xl text-white font-bold text-sm shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50",
+                  "flex-1 px-6 py-4 text-white font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50",
                   currentStyle.button
                 )}
               >
                 {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white animate-spin" />
                 ) : (
                   confirmText
                 )}
@@ -113,3 +113,6 @@ const ConfirmModal = ({
 };
 
 export default ConfirmModal;
+
+
+

@@ -22,12 +22,12 @@ import { useState } from "react";
 function QuantityControl({ value, onDecrease, onIncrease }) {
   return (
     <div
-      className="flex items-center border border-slate-100 rounded-xl bg-slate-50"
+      className="flex items-center border border-slate-100 rounded-none bg-slate-50"
       style={{ width: "fit-content" }}
     >
       <button
         onClick={onDecrease}
-        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white text-slate-400 hover:text-secondary transition"
+        className="w-8 h-8 flex items-center justify-center rounded-none hover:bg-white text-slate-400 hover:text-secondary transition"
       >
         <FiMinus />
       </button>
@@ -38,7 +38,7 @@ function QuantityControl({ value, onDecrease, onIncrease }) {
 
       <button
         onClick={onIncrease}
-        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white text-slate-400 hover:text-secondary transition"
+        className="w-8 h-8 flex items-center justify-center rounded-none hover:bg-white text-slate-400 hover:text-secondary transition"
       >
         <FiPlus />
       </button>
@@ -84,7 +84,7 @@ export default function Cart() {
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-28 h-28 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center text-5xl mx-auto mb-6"
+          className="w-28 h-28 bg-slate-50 text-slate-200 rounded-none flex items-center justify-center text-5xl mx-auto mb-6"
         >
           <FiShoppingBag />
         </motion.div>
@@ -120,7 +120,7 @@ export default function Cart() {
 
         {/* ===== Not login ===== */}
         {!isAuthenticated && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-3 text-blue-700">
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-none flex items-center gap-3 text-blue-700">
             <FiInfo />
             <span className="text-sm font-medium">
               Chưa đăng nhập. Giỏ hàng chỉ lưu tạm.
@@ -139,12 +139,12 @@ export default function Cart() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="bg-white p-4 rounded-2xl border border-slate-200 flex gap-4"
+                  className="bg-white p-4 rounded-none border border-slate-200 flex gap-4"
                 >
                   {/* Image */}
                   <Link
                     to={`/products/${item.sanpham_id}`}
-                    className="w-16 h-20 bg-slate-50 rounded-xl flex items-center justify-center shrink-0"
+                    className="w-16 h-20 bg-slate-50 rounded-none flex items-center justify-center shrink-0"
                   >
                     <img
                       src={
@@ -220,7 +220,7 @@ export default function Cart() {
 
           {/* ===== Desktop Summary ===== */}
           <div className="hidden lg:block lg:col-span-4">
-            <div className="bg-white p-6 border border-slate-200 rounded-2xl sticky top-24">
+            <div className="bg-white p-6 border border-slate-200 rounded-none sticky top-24">
               <h3 className="font-black text-xl mb-6">Tổng đơn</h3>
 
               <div className="space-y-3 mb-6 text-sm">
@@ -244,7 +244,7 @@ export default function Cart() {
 
               <Link
                 to="/checkout"
-                className="w-full bg-black text-white py-4 rounded-xl flex justify-center items-center gap-2"
+                className="w-full bg-black text-white py-4 rounded-none flex justify-center items-center gap-2"
               >
                 Thanh toán <FiChevronRight />
               </Link>
@@ -263,7 +263,7 @@ export default function Cart() {
       </div>
 
       {/* ===== Mobile Bottom Bar ===== */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between lg:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between lg:hidden shadow-none">
         <div>
           <p className="text-xs text-slate-400">Tổng</p>
           <p className="text-lg font-black text-primary">
@@ -273,7 +273,7 @@ export default function Cart() {
 
         <Link
           to="/checkout"
-          className="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2"
+          className="bg-primary text-white px-6 py-3 rounded-none font-bold flex items-center gap-2"
         >
           Thanh toán <FiChevronRight />
         </Link>
@@ -291,3 +291,6 @@ export default function Cart() {
     </div>
   );
 }
+
+
+

@@ -60,7 +60,7 @@ export default function EmployeeProviders() {
       <div className="admin-card">
         <div className="mb-6 relative max-w-sm">
           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input type="text" placeholder="Tìm kiếm..." className="w-full pl-10 pr-4 py-2 border rounded-lg outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <input type="text" placeholder="Tìm kiếm..." className="w-full pl-10 pr-4 py-2 border rounded-none outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
         <table className="admin-table">
           <thead>
@@ -74,8 +74,8 @@ export default function EmployeeProviders() {
                 <td>{i.dia_chi || '---'}</td>
                 <td>{i.so_dien_thoai}</td>
                 <td className="flex justify-center gap-2">
-                  <button onClick={() => { setEditingItem(i); setFormData({ tenNhaCungCap: i.tenNhaCungCap, dia_chi: i.dia_chi || '', so_dien_thoai: i.so_dien_thoai || '' }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"><FiEdit2 /></button>
-                  <button onClick={() => handleDelete(i.nhacungcap_id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><FiTrash2 /></button>
+                  <button onClick={() => { setEditingItem(i); setFormData({ tenNhaCungCap: i.tenNhaCungCap, dia_chi: i.dia_chi || '', so_dien_thoai: i.so_dien_thoai || '' }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-none"><FiEdit2 /></button>
+                  <button onClick={() => handleDelete(i.nhacungcap_id)} className="p-2 text-red-600 hover:bg-red-50 rounded-none"><FiTrash2 /></button>
                 </td>
               </tr>
             ))}
@@ -85,15 +85,15 @@ export default function EmployeeProviders() {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl w-full max-w-md">
+          <div className="bg-white rounded-none w-full max-w-md">
             <div className="p-4 border-b flex justify-between">
               <h3 className="font-bold">{editingItem ? 'Sửa NCC' : 'Thêm NCC'}</h3>
               <button onClick={() => setIsModalOpen(false)}><FiX /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <input type="text" placeholder="Tên NCC" required className="w-full border p-2 rounded" value={formData.tenNhaCungCap} onChange={e => setFormData({...formData, tenNhaCungCap: e.target.value})} />
-              <input type="text" placeholder="Địa chỉ" className="w-full border p-2 rounded" value={formData.dia_chi} onChange={e => setFormData({...formData, dia_chi: e.target.value})} />
-              <input type="text" placeholder="Số điện thoại" className="w-full border p-2 rounded" value={formData.so_dien_thoai} onChange={e => setFormData({...formData, so_dien_thoai: e.target.value})} />
+              <input type="text" placeholder="Tên NCC" required className="w-full border p-2 rounded-none" value={formData.tenNhaCungCap} onChange={e => setFormData({...formData, tenNhaCungCap: e.target.value})} />
+              <input type="text" placeholder="Địa chỉ" className="w-full border p-2 rounded-none" value={formData.dia_chi} onChange={e => setFormData({...formData, dia_chi: e.target.value})} />
+              <input type="text" placeholder="Số điện thoại" className="w-full border p-2 rounded-none" value={formData.so_dien_thoai} onChange={e => setFormData({...formData, so_dien_thoai: e.target.value})} />
               <button type="submit" className="w-full btn-primary mt-4">{editingItem ? 'Cập nhật' : 'Thêm mới'}</button>
             </form>
           </div>
@@ -102,3 +102,6 @@ export default function EmployeeProviders() {
     </div>
   );
 }
+
+
+

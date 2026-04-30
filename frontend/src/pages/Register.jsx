@@ -65,11 +65,11 @@ export default function Register() {
       <div className="w-full max-w-xl">
 
         {/* CARD */}
-        <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-lg p-6 md:p-8">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-none shadow-none p-6 md:p-8">
 
           {/* HEADER */}
           <div className="text-center mb-8">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-xl">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-none bg-primary/10 flex items-center justify-center text-primary text-xl">
               <FiUser />
             </div>
             <h1 className="text-2xl font-bold text-secondary">
@@ -165,10 +165,10 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:-translate-y-[1px] transition-all disabled:opacity-50"
+              className="w-full bg-primary text-white py-3 rounded-none font-semibold flex items-center justify-center gap-2 shadow-none hover:shadow-none  transition-all disabled:opacity-50"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-none animate-spin" />
               ) : (
                 <>
                   Đăng ký <FiArrowRight />
@@ -189,3 +189,5 @@ export default function Register() {
     </div>
   );
 }
+
+

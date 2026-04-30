@@ -19,7 +19,7 @@ const TextArea = forwardRef(({
       <textarea
         ref={ref}
         className={cn(
-          "w-full bg-white border border-slate-200 rounded-2xl py-3 px-4 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-slate-300 min-h-[120px] resize-none",
+          "w-full bg-white border border-slate-200 rounded-none py-3 px-4 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-slate-300 min-h-[120px] resize-none",
           error && "border-red-500 focus:ring-red-500/10 focus:border-red-500",
           className
         )}
@@ -37,3 +37,6 @@ const TextArea = forwardRef(({
 TextArea.displayName = "TextArea";
 
 export default TextArea;
+
+
+

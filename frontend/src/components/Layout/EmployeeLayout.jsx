@@ -55,7 +55,7 @@ export default function EmployeeLayout() {
         <div className="p-4 border-t border-gray-800">
           <button 
             onClick={handleLogout} 
-            className="flex items-center gap-4 w-full p-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
+            className="flex items-center gap-4 w-full p-3 rounded-none text-red-400 hover:bg-red-500/10 transition-colors"
           >
             <FiLogOut className="text-xl shrink-0" />
             <span className={`font-medium transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 invisible'}`}>
@@ -67,7 +67,7 @@ export default function EmployeeLayout() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-20 bg-white shadow-sm border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-10">
+        <header className="h-20 bg-white shadow-none border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-10">
           <button className="text-2xl text-gray-500 hover:text-gray-800" onClick={() => setSidebarOpen(!sidebarOpen)}>
             <FiMenu />
           </button>
@@ -79,7 +79,7 @@ export default function EmployeeLayout() {
                 {user?.role === 'admin' ? 'Quản trị viên' : 'Nhân viên'}
               </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold shadow-sm">
+            <div className="w-10 h-10 rounded-none bg-primary flex items-center justify-center text-white font-bold shadow-none">
               {user?.ten?.charAt(0) || 'A'}
             </div>
           </div>
@@ -92,3 +92,6 @@ export default function EmployeeLayout() {
     </div>
   );
 }
+
+
+

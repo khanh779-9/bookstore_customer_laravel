@@ -15,7 +15,7 @@ export default function About() {
   return (
     <div className="container mx-auto px-4 space-y-20 pb-20">
       {/* Hero Section */}
-      <section className="relative h-[500px] flex items-center justify-center text-center overflow-hidden bg-gray-900 mx-4 mt-4 rounded-[2rem] shadow-2xl group">
+      <section className="relative h-[500px] flex items-center justify-center text-center overflow-hidden bg-gray-900 mx-4 mt-4 rounded-none shadow-none group">
         <img
           src="/assets/images/about_background.png"
           alt="About Background"
@@ -32,7 +32,7 @@ export default function About() {
           <div className="mt-10">
             <Link
               to="/products"
-              className="bg-primary hover:bg-primary-dark text-white font-black py-4 px-12 rounded-full transition-all hover:scale-105 active:scale-95 shadow-xl shadow-primary-dark/20"
+              className="bg-primary hover:bg-primary-dark text-white font-black py-4 px-12 rounded-none transition-all hover:scale-105 active:scale-95 shadow-none shadow-primary-dark/20"
             >
               Khám Phá Sản Phẩm
             </Link>
@@ -43,7 +43,7 @@ export default function About() {
       {/* Intro Mission */}
       <section className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold uppercase tracking-widest">
+          <div className="inline-block px-4 py-1 bg-primary/10 text-primary rounded-none text-xs font-bold uppercase tracking-widest">
             Sứ mệnh của chúng tôi
           </div>
           <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-medium">
@@ -52,14 +52,14 @@ export default function About() {
             tin rằng những vật dụng nhỏ bé trên bàn làm việc có sức mạnh to lớn
             để biến ý tưởng thành hiện thực.
           </p>
-          <div className="w-24 h-1 bg-gray-100 mx-auto rounded-full"></div>
+          <div className="w-24 h-1 bg-gray-100 mx-auto rounded-none"></div>
         </div>
       </section>
 
       {/* Timeline Section */}
       <section className="container mx-auto px-4">
-        <div className="max-w-5xl mx-auto bg-white rounded-[3rem] p-12 md:p-20 shadow-sm border border-gray-100 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+        <div className="max-w-5xl mx-auto bg-white rounded-none p-12 md:p-20 shadow-none border border-gray-100 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-none -mr-32 -mt-32 blur-3xl"></div>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-16 text-center">
             Hành Trình Của Chúng Tôi
           </h2>
@@ -96,11 +96,11 @@ export default function About() {
                 className={`relative flex items-center gap-8 md:gap-0 ${i % 2 === 0 ? "md:flex-row-reverse" : ""}`}
               >
                 <div className="hidden md:block w-1/2"></div>
-                <div className="absolute left-6 md:left-1/2 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl shadow-lg shadow-green-100 -translate-x-1/2 z-10 border-4 border-white">
+                <div className="absolute left-6 md:left-1/2 w-12 h-12 bg-primary text-white rounded-none flex items-center justify-center text-xl shadow-none shadow-green-100 -translate-x-1/2 z-10 border-4 border-white">
                   {item.icon}
                 </div>
                 <div
-                  className={`flex-1 bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-md transition-all ${i % 2 === 0 ? "md:mr-16" : "md:ml-16"}`}
+                  className={`flex-1 bg-gray-50 p-8 rounded-none border border-gray-100 hover:shadow-none transition-all ${i % 2 === 0 ? "md:mr-16" : "md:ml-16"}`}
                 >
                   <span className="text-primary font-bold text-2xl block mb-2">
                     {item.year}
@@ -119,7 +119,7 @@ export default function About() {
       </section>
 
       {/* Core Values */}
-      <section className="bg-gray-900 py-24 rounded-[4rem] mx-4 overflow-hidden relative">
+      <section className="bg-gray-900 py-24 rounded-none mx-4 overflow-hidden relative">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 space-y-4">
@@ -150,9 +150,9 @@ export default function About() {
             ].map((value, i) => (
               <div
                 key={i}
-                className="bg-white/5 backdrop-blur-lg p-10 rounded-[2.5rem] border border-white/10 text-center group hover:bg-primary transition-all duration-500"
+                className="bg-white/5 backdrop-blur-lg p-10 rounded-none border border-white/10 text-center group hover:bg-primary transition-all duration-500"
               >
-                <div className="w-20 h-20 mx-auto mb-8 bg-primary/20 text-primary rounded-3xl flex items-center justify-center text-3xl group-hover:bg-white group-hover:scale-110 transition-all duration-500">
+                <div className="w-20 h-20 mx-auto mb-8 bg-primary/20 text-primary rounded-none flex items-center justify-center text-3xl group-hover:bg-white group-hover:scale-110 transition-all duration-500">
                   {value.icon}
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-white transition-colors">
@@ -180,7 +180,7 @@ export default function About() {
           <div className="pt-6">
             <Link
               to="/products"
-              className="inline-block bg-primary text-white font-black py-5 px-14 rounded-2xl hover:bg-green-500 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-green-100 text-lg tracking-tight"
+              className="inline-block bg-primary text-white font-black py-5 px-14 rounded-none hover:bg-green-500 transition-all hover:scale-105 active:scale-95 shadow-none shadow-green-100 text-lg tracking-tight"
             >
               XEM TẤT CẢ SẢN PHẨM
             </Link>
@@ -190,3 +190,6 @@ export default function About() {
     </div>
   );
 }
+
+
+

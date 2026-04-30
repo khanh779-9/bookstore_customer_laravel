@@ -21,7 +21,7 @@ export function FormInput({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full px-3 py-3 bg-gray-50 border-1 border-transparent rounded-[5px]
+        className="w-full px-3 py-3 bg-gray-50 border-1 border-transparent rounded-none
         focus:border-primary focus:bg-white outline-none transition-all 
         font-bold placeholder:font-medium"
       />
@@ -48,7 +48,7 @@ export function FormTextarea({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full px-3 py-3 bg-gray-50 border-1 border-transparent rounded-[5px]
+        className="w-full px-3 py-3 bg-gray-50 border-1 border-transparent rounded-none
         focus:border-primary focus:bg-white outline-none transition-all 
         font-bold placeholder:font-medium resize-none"
       />
@@ -58,14 +58,14 @@ export function FormTextarea({
 
 export function FormCheckbox({ label, checked, onChange, required = false }) {
   return (
-    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-[5px] border-1 border-transparent hover:border-gray-100 transition-all group">
+    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-none border-1 border-transparent hover:border-gray-100 transition-all group">
       <input
         type="checkbox"
         required={required}
         checked={checked}
         onChange={onChange}
         id="conse"
-        className="w-5 h-5 rounded-lg border-2 border-gray-300 checkbox-color focus:ring-primary"
+        className="w-5 h-5 rounded-none border-2 border-gray-300 checkbox-color focus:ring-primary"
       />
       <label
         className="text-sm text-gray-500 font-bold cursor-pointer group-hover:text-gray-700"
@@ -76,3 +76,6 @@ export function FormCheckbox({ label, checked, onChange, required = false }) {
     </div>
   );
 }
+
+
+

@@ -98,10 +98,10 @@ export default function Header() {
     <>
       <header
         className={cn(
-          "sticky top-0 z-[100] transition-all duration-300 p-3",
+          "sticky top-0 z-[100] transition-all duration-300 p-3 shadow-sm",
           isScrolled
-            ? "bg-white shadow-md py-2"
-            : "bg-white border-b border-slate-100 py-3",
+            ? "bg-white border-b border-slate-300 py-2"
+            : "bg-white border-b border-slate-200 py-3",
         )}
       >
         <div className="container mx-auto px-4 max-w-[1600px] flex items-center justify-between gap-4 md:gap-8">
@@ -146,7 +146,7 @@ export default function Header() {
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 5 }}
-                    className="absolute top-full left-0 mt-4 w-60 bg-white shadow-xl border border-slate-100 p-2 z-50"
+                    className="absolute top-full left-0 mt-4 w-60 bg-white border border-slate-200 p-2 z-50 shadow-sm"
                   >
                     {categories.map((cat) => (
                       <Link
@@ -199,11 +199,11 @@ export default function Header() {
                         : "notifications",
                     )
                   }
-                  className="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 transition-all relative"
+                  className="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 transition-all relative cursor-pointer"
                 >
                   <FiBell className="w-5 h-5" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-2 right-2 bg-red-500 w-2 h-2 rounded-full border-2 border-white"></span>
+                    <span className="absolute top-2 right-2 bg-red-500 w-2 h-2 border-2 border-white"></span>
                   )}
                 </button>
                 <AnimatePresence>
@@ -212,14 +212,14 @@ export default function Header() {
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 5 }}
-                      className="absolute right-0 top-full mt-4 w-80 bg-white shadow-xl border border-slate-100 p-2 z-50"
+                      className="absolute right-0 top-full mt-4 w-80 bg-white border border-slate-200 p-2 z-50 shadow-sm"
                     >
                       <div className="p-3 border-b border-slate-50 flex items-center justify-between">
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                           Thông báo
                         </span>
                         {unreadCount > 0 && (
-                          <span className="bg-red-50 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          <span className="bg-red-50 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-none">
                             {unreadCount} mới
                           </span>
                         )}
@@ -267,11 +267,11 @@ export default function Header() {
             {/* Cart */}
             <Link
               to="/cart"
-              className="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 rounded-xl transition-all relative"
+              className="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 transition-all relative"
             >
               <FiShoppingCart className="w-5 h-5" />
               {count > 0 && (
-                <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center border-2 border-white">
                   {count > 9 ? "9+" : count}
                 </span>
               )}
@@ -289,7 +289,7 @@ export default function Header() {
                   }
                   className="flex items-center gap-2 p-1 hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-xs shadow-md shadow-primary/20">
+                  <div className="w-8 h-8 bg-primary text-white flex items-center justify-center font-bold text-xs">
                     {user?.ten?.charAt(0).toUpperCase()}
                   </div>
                   <FiChevronDown
@@ -305,7 +305,7 @@ export default function Header() {
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 5 }}
-                      className="absolute right-0 top-full mt-4 w-56 bg-white shadow-xl border border-slate-100 p-2 z-50"
+                      className="absolute right-0 top-full mt-4 w-56 bg-white border border-slate-200 p-2 z-50 shadow-sm"
                     >
                       <div className="p-3 border-b border-slate-50 mb-1">
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -324,7 +324,7 @@ export default function Header() {
                       <div className="h-[1px] bg-slate-50 my-1"></div>
                       <button
                         onClick={handleLogoutClick}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 transition-all"
                       >
                         <FiLogOut /> Đăng xuất
                       </button>
@@ -367,7 +367,7 @@ export default function Header() {
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              className="h-full w-[80%] max-w-xs bg-white p-6 shadow-2xl flex flex-col"
+              className="h-full w-[80%] max-w-xs bg-white p-6 flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-8">
@@ -376,7 +376,7 @@ export default function Header() {
                 </span>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 bg-slate-50 rounded-lg"
+                  className="p-2 bg-slate-50"
                 >
                   <FiX className="w-5 h-5 text-slate-400" />
                 </button>

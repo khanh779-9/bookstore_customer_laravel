@@ -10,7 +10,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white border-t border-slate-100 pt-16 pb-8">
+    <footer className="bg-white border-t border-slate-200 pt-16 pb-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-16">
           
@@ -83,7 +83,7 @@ export default function Footer() {
             className="group flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-primary transition-all uppercase tracking-widest"
           >
             Lên đầu trang
-            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+            <div className="w-8 h-8 bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
               <FiArrowUp />
             </div>
           </button>
@@ -100,7 +100,7 @@ function FooterLink({ to, children }) {
         to={to} 
         className="text-sm text-slate-500 hover:text-primary transition-all flex items-center gap-2 group"
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-primary group-hover:scale-125 transition-all"></span>
+        <span className="w-1.5 h-1.5 bg-slate-200 group-hover:bg-primary group-hover:scale-125 transition-all"></span>
         {children}
       </Link>
     </li>
@@ -111,9 +111,12 @@ function SocialLink({ icon: Icon, href }) {
   return (
     <a 
       href={href} 
-      className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-sm"
+      className="w-10 h-10 bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-primary hover:text-white transition-all"
     >
       <Icon className="w-5 h-5" />
     </a>
   );
 }
+
+
+

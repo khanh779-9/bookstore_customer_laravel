@@ -116,7 +116,7 @@ export default function Notifications() {
           {notifications.some((n) => n.status === "chua_doc") && (
             <button
               onClick={handleMarkAll}
-              className="flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors bg-primary/5 px-4 py-2 rounded-xl"
+              className="flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors bg-primary/5 px-4 py-2 rounded-none"
             >
               <FiCheck /> Đánh dấu tất cả đã đọc
             </button>
@@ -124,15 +124,15 @@ export default function Notifications() {
         </div>
 
         {/* Tabs Filter */}
-        <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 mb-8 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-2 bg-white p-1.5 rounded-none shadow-none border border-slate-100 mb-8 overflow-x-auto scrollbar-hide">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
+                "flex items-center gap-2 px-6 py-2.5 rounded-none text-sm font-bold transition-all whitespace-nowrap",
                 activeTab === tab.id
-                  ? "bg-primary text-white shadow-lg shadow-primary/20"
+                  ? "bg-primary text-white shadow-none shadow-primary/20"
                   : "text-slate-500 hover:bg-slate-50 hover:text-secondary",
               )}
             >
@@ -156,15 +156,15 @@ export default function Notifications() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     className={cn(
-                      "group bg-white rounded-[2rem] p-6 border transition-all flex items-start gap-6",
+                      "group bg-white rounded-none p-6 border transition-all flex items-start gap-6",
                       notif.status === "chua_doc"
-                        ? "border-primary/20 shadow-md shadow-primary/5 bg-gradient-to-r from-primary/[0.02] to-transparent"
+                        ? "border-primary/20 shadow-none shadow-primary/5 bg-gradient-to-r from-primary/[0.02] to-transparent"
                         : "border-slate-100 hover:border-slate-200",
                     )}
                   >
                     <div
                       className={cn(
-                        "w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 transition-transform group-hover:scale-110",
+                        "w-12 h-12 rounded-none flex items-center justify-center text-xl shrink-0 transition-transform group-hover:scale-110",
                         notif.status === "chua_doc"
                           ? "bg-primary/10"
                           : "bg-slate-50",
@@ -231,9 +231,9 @@ export default function Notifications() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-white rounded-[3rem] py-20 px-10 text-center border border-slate-100"
+                  className="bg-white rounded-none py-20 px-10 text-center border border-slate-100"
                 >
-                  <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <div className="w-24 h-24 bg-slate-50 rounded-none flex items-center justify-center mx-auto mb-6">
                     <FiInbox className="text-4xl text-slate-300" />
                   </div>
                   <h3 className="text-xl font-bold text-secondary mb-2">
@@ -261,3 +261,6 @@ export default function Notifications() {
     </div>
   );
 }
+
+
+

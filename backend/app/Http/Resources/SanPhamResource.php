@@ -15,7 +15,7 @@ class SanPhamResource extends JsonResource
     public function toArray(Request $request): array
     {
         if (self::$wishlistIds === null) {
-            $user = $request->user();
+            $user = $request->user() ?? auth('sanctum')->user();
             if ($user && $user->khachhang_id) {
                 self::$wishlistIds = \Illuminate\Support\Facades\DB::table('sanphamyeuthich')
                     ->where('khachhang_id', $user->khachhang_id)

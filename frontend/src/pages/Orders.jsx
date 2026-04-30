@@ -99,14 +99,14 @@ export default function Orders() {
           </Link>
 
           <div
-            className={`px-4 py-1 rounded-full text-xs font-bold flex items-center gap-2 ${status.color}`}
+            className={`px-4 py-1 rounded-none text-xs font-bold flex items-center gap-2 ${status.color}`}
           >
             {status.icon} {status.label}
           </div>
         </div>
 
         {/* MAIN CARD */}
-        <div className="bg-white rounded-3xl shadow-lg border p-8 space-y-8">
+        <div className="bg-white rounded-none shadow-none border p-8 space-y-8">
           {/* TOP */}
           <div className="flex justify-between flex-wrap gap-6">
             <div>
@@ -154,11 +154,11 @@ export default function Orders() {
             {order.items?.map((item, i) => (
               <div
                 key={i}
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition"
+                className="flex items-center gap-4 p-4 rounded-none hover:bg-gray-50 transition"
               >
                 <img
                   src={`/assets/images/${item.image || "products/defaultProduct.png"}`}
-                  className="w-16 h-20 object-contain bg-gray-50 rounded-lg"
+                  className="w-16 h-20 object-contain bg-gray-50 rounded-none"
                 />
 
                 <div className="flex-1">
@@ -186,7 +186,7 @@ export default function Orders() {
       </div>
 
       {orders.length === 0 ? (
-        <div className="text-center py-20 border border-gray-200 rounded-3xl">
+        <div className="text-center py-20 border border-gray-200 rounded-none">
           <FiBox className="text-5xl text-gray-200 mx-auto mb-4" />
           <p className="text-gray-400">Chưa có đơn hàng</p>
         </div>
@@ -199,12 +199,12 @@ export default function Orders() {
               <Link
                 key={order.id}
                 to={`/orders?id=${order.id}`}
-                className="block p-6 rounded-2xl border hover:shadow-lg transition group"
+                className="block p-6 rounded-none border hover:shadow-none transition group"
               >
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${status.color}`}
+                      className={`w-12 h-12 rounded-none flex items-center justify-center ${status.color}`}
                     >
                       {status.icon}
                     </div>
@@ -237,3 +237,6 @@ export default function Orders() {
     </div>
   );
 }
+
+
+

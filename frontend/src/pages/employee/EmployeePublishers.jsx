@@ -72,7 +72,7 @@ export default function EmployeePublishers() {
       <div className="admin-card">
         <div className="mb-6 relative max-w-sm">
           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input type="text" placeholder="Tìm kiếm..." className="w-full pl-10 pr-4 py-2 border rounded-lg outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <input type="text" placeholder="Tìm kiếm..." className="w-full pl-10 pr-4 py-2 border rounded-none outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
         <table className="admin-table">
           <thead>
@@ -86,8 +86,8 @@ export default function EmployeePublishers() {
                 <td>{i.diachi || '---'}</td>
                 <td>{i.email}<br/><span className="text-xs">{i.sdt}</span></td>
                 <td className="flex justify-center gap-2">
-                  <button onClick={() => openEdit(i)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"><FiEdit2 /></button>
-                  <button onClick={() => handleDelete(i.nhaxuatban_id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg"><FiTrash2 /></button>
+                  <button onClick={() => openEdit(i)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-none"><FiEdit2 /></button>
+                  <button onClick={() => handleDelete(i.nhaxuatban_id)} className="p-2 text-red-600 hover:bg-red-50 rounded-none"><FiTrash2 /></button>
                 </td>
               </tr>
             ))}
@@ -98,16 +98,16 @@ export default function EmployeePublishers() {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl w-full max-w-md">
+          <div className="bg-white rounded-none w-full max-w-md">
             <div className="p-4 border-b flex justify-between">
               <h3 className="font-bold">{editingItem ? 'Sửa NXB' : 'Thêm NXB'}</h3>
               <button onClick={() => setIsModalOpen(false)}><FiX /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <input type="text" placeholder="Tên NXB *" required className="w-full border p-2 rounded" value={formData.ten} onChange={e => setFormData({...formData, ten: e.target.value})} />
-              <input type="text" placeholder="Địa chỉ" className="w-full border p-2 rounded" value={formData.diachi} onChange={e => setFormData({...formData, diachi: e.target.value})} />
-              <input type="email" placeholder="Email" className="w-full border p-2 rounded" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-              <input type="text" placeholder="Số điện thoại" className="w-full border p-2 rounded" value={formData.sdt} onChange={e => setFormData({...formData, sdt: e.target.value})} />
+              <input type="text" placeholder="Tên NXB *" required className="w-full border p-2 rounded-none" value={formData.ten} onChange={e => setFormData({...formData, ten: e.target.value})} />
+              <input type="text" placeholder="Địa chỉ" className="w-full border p-2 rounded-none" value={formData.diachi} onChange={e => setFormData({...formData, diachi: e.target.value})} />
+              <input type="email" placeholder="Email" className="w-full border p-2 rounded-none" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+              <input type="text" placeholder="Số điện thoại" className="w-full border p-2 rounded-none" value={formData.sdt} onChange={e => setFormData({...formData, sdt: e.target.value})} />
               <button type="submit" className="w-full btn-primary mt-4">{editingItem ? 'Cập nhật' : 'Thêm mới'}</button>
             </form>
           </div>
@@ -116,3 +116,6 @@ export default function EmployeePublishers() {
     </div>
   );
 }
+
+
+

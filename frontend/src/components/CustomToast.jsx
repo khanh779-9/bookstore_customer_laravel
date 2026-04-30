@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FiCheckCircle, FiAlertCircle, FiInfo, FiX } from "react-icons/fi";
 import { cn } from "../utils/cn";
 
@@ -35,7 +35,7 @@ export default function CustomToast({
       animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
       className={cn(
-        "fixed top-20 right-6 overflow-hidden z-[9999] flex items-center gap-3 px-5 py-4 rounded-2xl border backdrop-blur-xl shadow-2xl min-w-[320px] max-w-md",
+        "fixed top-20 right-6 overflow-hidden z-[9999] flex items-center gap-3 px-5 py-4 rounded-none border backdrop-blur-xl shadow-none min-w-[320px] max-w-md",
         colors[type],
       )}
       role="alert"
@@ -48,7 +48,7 @@ export default function CustomToast({
 
       <button
         onClick={onClose}
-        className="p-1 rounded-lg hover:bg-black/5 transition-colors text-slate-400 hover:text-slate-600 ml-5"
+        className="p-1 rounded-none hover:bg-black/5 transition-colors text-slate-400 hover:text-slate-600 ml-5"
       >
         <FiX className="w-4 h-4" />
       </button>
@@ -59,7 +59,7 @@ export default function CustomToast({
         animate={{ width: "0%" }}
         transition={{ duration: duration / 1000, ease: "linear" }}
         className={cn(
-          "absolute bottom-0 left-0 h-1 rounded-full opacity-40",
+          "absolute bottom-0 left-0 h-1 rounded-none opacity-40",
           type === "success"
             ? "bg-emerald-500"
             : type === "error"

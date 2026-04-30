@@ -31,9 +31,9 @@ export default function EmployeeReports() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 rounded-none border border-gray-100 shadow-none">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-50 text-green-600 rounded-lg"><FiDollarSign className="w-6 h-6" /></div>
+            <div className="p-3 bg-green-50 text-green-600 rounded-none"><FiDollarSign className="w-6 h-6" /></div>
             <div>
               <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Tổng doanh thu</div>
               <div className="text-2xl font-bold text-gray-800">
@@ -42,9 +42,9 @@ export default function EmployeeReports() {
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 rounded-none border border-gray-100 shadow-none">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-lg"><FiShoppingBag className="w-6 h-6" /></div>
+            <div className="p-3 bg-blue-50 text-blue-600 rounded-none"><FiShoppingBag className="w-6 h-6" /></div>
             <div>
               <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Tổng đơn hàng</div>
               <div className="text-2xl font-bold text-gray-800">
@@ -88,3 +88,6 @@ export default function EmployeeReports() {
     </div>
   );
 }
+
+
+

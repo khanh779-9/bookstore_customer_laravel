@@ -170,7 +170,7 @@ export default function EmployeeProducts() {
     return name.includes(searchTerm.toLowerCase());
   });
 
-  const inputStyle = 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition';
+  const inputStyle = 'w-full px-3 py-2 border border-gray-300 rounded-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition';
   const labelStyle = 'block text-sm font-semibold text-gray-700 mb-1';
 
   return (
@@ -185,7 +185,7 @@ export default function EmployeeProducts() {
       <div className="admin-card">
         <div className="mb-6 relative max-w-sm">
           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input type="text" placeholder="Tìm kiếm sản phẩm..." className="w-full pl-10 pr-4 py-2 border rounded-lg outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <input type="text" placeholder="Tìm kiếm sản phẩm..." className="w-full pl-10 pr-4 py-2 border rounded-none outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
 
         {loading ? <p className="text-center py-8">Đang tải dữ liệu...</p> : (
@@ -208,25 +208,25 @@ export default function EmployeeProducts() {
                 return (
                   <tr key={p.sanpham_id}>
                     <td>
-                      <img src={`/assets/images/${p.hinhanh}`} alt={name} className="w-12 h-12 object-cover rounded" onError={e => e.target.src='/placeholder.svg'} />
+                      <img src={`/assets/images/${p.hinhanh}`} alt={name} className="w-12 h-12 object-cover rounded-none" onError={e => e.target.src='/placeholder.svg'} />
                     </td>
                     <td className="text-gray-400">#{p.sanpham_id}</td>
                     <td className="max-w-[250px] truncate font-medium">{name}</td>
                     <td>
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold ${isSach ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                      <span className={`px-2 py-1 rounded-none text-xs font-bold ${isSach ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
                         {isSach ? 'Sách' : 'VPP'}
                       </span>
                     </td>
                     <td className="font-semibold text-indigo-600">{parseFloat(p.gia).toLocaleString('vi-VN')}₫</td>
                     <td>
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold ${p.soluongton > 5 ? 'bg-green-100 text-green-700' : p.soluongton === 0 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      <span className={`px-2 py-1 rounded-none text-xs font-bold ${p.soluongton > 5 ? 'bg-green-100 text-green-700' : p.soluongton === 0 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
                         {p.soluongton}
                       </span>
                     </td>
                     <td>
                       <div className="flex justify-center gap-2">
-                        <button onClick={() => openEdit(p)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg" title="Sửa"><FiEdit2 /></button>
-                        <button onClick={() => handleDelete(p.sanpham_id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="Xóa"><FiTrash2 /></button>
+                        <button onClick={() => openEdit(p)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-none" title="Sửa"><FiEdit2 /></button>
+                        <button onClick={() => handleDelete(p.sanpham_id)} className="p-2 text-red-600 hover:bg-red-50 rounded-none" title="Xóa"><FiTrash2 /></button>
                       </div>
                     </td>
                   </tr>
@@ -243,10 +243,10 @@ export default function EmployeeProducts() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-none w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center z-10">
               <h3 className="text-lg font-bold">{editingId ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}</h3>
-              <button onClick={() => setShowModal(false)} className="p-1 hover:bg-gray-100 rounded"><FiX size={20} /></button>
+              <button onClick={() => setShowModal(false)} className="p-1 hover:bg-gray-100 rounded-none"><FiX size={20} /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {/* Product Type */}
@@ -332,7 +332,7 @@ export default function EmployeeProducts() {
               <div>
                 <label className={labelStyle}>Hình ảnh {editingId && '(để trống nếu không đổi)'}</label>
                 <div className="flex items-center gap-3">
-                  <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer transition">
+                  <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-none cursor-pointer transition">
                     <FiUpload /> Chọn ảnh
                     <input type="file" accept="image/*" className="hidden" onChange={e => setImageFile(e.target.files[0])} />
                   </label>
@@ -360,3 +360,6 @@ export default function EmployeeProducts() {
     </div>
   );
 }
+
+
+

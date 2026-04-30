@@ -198,9 +198,9 @@ export default function Account() {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <aside className="lg:col-span-3">
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden lg:sticky lg:top-24">
+            <div className="bg-white border border-slate-200 rounded-none shadow-none overflow-hidden lg:sticky lg:top-24">
               <div className="p-6 text-center bg-gradient-to-b from-slate-50 to-white border-b border-slate-100">
-                <div className="w-20 h-20 mx-auto rounded-2xl bg-primary text-white flex items-center justify-center text-2xl font-bold shadow-md shadow-primary/20">
+                <div className="w-20 h-20 mx-auto rounded-none bg-primary text-white flex items-center justify-center text-2xl font-bold shadow-none shadow-primary/20">
                   {initials || <FiUser />}
                 </div>
 
@@ -222,13 +222,13 @@ export default function Account() {
 
                 <Link
                   to="/orders"
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-none text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
                 >
                   <span className="flex items-center gap-3">
                     <FiPackage className="text-slate-400" />
                     Đơn hàng của tôi
                   </span>
-                  <span className="text-[10px] px-2 py-1 rounded-full bg-slate-100 text-slate-500">
+                  <span className="text-[10px] px-2 py-1 rounded-none bg-slate-100 text-slate-500">
                     {orderCount}
                   </span>
                 </Link>
@@ -242,7 +242,7 @@ export default function Account() {
 
                 <button
                   onClick={logout}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition mt-2"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-none text-sm font-medium text-red-500 hover:bg-red-50 transition mt-2"
                 >
                   <FiLogOut className="text-red-400" />
                   Đăng xuất
@@ -252,7 +252,7 @@ export default function Account() {
           </aside>
 
           <main className="lg:col-span-9 space-y-6">
-            <div className="lg:hidden bg-white border border-slate-200 rounded-2xl p-2 shadow-sm flex gap-2 overflow-x-auto">
+            <div className="lg:hidden bg-white border border-slate-200 rounded-none p-2 shadow-none flex gap-2 overflow-x-auto">
               <MobileTab
                 active={activeTab === "info"}
                 onClick={() => setActiveTab("info")}
@@ -267,7 +267,7 @@ export default function Account() {
               />
               <Link
                 to="/orders"
-                className="shrink-0 px-4 py-2 rounded-xl text-sm font-medium text-slate-600 bg-slate-50"
+                className="shrink-0 px-4 py-2 rounded-none text-sm font-medium text-slate-600 bg-slate-50"
               >
                 Đơn hàng
               </Link>
@@ -321,7 +321,7 @@ export default function Account() {
                     <div className="pt-1">
                       <button
                         type="submit"
-                        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-white text-sm font-semibold shadow-sm hover:shadow-md hover:-translate-y-[1px] transition"
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-none bg-primary text-white text-sm font-semibold shadow-none hover:shadow-none  transition"
                       >
                         <FiSave />
                         Cập nhật hồ sơ
@@ -336,7 +336,7 @@ export default function Account() {
                   action={
                     <button
                       onClick={openAddAddress}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-semibold hover:bg-primary hover:text-white transition"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-none bg-primary/10 text-primary text-sm font-semibold hover:bg-primary hover:text-white transition"
                     >
                       <FiPlus />
                       Thêm mới
@@ -351,7 +351,7 @@ export default function Account() {
                       action={
                         <button
                           onClick={openAddAddress}
-                          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold"
+                          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-none bg-primary text-white text-sm font-semibold"
                         >
                           <FiPlus />
                           Thêm địa chỉ
@@ -363,10 +363,10 @@ export default function Account() {
                       {addresses.map((addr) => (
                         <div
                           key={addr.dcgh_id}
-                          className="group rounded-2xl border border-slate-200 bg-white p-4 hover:border-primary/20 hover:shadow-sm transition"
+                          className="group rounded-none border border-slate-200 bg-white p-4 hover:border-primary/20 hover:shadow-none transition"
                         >
                           <div className="flex items-start justify-between gap-4 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition">
+                            <div className="w-10 h-10 rounded-none bg-slate-50 text-slate-500 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition">
                               <FiMapPin />
                             </div>
 
@@ -374,7 +374,7 @@ export default function Account() {
                               <button
                                 type="button"
                                 onClick={() => openEditAddress(addr)}
-                                className="p-2 rounded-lg text-slate-400 hover:text-primary hover:bg-slate-50 transition"
+                                className="p-2 rounded-none text-slate-400 hover:text-primary hover:bg-slate-50 transition"
                                 aria-label="Sửa địa chỉ"
                               >
                                 <FiEdit2 />
@@ -382,7 +382,7 @@ export default function Account() {
                               <button
                                 type="button"
                                 onClick={() => handleDeleteAddress(addr.dcgh_id)}
-                                className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+                                className="p-2 rounded-none text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
                                 aria-label="Xóa địa chỉ"
                               >
                                 <FiTrash2 />
@@ -434,7 +434,7 @@ export default function Account() {
 
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-white text-sm font-semibold shadow-sm hover:shadow-md hover:-translate-y-[1px] transition"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-none bg-primary text-white text-sm font-semibold shadow-none hover:shadow-none  transition"
                   >
                     <FiSave />
                     Cập nhật mật khẩu
@@ -453,7 +453,7 @@ export default function Account() {
             onClick={() => setShowAddressModal(false)}
           />
 
-          <div className="relative w-full max-w-lg rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden">
+          <div className="relative w-full max-w-lg rounded-none bg-white border border-slate-200 shadow-none overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
               <div>
                 <h3 className="text-lg font-bold text-secondary">
@@ -467,7 +467,7 @@ export default function Account() {
               <button
                 type="button"
                 onClick={() => setShowAddressModal(false)}
-                className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition flex items-center justify-center"
+                className="w-9 h-9 rounded-none bg-slate-100 text-slate-500 hover:bg-slate-200 transition flex items-center justify-center"
                 aria-label="Đóng"
               >
                 <FiX />
@@ -487,13 +487,13 @@ export default function Account() {
                 <button
                   type="button"
                   onClick={() => setShowAddressModal(false)}
-                  className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+                  className="flex-1 px-4 py-3 rounded-none border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:shadow-md transition"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-none bg-primary text-white text-sm font-semibold hover:shadow-none transition"
                 >
                   <FiSave />
                   Lưu địa chỉ
@@ -522,9 +522,9 @@ function SidebarButton({ active, onClick, icon, label }) {
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition",
+        "w-full flex items-center gap-3 px-4 py-3 rounded-none text-sm font-medium transition",
         active
-          ? "bg-primary text-white shadow-sm"
+          ? "bg-primary text-white shadow-none"
           : "text-slate-600 hover:bg-slate-50"
       )}
     >
@@ -539,7 +539,7 @@ function MobileTab({ active, onClick, icon, label }) {
     <button
       onClick={onClick}
       className={cn(
-        "shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition",
+        "shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-none text-sm font-medium transition",
         active
           ? "bg-primary text-white"
           : "bg-slate-50 text-slate-600 hover:bg-slate-100"
@@ -553,7 +553,7 @@ function MobileTab({ active, onClick, icon, label }) {
 
 function SectionCard({ title, subtitle, action, children }) {
   return (
-    <section className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+    <section className="bg-white border border-slate-200 rounded-none shadow-none overflow-hidden">
       <div className="px-5 md:px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-bold text-secondary">{title}</h3>
@@ -572,7 +572,7 @@ function SectionCard({ title, subtitle, action, children }) {
 function EmptyState({ icon, title, desc, action }) {
   return (
     <div className="py-10 text-center">
-      <div className="w-12 h-12 mx-auto rounded-2xl bg-slate-50 text-slate-300 flex items-center justify-center text-xl">
+      <div className="w-12 h-12 mx-auto rounded-none bg-slate-50 text-slate-300 flex items-center justify-center text-xl">
         {icon}
       </div>
       <h4 className="mt-4 text-sm font-semibold text-secondary">{title}</h4>
@@ -581,3 +581,5 @@ function EmptyState({ icon, title, desc, action }) {
     </div>
   );
 }
+
+

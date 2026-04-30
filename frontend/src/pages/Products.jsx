@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { productService } from "../services/productService";
 import { categoryService } from "../services/categoryService";
 import { lookupService } from "../services/lookupService";
+import { useAuth } from "../contexts/AuthContext";
 import ProductCard from "../components/Product/ProductCard";
 import {
   FiFilter,
@@ -23,6 +24,7 @@ import Select from "../components/Common/Select";
 import { cn } from "../utils/cn";
 
 export default function Products() {
+  const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showMobileFilter, setShowMobileFilter] = useState(false);
 
@@ -49,6 +51,7 @@ export default function Products() {
     queryKey: [
       "products",
       { q, categoryId, providerId, publisherId, promotedOnly, sortBy, page },
+      isAuthenticated,
     ],
     queryFn: () =>
       productService.getProducts({
@@ -143,7 +146,7 @@ export default function Products() {
                   updateFilter("promoted_only", promotedOnly ? "" : "1")
                 }
                 className={cn(
-                  "w-full flex justify-between px-3 py-2 border rounded-lg text-sm",
+                  "w-full flex justify-between px-3 py-2 border rounded-none text-sm",
                   promotedOnly
                     ? "bg-red-50 border-red-200 text-red-600"
                     : "border-slate-200 text-slate-500",
@@ -229,7 +232,7 @@ export default function Products() {
                     <h3 className="font-bold text-secondary">Bộ lọc</h3>
                     <button
                       onClick={() => setShowMobileFilter(false)}
-                      className="p-2 bg-slate-100 rounded-lg"
+                      className="p-2 bg-slate-100 rounded-none"
                     >
                       <FiX />
                     </button>
@@ -243,7 +246,7 @@ export default function Products() {
                         updateFilter("promoted_only", promotedOnly ? "" : "1")
                       }
                       className={cn(
-                        "w-full flex justify-between px-3 py-2 border rounded-lg text-sm",
+                        "w-full flex justify-between px-3 py-2 border rounded-none text-sm",
                         promotedOnly
                           ? "bg-red-50 border-red-200 text-red-600"
                           : "border-slate-200 text-slate-500",
@@ -317,14 +320,14 @@ export default function Products() {
                         clearFilters();
                         setShowMobileFilter(false);
                       }}
-                      className="w-full border border-slate-200 py-2 rounded-lg text-sm"
+                      className="w-full border border-slate-200 py-2 rounded-none text-sm"
                     >
                       Xóa bộ lọc
                     </button>
 
                     <button
                       onClick={() => setShowMobileFilter(false)}
-                      className="w-full bg-primary text-white py-2 rounded-lg text-sm font-semibold"
+                      className="w-full bg-primary text-white py-2 rounded-none text-sm font-semibold"
                     >
                       Áp dụng
                     </button>
@@ -472,7 +475,7 @@ function FilterButton({ active, onClick, children }) {
     <button
       onClick={onClick}
       className={cn(
-        "w-full text-left px-3 py-2 rounded-lg text-sm font-semibold",
+        "w-full text-left px-3 py-2 rounded-none text-sm font-semibold",
         active ? "bg-primary text-white" : "text-slate-500 hover:bg-slate-50",
       )}
     >
@@ -491,10 +494,13 @@ function PaginationButton({ onClick, disabled, icon, label }) {
         "w-10 h-10 flex items-center justify-center transition-all duration-200 border border-slate-200",
         disabled
           ? "text-slate-200 cursor-not-allowed"
-          : "bg-white text-slate-500 hover:bg-slate-50 hover:text-primary shadow-sm active:scale-95 cursor-pointer",
+          : "bg-white text-slate-500 hover:bg-slate-50 hover:text-primary shadow-none active:scale-95 cursor-pointer",
       )}
     >
       {icon}
     </button>
   );
 }
+
+
+

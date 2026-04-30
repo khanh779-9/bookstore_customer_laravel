@@ -16,7 +16,7 @@ const Select = ({ label, icon: Icon, value, onChange, options, placeholder = "Ch
           value={value}
           onChange={onChange}
           className={cn(
-            "w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition-all cursor-pointer pr-10",
+            "w-full appearance-none rounded-none border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition-all cursor-pointer pr-10",
             "focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10",
             "group-hover:border-slate-300",
             className
@@ -39,3 +39,6 @@ const Select = ({ label, icon: Icon, value, onChange, options, placeholder = "Ch
 };
 
 export default Select;
+
+
+

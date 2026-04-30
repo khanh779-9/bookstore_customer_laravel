@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\KhachHang;
+use App\Models\ThongBao;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 

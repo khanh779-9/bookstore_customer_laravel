@@ -26,6 +26,10 @@ class AuthController extends Controller
         try {
             $result = $this->authService->login($request->validated(), $request->header('User-Agent'));
 
+            $device= $request->header('User-Agent') ?? 'web';
+            $browser = getBrowser($device);
+            $os = getOS($device);
+
             return (new KhachHangResource($result['customer']))->additional([
                 'message' => 'Đăng nhập thành công!',
                 'token' => $result['token']

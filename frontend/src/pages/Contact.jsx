@@ -55,15 +55,15 @@ export default function Contact() {
           Chúng tôi luôn sẵn lòng lắng nghe! Đừng ngần ngại liên hệ nếu bạn có
           bất kỳ câu hỏi hay góp ý nào.
         </p>
-        <div className="w-24 h-2 bg-primary mx-auto rounded-full"></div>
+        <div className="w-24 h-2 bg-primary mx-auto rounded-none"></div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* LEFT */}
         <div className="lg:col-span-5 space-y-8">
-          <div className="bg-white p-10 shadow-sm border border-gray-100 h-full">
+          <div className="bg-white p-10 shadow-none border border-gray-100 h-full">
             <h2 className="text-2xl font-black text-gray-900 mb-10 flex items-center gap-3">
-              <span className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
+              <span className="w-10 h-10 bg-primary/10 text-primary rounded-none flex items-center justify-center">
                 <FiMapPin />
               </span>
               Thông tin cửa hàng
@@ -102,7 +102,7 @@ export default function Contact() {
               <h3 className="font-black text-gray-900 mb-6 italic">
                 Tìm chúng tôi trên bản đồ
               </h3>
-              <div className="rounded-3xl overflow-hidden shadow-xl aspect-video">
+              <div className="rounded-none overflow-hidden shadow-none aspect-video">
                 <iframe
                   src="https://www.google.com/maps?q=Trường+Đại+Học+Công+Nghệ+Sài+Gòn&output=embed"
                   className="w-full h-full border-0 grayscale hover:grayscale-0 transition-all"
@@ -115,7 +115,7 @@ export default function Contact() {
 
         {/* RIGHT */}
         <div className="lg:col-span-7">
-          <div className="bg-white p-10 md:p-12 shadow-sm border border-gray-100">
+          <div className="bg-white p-10 md:p-12 shadow-none border border-gray-100">
             <h2 className="text-2xl font-bold text-gray-900 mb-10 flex items-center gap-3">
               <FiSend className="text-primary" /> Gửi tin nhắn
             </h2>
@@ -174,7 +174,7 @@ export default function Contact() {
                   required
                 />
 
-                <button className="w-full bg-primary text-white font-black py-5 rounded-2xl flex items-center justify-center gap-3 hover:scale-105 transition-all">
+                <button className="w-full bg-primary text-white font-black py-5 rounded-none flex items-center justify-center gap-3 hover:scale-105 transition-all">
                   <FiSend /> GỬI NGAY
                 </button>
               </form>
@@ -191,7 +191,7 @@ export default function Contact() {
 function InfoItem({ icon, title, children }) {
   return (
     <div className="flex gap-6 group">
-      <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-2xl text-gray-400 group-hover:bg-primary group-hover:text-white transition-all">
+      <div className="w-14 h-14 bg-gray-50 rounded-none flex items-center justify-center text-2xl text-gray-400 group-hover:bg-primary group-hover:text-white transition-all">
         {icon}
       </div>
       <div>
@@ -207,7 +207,7 @@ function InfoItem({ icon, title, children }) {
 function SuccessBlock({ onReset }) {
   return (
     <div className="py-20 text-center space-y-6">
-      <div className="w-24 h-24 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-5xl mx-auto">
+      <div className="w-24 h-24 bg-green-50 text-green-500 rounded-none flex items-center justify-center text-5xl mx-auto">
         <FiCheckCircle />
       </div>
       <h3 className="text-2xl font-bold">Gửi thành công!</h3>
@@ -216,10 +216,13 @@ function SuccessBlock({ onReset }) {
       </p>
       <button
         onClick={onReset}
-        className="bg-gray-900 text-white px-8 py-3 rounded-xl"
+        className="bg-gray-900 text-white px-8 py-3 rounded-none"
       >
         Gửi lại
       </button>
     </div>
   );
 }
+
+
+

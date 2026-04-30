@@ -42,10 +42,10 @@ export default function Login() {
     <div className="bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         {/* CARD */}
-        <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-lg p-6 md:p-8">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-none shadow-none p-6 md:p-8">
           {/* HEADER */}
           <div className="text-center mb-8">
-            <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-lg">
+            <div className="w-12 h-12 mx-auto mb-4 rounded-none bg-primary/10 flex items-center justify-center text-primary text-lg">
               <FiLock />
             </div>
             <h1 className="text-2xl font-bold text-secondary">Đăng nhập</h1>
@@ -101,10 +101,10 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:-translate-y-[1px] transition-all disabled:opacity-50"
+              className="w-full bg-primary text-white py-3 rounded-none font-semibold flex items-center justify-center gap-2 shadow-none hover:shadow-none  transition-all disabled:opacity-50"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-none animate-spin" />
               ) : (
                 <>
                   Đăng nhập <FiArrowRight />
@@ -133,7 +133,7 @@ export default function Login() {
             {/* GOOGLE */}
             <button
               type="button"
-              className="w-full border border-slate-200 py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+              className="w-full border border-slate-200 py-2.5 rounded-none flex items-center justify-center gap-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
             >
               <FcGoogle />
               Tiếp tục với Google
@@ -151,3 +151,6 @@ export default function Login() {
     </div>
   );
 }
+
+
+

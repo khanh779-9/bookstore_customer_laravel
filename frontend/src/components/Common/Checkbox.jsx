@@ -4,7 +4,7 @@ import { cn } from '../../utils/cn';
 const Checkbox = ({ label, checked, onChange, required = false, className, containerClassName }) => {
   return (
     <label className={cn(
-      "flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-transparent hover:border-slate-100 transition-all group cursor-pointer",
+      "flex items-center gap-3 p-4 bg-slate-50 rounded-none border border-transparent hover:border-slate-100 transition-all group cursor-pointer",
       checked && "bg-primary/5 border-primary/10",
       containerClassName
     )}>
@@ -15,7 +15,7 @@ const Checkbox = ({ label, checked, onChange, required = false, className, conta
           checked={checked}
           onChange={onChange}
           className={cn(
-            "w-5 h-5 rounded-lg border-2 border-slate-300 appearance-none checked:bg-primary checked:border-primary transition-all cursor-pointer",
+            "w-5 h-5 rounded-none border-2 border-slate-300 appearance-none checked:bg-primary checked:border-primary transition-all cursor-pointer",
             className
           )}
         />
@@ -39,3 +39,6 @@ const Checkbox = ({ label, checked, onChange, required = false, className, conta
 };
 
 export default Checkbox;
+
+
+

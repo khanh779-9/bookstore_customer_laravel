@@ -29,7 +29,7 @@ const Input = forwardRef(({
           ref={ref}
           type={type}
           className={cn(
-            "w-full bg-white border border-slate-200 rounded-xl py-3 px-4 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-slate-300",
+            "w-full bg-white border border-slate-200 rounded-none py-3 px-4 text-sm font-medium transition-all focus:outline-none focus:border-primary placeholder:text-slate-300",
             Icon && "pl-11",
             error && "border-red-500 focus:ring-red-500/10 focus:border-red-500",
             className
@@ -54,3 +54,6 @@ const Input = forwardRef(({
 Input.displayName = "Input";
 
 export default Input;
+
+
+

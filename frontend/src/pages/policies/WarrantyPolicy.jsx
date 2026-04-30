@@ -5,11 +5,11 @@ export default function WarrantyPolicy() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-7xl">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-yellow-50 via-white to-red-50 rounded-[3rem] p-8 md:p-16 mb-12 border border-yellow-100 shadow-sm">
+      <section className="relative overflow-hidden bg-gradient-to-br from-yellow-50 via-white to-red-50 rounded-none p-8 md:p-16 mb-12 border border-yellow-100 shadow-none">
         <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12">
           <div className="flex-1 space-y-6">
             <div className="flex items-center gap-3">
-              <span className="bg-yellow-500 text-white text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase">BookZone Guarantee</span>
+              <span className="bg-yellow-500 text-white text-[10px] font-black px-3 py-1 rounded-none tracking-widest uppercase">BookZone Guarantee</span>
               <span className="text-gray-400 text-xs font-bold italic">Sửa chữa hoặc thay thế miễn phí</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight italic">Chính sách bảo hành</h1>
@@ -17,15 +17,15 @@ export default function WarrantyPolicy() {
               Tất cả sản phẩm BookZone đều được bảo hành chuyên nghiệp với thời gian phù hợp loại sản phẩm.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 group hover:border-yellow-500 transition-all">
-                <div className="w-10 h-10 bg-yellow-50 text-yellow-500 rounded-xl flex items-center justify-center text-xl group-hover:bg-yellow-500 group-hover:text-white transition-all"><FiClock /></div>
+              <div className="bg-white p-4 rounded-none shadow-none border border-gray-100 flex items-center gap-3 group hover:border-yellow-500 transition-all">
+                <div className="w-10 h-10 bg-yellow-50 text-yellow-500 rounded-none flex items-center justify-center text-xl group-hover:bg-yellow-500 group-hover:text-white transition-all"><FiClock /></div>
                 <div>
                   <div className="font-black text-gray-900 text-sm">Đa dạng</div>
                   <div className="text-xs text-gray-400 font-bold italic">7-12 tháng</div>
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 group hover:border-yellow-500 transition-all">
-                <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-xl group-hover:bg-blue-500 group-hover:text-white transition-all"><FiTool /></div>
+              <div className="bg-white p-4 rounded-none shadow-none border border-gray-100 flex items-center gap-3 group hover:border-yellow-500 transition-all">
+                <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-none flex items-center justify-center text-xl group-hover:bg-blue-500 group-hover:text-white transition-all"><FiTool /></div>
                 <div>
                   <div className="font-black text-gray-900 text-sm">Chuyên nghiệp</div>
                   <div className="text-xs text-gray-400 font-bold italic">Xử lý 5-7 ngày</div>
@@ -33,16 +33,16 @@ export default function WarrantyPolicy() {
               </div>
             </div>
           </div>
-          <div className="lg:w-1/3 bg-white/60 backdrop-blur-md p-8 rounded-[2.5rem] border border-white shadow-2xl space-y-6">
+          <div className="lg:w-1/3 bg-white/60 backdrop-blur-md p-8 rounded-none border border-white shadow-none space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-yellow-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg shadow-yellow-100"><FiShield /></div>
+              <div className="w-12 h-12 bg-yellow-500 text-white rounded-none flex items-center justify-center text-xl shadow-none shadow-yellow-100"><FiShield /></div>
               <div>
                 <div className="font-black text-gray-900 text-sm">Miễn phí sửa chữa</div>
                 <div className="text-xs text-gray-400 font-bold italic">Lỗi do nhà sản xuất</div>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg shadow-blue-100"><FiHeadphones /></div>
+              <div className="w-12 h-12 bg-blue-500 text-white rounded-none flex items-center justify-center text-xl shadow-none shadow-blue-100"><FiHeadphones /></div>
               <div>
                 <div className="font-black text-gray-900 text-sm">Hỗ trợ đầy đủ</div>
                 <div className="text-xs text-gray-400 font-bold italic">Hotline & email hỗ trợ</div>
@@ -55,12 +55,12 @@ export default function WarrantyPolicy() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Main Content */}
         <div className="lg:col-span-8 space-y-8">
-          <section className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-8">
+          <section className="bg-white p-10 rounded-none border border-gray-100 shadow-none space-y-8">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-gray-900 italic flex items-center gap-3">
                 <FiShield className="text-yellow-500" /> Thời hạn bảo hành
               </h2>
-              <span className="px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-[10px] font-black text-yellow-500 tracking-widest uppercase">Miễn phí 100%</span>
+              <span className="px-3 py-1 bg-gray-50 border border-gray-100 rounded-none text-[10px] font-black text-yellow-500 tracking-widest uppercase">Miễn phí 100%</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
@@ -69,8 +69,8 @@ export default function WarrantyPolicy() {
                 { icon: <FiCheckCircle />, title: 'Bộ quà tặng', desc: '14 ngày từ ngày nhận' },
                 { icon: <FiTool />, title: 'Sản phẩm khác', desc: 'Theo quy định của NSX' }
               ].map((item, i) => (
-                <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-transparent hover:border-yellow-100 hover:bg-yellow-50/30 transition-all flex items-start gap-4 group">
-                  <div className="w-10 h-10 bg-white text-yellow-500 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <div key={i} className="bg-gray-50 p-6 rounded-none border border-transparent hover:border-yellow-100 hover:bg-yellow-50/30 transition-all flex items-start gap-4 group">
+                  <div className="w-10 h-10 bg-white text-yellow-500 rounded-none flex items-center justify-center shadow-none group-hover:scale-110 transition-transform">
                     {item.icon}
                   </div>
                   <div>
@@ -82,7 +82,7 @@ export default function WarrantyPolicy() {
             </div>
           </section>
 
-          <section className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-12">
+          <section className="bg-white p-10 rounded-none border border-gray-100 shadow-none space-y-12">
             <h2 className="text-2xl font-black text-gray-900 italic flex items-center gap-3">
               <FiCheckCircle className="text-green-500" /> Quy trình bảo hành
             </h2>
@@ -94,13 +94,13 @@ export default function WarrantyPolicy() {
                 { step: 4, title: 'Giao hàng', desc: 'Gửi sản phẩm về cho bạn miễn phí vận chuyển.', badge: 'Cập nhật liên tục' }
               ].map((item, i) => (
                 <div key={i} className="relative flex gap-10 items-start">
-                  <div className="w-12 h-12 bg-yellow-500 text-white rounded-full flex items-center justify-center font-black text-lg z-10 border-4 border-white shadow-lg shrink-0">
+                  <div className="w-12 h-12 bg-yellow-500 text-white rounded-none flex items-center justify-center font-black text-lg z-10 border-4 border-white shadow-none shrink-0">
                     {item.step}
                   </div>
                   <div className="space-y-2">
                     <h3 className="font-black text-gray-900 text-lg">{item.title}</h3>
                     <p className="text-gray-500 text-sm italic">{item.desc}</p>
-                    <span className="inline-block px-2 py-1 bg-gray-50 border border-gray-100 rounded text-[10px] font-black text-yellow-500 uppercase">{item.badge}</span>
+                    <span className="inline-block px-2 py-1 bg-gray-50 border border-gray-100 rounded-none text-[10px] font-black text-yellow-500 uppercase">{item.badge}</span>
                   </div>
                 </div>
               ))}
@@ -110,7 +110,7 @@ export default function WarrantyPolicy() {
 
         {/* Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
-          <div className="bg-yellow-500 text-white p-10 rounded-[2.5rem] shadow-xl shadow-yellow-100 space-y-6">
+          <div className="bg-yellow-500 text-white p-10 rounded-none shadow-none shadow-yellow-100 space-y-6">
             <h3 className="font-black text-xl italic flex items-center gap-2">
               <FiHeadphones /> Cần hỗ trợ ngay?
             </h3>
@@ -118,16 +118,16 @@ export default function WarrantyPolicy() {
               Đội ngũ CSKH sẵn sàng hỗ trợ bạn. Chúng tôi sẽ phản hồi trong 24 giờ.
             </p>
             <div className="space-y-3">
-              <Link to="/contact" className="block w-full py-4 bg-white text-yellow-500 text-center font-black rounded-2xl shadow-lg hover:scale-[1.02] transition-all">
+              <Link to="/contact" className="block w-full py-4 bg-white text-yellow-500 text-center font-black rounded-none shadow-none hover:scale-[1.02] transition-all">
                 GỬI YÊU CẦU
               </Link>
-              <a href="tel:0239482958" className="block w-full py-4 border-2 border-white/20 text-white text-center font-black rounded-2xl hover:bg-white/10 transition-all">
+              <a href="tel:0239482958" className="block w-full py-4 border-2 border-white/20 text-white text-center font-black rounded-none hover:bg-white/10 transition-all">
                 HOTLINE 0239 482 958
               </a>
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+          <div className="bg-white p-8 rounded-none border border-gray-100 shadow-none space-y-6">
             <h3 className="font-black text-gray-900 italic flex items-center gap-2">
               <FiCheckCircle className="text-green-500" /> Mẹo xử lý nhanh
             </h3>
@@ -138,7 +138,7 @@ export default function WarrantyPolicy() {
                 { icon: <FiBox />, text: 'Giữ nguyên bao bì và phụ kiện ban đầu.' }
               ].map((item, i) => (
                 <li key={i} className="flex gap-4 group">
-                  <div className="w-10 h-10 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center text-lg group-hover:bg-yellow-50 group-hover:text-yellow-500 transition-all">
+                  <div className="w-10 h-10 bg-gray-50 text-gray-400 rounded-none flex items-center justify-center text-lg group-hover:bg-yellow-50 group-hover:text-yellow-500 transition-all">
                     {item.icon}
                   </div>
                   <p className="text-xs text-gray-500 font-bold italic leading-relaxed">{item.text}</p>
@@ -151,3 +151,6 @@ export default function WarrantyPolicy() {
     </div>
   );
 }
+
+
+

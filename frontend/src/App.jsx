@@ -39,7 +39,7 @@ import EmployeeReports from './pages/employee/EmployeeReports';
 
 function App() {
   return (
-    <div className="app-container font-sans bg-gray-50 text-gray-800 min-h-screen">
+    <div className="font-sans bg-gray-50 text-gray-800 min-h-screen">
       <Routes>
       {/* Customer Routes with Layout */}
       <Route element={<CustomerLayout />}>
@@ -84,7 +84,7 @@ function App() {
       <Route path="*" element={<div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-6xl font-black text-gray-300 mb-4">404</h1>
         <p className="text-xl text-gray-500 mb-8">Trang không tồn tại.</p>
-        <a href="/" className="px-6 py-3 bg-primary text-white rounded-full font-bold">Về trang chủ</a>
+        <a href="/" className="px-6 py-3 bg-primary text-white rounded-none font-bold">Về trang chủ</a>
       </div>} />
       </Routes>
     </div>
@@ -92,4 +92,7 @@ function App() {
 }
 
 export default App;
+
+
+
 

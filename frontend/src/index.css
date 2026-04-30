@@ -7,20 +7,28 @@
   --color-secondary: #1e293b;
   --color-accent: #f59e0b;
   --color-surface: #ffffff;
-  --color-background: #fcfcfc;
+  --color-background: #f8fafc;
   
   /* Unified Typography: Using Be Vietnam Pro for all text for a clean, consistent look */
   --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Be Vietnam Pro", sans-serif;
   --font-serif: "Be Vietnam Pro", sans-serif;
 
-  --shadow-premium: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
-  --shadow-hover-xl: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  --shadow-premium: none;
+  --shadow-hover-xl: none;
+  /* --shadow-sm: none; */
+  --shadow-md: none;
+  /* --shadow-lg: none; */
+  /* --shadow-xl: none; */
+  --shadow-2xl: none;
   
-  --radius-sm: 0.4rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1.25rem;
-  --radius-xl: 1.5rem;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  /* --radius-full: 0; */
 
   --checkbox-color: #2563eb;
 }
@@ -53,23 +61,23 @@
 }
 
 @utility btn-base {
-  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all duration-200 active:scale-95 text-sm;
+  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-none font-bold transition-all duration-200 active:scale-95 text-sm;
 }
 
 @utility btn-primary {
-  @apply btn-base bg-primary text-white shadow-sm hover:bg-primary-dark hover:-translate-y-0.5;
+  @apply btn-base bg-primary text-white hover:bg-primary-dark hover:ring-2 hover:ring-primary/20;
 }
 
 @utility btn-secondary {
-  @apply btn-base bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300;
+  @apply btn-base bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 hover:border-slate-400 hover:text-secondary;
 }
 
 @utility btn-dark {
-  @apply btn-base bg-secondary text-white hover:bg-slate-700 shadow-sm;
+  @apply btn-base bg-secondary text-white hover:bg-slate-700;
 }
 
 @utility card-premium {
-  @apply bg-white rounded-2xl border border-slate-100 shadow-premium hover:shadow-hover-xl hover:-translate-y-1 transition-all duration-300;
+  @apply bg-white rounded-none border border-slate-200 transition-all duration-300 hover:border-primary/30;
 }
 
 @utility glass-panel {
@@ -82,7 +90,7 @@
 }
 
 @utility input-premium {
-  @apply w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all bg-white text-sm;
+  @apply w-full px-4 py-2.5 rounded-none border border-slate-300 focus:outline-none focus:border-primary focus:bg-white transition-all bg-slate-50/50 text-sm;
 }
 
 /* Custom Scrollbar */
@@ -93,7 +101,7 @@
   @apply bg-transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+  @apply bg-slate-200 hover:bg-slate-300 transition-colors;
 }
 
 /* Shimmer Effect */
@@ -107,3 +115,4 @@
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+

@@ -41,7 +41,7 @@ export default function Dashboard() {
 
       {stats && (
         <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-          <div className="stat-card" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="stat-card" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-none)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <p className="text-muted">Tổng doanh thu</p>
@@ -52,7 +52,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="stat-card" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="stat-card" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-none)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <p className="text-muted">Đơn hàng</p>
@@ -63,7 +63,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="stat-card" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="stat-card" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-none)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <p className="text-muted">Sản phẩm</p>
@@ -74,7 +74,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="stat-card" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="stat-card" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-none)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <p className="text-muted">Khách hàng</p>
@@ -88,7 +88,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="recent-orders" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-sm)' }}>
+      <div className="recent-orders" style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: '1rem', boxShadow: 'var(--shadow-none)' }}>
         <h2 style={{ marginBottom: '1.5rem' }}>Đơn hàng gần đây</h2>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
@@ -118,3 +118,6 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
+

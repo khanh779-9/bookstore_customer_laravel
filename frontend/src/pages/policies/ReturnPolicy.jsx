@@ -5,11 +5,11 @@ export default function ReturnPolicy() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-7xl">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-blue-50 rounded-[3rem] p-8 md:p-16 mb-12 border border-indigo-100 shadow-sm">
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-blue-50 rounded-none p-8 md:p-16 mb-12 border border-indigo-100 shadow-none">
         <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12">
           <div className="flex-1 space-y-6">
             <div className="flex items-center gap-3">
-              <span className="bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase">BookZone Care</span>
+              <span className="bg-primary text-white text-[10px] font-black px-3 py-1 rounded-none tracking-widest uppercase">BookZone Care</span>
               <span className="text-gray-400 text-xs font-bold italic">Đổi trả nhanh - xử lý minh bạch</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight italic">Chính sách đổi trả</h1>
@@ -17,15 +17,15 @@ export default function ReturnPolicy() {
               Tự tin mua sắm với quy trình đổi trả rõ ràng, linh hoạt và ưu tiên quyền lợi khách hàng.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 group hover:border-primary transition-all">
-                <div className="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center text-xl group-hover:bg-primary group-hover:text-white transition-all"><FiClock /></div>
+              <div className="bg-white p-4 rounded-none shadow-none border border-gray-100 flex items-center gap-3 group hover:border-primary transition-all">
+                <div className="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-none flex items-center justify-center text-xl group-hover:bg-primary group-hover:text-white transition-all"><FiClock /></div>
                 <div>
                   <div className="font-black text-gray-900 text-sm">30 ngày</div>
                   <div className="text-xs text-gray-400 font-bold italic">Cửa sổ đổi trả</div>
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 group hover:border-primary transition-all">
-                <div className="w-10 h-10 bg-green-50 text-green-500 rounded-xl flex items-center justify-center text-xl group-hover:bg-primary group-hover:text-white transition-all"><FiTruck /></div>
+              <div className="bg-white p-4 rounded-none shadow-none border border-gray-100 flex items-center gap-3 group hover:border-primary transition-all">
+                <div className="w-10 h-10 bg-green-50 text-green-500 rounded-none flex items-center justify-center text-xl group-hover:bg-primary group-hover:text-white transition-all"><FiTruck /></div>
                 <div>
                   <div className="font-black text-gray-900 text-sm">Miễn phí</div>
                   <div className="text-xs text-gray-400 font-bold italic">Phí hàng lỗi</div>
@@ -33,16 +33,16 @@ export default function ReturnPolicy() {
               </div>
             </div>
           </div>
-          <div className="lg:w-1/3 bg-white/60 backdrop-blur-md p-8 rounded-[2.5rem] border border-white shadow-2xl space-y-6">
+          <div className="lg:w-1/3 bg-white/60 backdrop-blur-md p-8 rounded-none border border-white shadow-none space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg shadow-green-100"><FiCheckCircle /></div>
+              <div className="w-12 h-12 bg-green-500 text-white rounded-none flex items-center justify-center text-xl shadow-none shadow-green-100"><FiCheckCircle /></div>
               <div>
                 <div className="font-black text-gray-900 text-sm">An tâm 1 đổi 1</div>
                 <div className="text-xs text-gray-400 font-bold italic">Lỗi do nhà sản xuất</div>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg shadow-blue-100"><FiHeadphones /></div>
+              <div className="w-12 h-12 bg-blue-500 text-white rounded-none flex items-center justify-center text-xl shadow-none shadow-blue-100"><FiHeadphones /></div>
               <div>
                 <div className="font-black text-gray-900 text-sm">Hỗ trợ đa kênh</div>
                 <div className="text-xs text-gray-400 font-bold italic">Hotline, email, chat 24/7</div>
@@ -55,12 +55,12 @@ export default function ReturnPolicy() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Main Content */}
         <div className="lg:col-span-8 space-y-8">
-          <section className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-8">
+          <section className="bg-white p-10 rounded-none border border-gray-100 shadow-none space-y-8">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-gray-900 italic flex items-center gap-3">
                 <FiRefreshCw className="text-primary" /> Điều kiện đổi trả
               </h2>
-              <span className="px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-[10px] font-black text-primary tracking-widest uppercase">30 NGÀY</span>
+              <span className="px-3 py-1 bg-gray-50 border border-gray-100 rounded-none text-[10px] font-black text-primary tracking-widest uppercase">30 NGÀY</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
@@ -69,8 +69,8 @@ export default function ReturnPolicy() {
                 { icon: <FiCheckCircle />, title: 'Hóa đơn', desc: 'Kèm hóa đơn gốc, tem mác và phụ kiện (nếu có).' },
                 { icon: <FiTruck />, title: 'Vận chuyển', desc: 'Miễn phí với sản phẩm lỗi kỹ thuật, hỗ trợ tối đa.' }
               ].map((item, i) => (
-                <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-transparent hover:border-indigo-100 hover:bg-indigo-50/30 transition-all flex items-start gap-4 group">
-                  <div className="w-10 h-10 bg-white text-indigo-500 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <div key={i} className="bg-gray-50 p-6 rounded-none border border-transparent hover:border-indigo-100 hover:bg-indigo-50/30 transition-all flex items-start gap-4 group">
+                  <div className="w-10 h-10 bg-white text-indigo-500 rounded-none flex items-center justify-center shadow-none group-hover:scale-110 transition-transform">
                     {item.icon}
                   </div>
                   <div>
@@ -82,7 +82,7 @@ export default function ReturnPolicy() {
             </div>
           </section>
 
-          <section className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-12">
+          <section className="bg-white p-10 rounded-none border border-gray-100 shadow-none space-y-12">
             <h2 className="text-2xl font-black text-gray-900 italic flex items-center gap-3">
               <FiCheckCircle className="text-green-500" /> Quy trình đổi trả
             </h2>
@@ -94,20 +94,20 @@ export default function ReturnPolicy() {
                 { step: 4, title: 'Nhận kết quả', desc: 'Xử lý trong 5-7 ngày làm việc: hoàn tiền hoặc đổi mới.', badge: 'Cập nhật email' }
               ].map((item, i) => (
                 <div key={i} className="relative flex gap-10 items-start">
-                  <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-black text-lg z-10 border-4 border-white shadow-lg shrink-0">
+                  <div className="w-12 h-12 bg-primary text-white rounded-none flex items-center justify-center font-black text-lg z-10 border-4 border-white shadow-none shrink-0">
                     {item.step}
                   </div>
                   <div className="space-y-2">
                     <h3 className="font-black text-gray-900 text-lg">{item.title}</h3>
                     <p className="text-gray-500 text-sm italic">{item.desc}</p>
-                    <span className="inline-block px-2 py-1 bg-gray-50 border border-gray-100 rounded text-[10px] font-black text-primary uppercase">{item.badge}</span>
+                    <span className="inline-block px-2 py-1 bg-gray-50 border border-gray-100 rounded-none text-[10px] font-black text-primary uppercase">{item.badge}</span>
                   </div>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-8">
+          <section className="bg-white p-10 rounded-none border border-gray-100 shadow-none space-y-8">
             <h2 className="text-2xl font-black text-gray-900 italic flex items-center gap-3">
               <FiAlertTriangle className="text-red-500" /> Không áp dụng đổi trả
             </h2>
@@ -118,7 +118,7 @@ export default function ReturnPolicy() {
                 'Hàng đặt riêng theo yêu cầu hoặc thuộc danh mục hạn chế.',
                 'Sản phẩm bị can thiệp bởi bên thứ ba không được ủy quyền.'
               ].map((item, i) => (
-                <div key={i} className="flex gap-4 p-4 bg-red-50/30 rounded-2xl border border-transparent hover:border-red-100 transition-all">
+                <div key={i} className="flex gap-4 p-4 bg-red-50/30 rounded-none border border-transparent hover:border-red-100 transition-all">
                   <FiAlertTriangle className="text-red-500 shrink-0 mt-1" />
                   <p className="text-sm text-gray-600 font-bold italic">{item}</p>
                 </div>
@@ -129,7 +129,7 @@ export default function ReturnPolicy() {
 
         {/* Sidebar */}
         <aside className="lg:col-span-4 space-y-6">
-          <div className="bg-primary text-white p-10 rounded-[2.5rem] shadow-xl shadow-green-100 space-y-6">
+          <div className="bg-primary text-white p-10 rounded-none shadow-none shadow-green-100 space-y-6">
             <h3 className="font-black text-xl italic flex items-center gap-2">
               <FiHeadphones /> Cần hỗ trợ?
             </h3>
@@ -137,16 +137,16 @@ export default function ReturnPolicy() {
               Đội ngũ CSKH sẵn sàng hỗ trợ bạn trong giờ hành chính. Phản hồi nhanh nhất trong 24h.
             </p>
             <div className="space-y-3">
-              <Link to="/contact" className="block w-full py-4 bg-white text-primary text-center font-black rounded-2xl shadow-lg hover:scale-[1.02] transition-all">
+              <Link to="/contact" className="block w-full py-4 bg-white text-primary text-center font-black rounded-none shadow-none hover:scale-[1.02] transition-all">
                 GỬI YÊU CẦU
               </Link>
-              <a href="tel:0239482958" className="block w-full py-4 border-2 border-white/20 text-white text-center font-black rounded-2xl hover:bg-white/10 transition-all">
+              <a href="tel:0239482958" className="block w-full py-4 border-2 border-white/20 text-white text-center font-black rounded-none hover:bg-white/10 transition-all">
                 HOTLINE 0239 482 958
               </a>
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+          <div className="bg-white p-8 rounded-none border border-gray-100 shadow-none space-y-6">
             <h3 className="font-black text-gray-900 italic flex items-center gap-2">
               <FiCheckCircle className="text-green-500" /> Mẹo xử lý nhanh
             </h3>
@@ -157,7 +157,7 @@ export default function ReturnPolicy() {
                 { icon: <FiMail />, text: 'Kiểm tra email thường xuyên để cập nhật.' }
               ].map((item, i) => (
                 <li key={i} className="flex gap-4 group">
-                  <div className="w-10 h-10 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center text-lg group-hover:bg-primary/10 group-hover:text-primary transition-all">
+                  <div className="w-10 h-10 bg-gray-50 text-gray-400 rounded-none flex items-center justify-center text-lg group-hover:bg-primary/10 group-hover:text-primary transition-all">
                     {item.icon}
                   </div>
                   <p className="text-xs text-gray-500 font-bold italic leading-relaxed">{item.text}</p>
@@ -170,3 +170,6 @@ export default function ReturnPolicy() {
     </div>
   );
 }
+
+
+

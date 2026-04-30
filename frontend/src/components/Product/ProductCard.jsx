@@ -10,7 +10,9 @@ import api from "../../api/client";
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { showToast } = useToast();
-  const [isWishlisted, setIsWishlisted] = useState(product.is_wishlisted || false);
+  const [isWishlisted, setIsWishlisted] = useState(
+    product.is_wishlisted || false,
+  );
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -21,9 +23,11 @@ export default function ProductCard({ product }) {
   const toggleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     try {
-      const res = await api.post("/wishlist/toggle", { sanpham_id: product.id });
+      const res = await api.post("/wishlist/toggle", {
+        sanpham_id: product.id,
+      });
       setIsWishlisted(res.data.added);
       showToast(res.data.message, "success");
     } catch (err) {
@@ -40,11 +44,11 @@ export default function ProductCard({ product }) {
   return (
     <motion.article
       layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
-      className="group p-1 bg-white border border-slate-100 hover:border-primary/20 shadow-sm hover:shadow-md transition-all flex flex-col overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.03, ease: "easeOut" }}
+      className="group p-1 bg-white border border-slate-200 hover:border-primary hover:shadow-lg transition-all flex flex-col overflow-hidden"
     >
       {/* IMAGE */}
       <div className="relative p-1.5">
@@ -60,7 +64,7 @@ export default function ProductCard({ product }) {
           />
 
           {hasPromo && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+            <div className="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5">
               -{discountPercent}%
             </div>
           )}
@@ -72,7 +76,7 @@ export default function ProductCard({ product }) {
             type="button"
             onClick={toggleWishlist}
             className={cn(
-              "w-7 h-7 rounded-lg flex items-center justify-center shadow-sm transition cursor-pointer",
+              "w-7 h-7 flex items-center justify-center transition cursor-pointer",
               isWishlisted
                 ? "bg-red-500 text-white"
                 : "bg-white text-slate-400 hover:text-red-500",
@@ -113,7 +117,7 @@ export default function ProductCard({ product }) {
           <button
             type="button"
             onClick={handleAddToCart}
-            className="w-8 h-8 flex items-center justify-center bg-slate-50 text-slate-500 hover:bg-primary hover:text-white rounded-lg transition shadow-sm cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center bg-slate-50 text-slate-500 hover:bg-primary hover:text-white transition cursor-pointer"
           >
             <FiShoppingCart className="w-4 h-4" />
           </button>

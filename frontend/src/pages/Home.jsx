@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { productService } from "../services/productService";
 import ProductCard from "../components/Product/ProductCard";
+import { useAuth } from "../contexts/AuthContext";
 import {
   AnimatePresence,
   MotionConfig,
@@ -20,7 +21,6 @@ import {
 } from "react-icons/fi";
 import Loading from "../components/Common/Loading";
 import Input from "../components/Common/Input";
-import { cn } from "../utils/cn";
 
 const BANNERS = [
   {
@@ -49,12 +49,13 @@ const BANNERS = [
     id: 4,
     title: "Ưu đãi VP Bank",
     desc: "Khám phá những cuốn sách Kim Đồng đã cập bến cửa hàng.",
-    image: "/assets/banners/VPBANK-T10-Web1920x450.png",
+    image: "/assets/banners/VPBANK-T10-Web1920x450.webp",
     alt: "Banner ưu đãi VP Bank",
   },
 ];
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
   const [currentBanner, setCurrentBanner] = useState(0);
   const shouldReduceMotion = useReducedMotion();
 
@@ -63,7 +64,7 @@ export default function Home() {
     isLoading: loadingDiscounted,
     isError: discountedError,
   } = useQuery({
-    queryKey: ["discounted-products"],
+    queryKey: ["discounted-products", isAuthenticated],
     queryFn: async () => {
       const res = await productService.getProducts({
         promoted_only: true,
@@ -78,7 +79,7 @@ export default function Home() {
     isLoading: loadingBestSellers,
     isError: bestSellersError,
   } = useQuery({
-    queryKey: ["best-sellers"],
+    queryKey: ["best-sellers", isAuthenticated],
     queryFn: async () => {
       const res = await productService.getProducts({
         sort_by: "best_selling",
@@ -112,50 +113,55 @@ export default function Home() {
             <div className="mx-auto px-4">
               <h1 className="sr-only">Trang chủ cửa hàng sách</h1>
 
-              <div className="relative aspect-[21/9] md:aspect-[3/1] rounded-2xl overflow-hidden shadow-sm group">
+              <div className="relative aspect-[21/9] md:aspect-[3/1] rounded-[24px] overflow-hidden group shadow-xl">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentBanner}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.02 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
                     className="absolute inset-0"
                   >
+                    {/* IMAGE */}
                     <img
                       src={BANNERS[currentBanner].image}
                       alt={BANNERS[currentBanner].alt}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-fill"
                       loading="eager"
-                      fetchPriority="high"
                     />
 
-                    <div className="absolute inset-0 bg-gradient-to-r from-secondary/85 via-secondary/60 to-transparent flex flex-col justify-center px-6 sm:px-10 md:px-20 text-white">
+                    {/* GRADIENT OVERLAY */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+
+                    {/* CONTENT */}
+                    <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-10 md:px-20 text-white">
                       <motion.h2
-                        initial={{ y: 14, opacity: 0 }}
+                        initial={{ y: 30, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        className="text-2xl md:text-4xl font-bold mb-3 max-w-xl"
+                        transition={{ duration: 0.5 }}
+                        className="text-3xl md:text-5xl font-extrabold mb-4 max-w-xl text-white leading-tight"
                       >
                         {BANNERS[currentBanner].title}
                       </motion.h2>
 
                       <motion.p
-                        initial={{ y: 14, opacity: 0 }}
+                        initial={{ y: 30, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.08 }}
-                        className="text-sm md:text-lg opacity-90 mb-7 max-w-lg"
+                        transition={{ delay: 0.1, duration: 0.5 }}
+                        className="text-sm md:text-lg text-white/85 mb-8 max-w-lg"
                       >
                         {BANNERS[currentBanner].desc}
                       </motion.p>
 
                       <motion.div
-                        initial={{ y: 14, opacity: 0 }}
+                        initial={{ y: 30, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.16 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
                       >
                         <Link
                           to="/products"
-                          className="btn-primary py-3 px-8 text-sm uppercase tracking-widest inline-flex items-center gap-2"
+                          className="inline-flex items-center gap-2 px-8 py-3 text-sm uppercase tracking-widest bg-white text-black font-semibold rounded-full hover:bg-black hover:text-white transition-all duration-300 shadow-lg"
                         >
                           Khám phá ngay <FiArrowRight />
                         </Link>
@@ -164,35 +170,34 @@ export default function Home() {
                   </motion.div>
                 </AnimatePresence>
 
+                {/* LEFT ARROW */}
                 <button
-                  type="button"
-                  aria-label="Ảnh trước"
                   onClick={goPrev}
-                  className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/35 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center text-white hover:scale-110 hover:bg-white/40 transition-all opacity-0 group-hover:opacity-100"
                 >
                   <FiChevronLeft className="w-6 h-6" />
                 </button>
 
+                {/* RIGHT ARROW */}
                 <button
-                  type="button"
-                  aria-label="Ảnh tiếp theo"
                   onClick={goNext}
-                  className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white/35 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center text-white hover:scale-110 hover:bg-white/40 transition-all opacity-0 group-hover:opacity-100"
                 >
                   <FiChevronRight className="w-6 h-6" />
                 </button>
 
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
-                  {BANNERS.map((banner, idx) => (
+                {/* INDICATOR */}
+                <div
+                  className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full"
+                >
+                  {BANNERS.map((_, idx) => (
                     <button
-                      key={banner.id}
-                      type="button"
-                      aria-label={`Chuyển đến banner ${idx + 1}`}
+                      key={idx}
                       onClick={() => setCurrentBanner(idx)}
-                      className={`h-2 rounded-full transition-all ${
+                      className={`h-2 rounded-full transition-all duration-300 ${
                         idx === currentBanner
-                          ? "w-6 bg-white"
-                          : "w-2 bg-white/50"
+                          ? "w-8 bg-white"
+                          : "w-2 bg-white/50 hover:bg-white"
                       }`}
                     />
                   ))}
@@ -202,8 +207,8 @@ export default function Home() {
           </section>
 
           <section className="py-8">
-            <div className="container mx-auto px-4 max-w-[1600px]">
-              <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="container mx-auto px-4">
+              <ul className="grid grid-cols-2 md:grid-cols-4 gap-5">
                 <li>
                   <FeatureItem
                     icon={FiTruck}
@@ -240,7 +245,7 @@ export default function Home() {
             <div className="container mx-auto px-4 max-w-[1600px]">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-8 bg-red-500 rounded-full" />
+                  <div className="w-1.5 h-8 bg-red-500 rounded-none" />
                   <h2 className="text-2xl font-bold text-secondary">
                     Đang khuyến mãi
                   </h2>
@@ -278,7 +283,7 @@ export default function Home() {
 
           <section className="py-12">
             <div className="container mx-auto px-4 max-w-[1600px]">
-              <div className="bg-secondary rounded-2xl overflow-hidden shadow-sm flex flex-col md:flex-row items-center">
+              <div className="bg-secondary rounded-none overflow-hidden shadow-none flex flex-col md:flex-row items-center">
                 <div className="p-8 md:p-16 flex-1 text-white">
                   <span className="text-xs font-bold uppercase tracking-[0.3em] text-primary mb-4 block">
                     Flash Sale
@@ -304,7 +309,7 @@ export default function Home() {
                       id="email"
                       type="email"
                       placeholder="Email của bạn..."
-                      className="bg-white/10 border border-white/20 rounded-xl py-3 px-6 text-sm flex-1 outline-none focus:ring-2 focus:ring-primary/50 transition-all text-white placeholder:text-slate-400"
+                      className="bg-white/10 border border-white/20 rounded-none py-3 px-6 text-sm flex-1 outline-none focus:ring-2 focus:ring-primary/50 transition-all text-white placeholder:text-slate-400"
                       containerClassName="flex-1"
                     />
                     <button
@@ -317,8 +322,8 @@ export default function Home() {
                 </div>
 
                 <div className="hidden md:block w-1/3 p-12">
-                  <div className="aspect-square rounded-full border-[1.5rem] border-primary/20 flex items-center justify-center p-8 animate-float">
-                    <div className="w-full h-full bg-primary rounded-full flex items-center justify-center text-white text-6xl font-bold shadow-2xl shadow-primary/40">
+                  <div className="aspect-square border-[1.5rem] border-primary/20 flex items-center justify-center p-8">
+                    <div className="w-full h-full bg-primary flex items-center justify-center text-white text-6xl font-bold">
                       20%
                     </div>
                   </div>
@@ -331,7 +336,7 @@ export default function Home() {
             <div className="container mx-auto px-4 max-w-[1600px]">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-8 bg-amber-500 rounded-full" />
+                  <div className="w-1.5 h-8 bg-amber-500 rounded-none" />
                   <h2 className="text-2xl font-bold text-secondary">
                     Bán chạy nhất
                   </h2>
@@ -368,15 +373,32 @@ export default function Home() {
 
 function FeatureItem({ icon: Icon, title, desc }) {
   return (
-    <div className="flex items-center gap-4 p-4 rounded-xl border border-slate-50 bg-white shadow-sm">
-      <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-primary shrink-0">
+    <div
+      className="group flex items-center gap-4 p-5 rounded-[16px]
+      border border-slate-200/70 bg-white
+      shadow-sm hover:shadow-lg hover:-translate-y-1
+      transition-all duration-300"
+    >
+      {/* ICON */}
+      <div
+        className="w-11 h-11 rounded-[14px]
+        bg-gradient-to-br from-slate-50 to-slate-100
+        flex items-center justify-center
+        text-primary shrink-0
+        group-hover:scale-110 transition-transform duration-300"
+      >
         <Icon className="w-5 h-5" aria-hidden="true" />
       </div>
-      <div>
-        <h3 className="text-sm font-bold text-secondary leading-none mb-1">
+
+      {/* TEXT */}
+      <div className="flex-1">
+        <h3 className="text-sm font-semibold text-slate-800 mb-1">
           {title}
         </h3>
-        <p className="text-[11px] text-slate-400 font-medium">{desc}</p>
+
+        <p className="text-xs text-slate-500 leading-relaxed">
+          {desc}
+        </p>
       </div>
     </div>
   );

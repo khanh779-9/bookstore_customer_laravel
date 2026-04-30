@@ -92,7 +92,7 @@ export default function EmployeeCategories() {
             <input
               type="text"
               placeholder="Tìm kiếm danh mục..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-none focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -128,14 +128,14 @@ export default function EmployeeCategories() {
                       <div className="flex items-center justify-center gap-2">
                         <button 
                           onClick={() => handleOpenModal(cat)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-none transition-colors"
                           title="Chỉnh sửa"
                         >
                           <FiEdit2 />
                         </button>
                         <button 
                           onClick={() => handleDelete(cat.danhmucSP_id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-none transition-colors"
                           title="Xóa"
                         >
                           <FiTrash2 />
@@ -153,7 +153,7 @@ export default function EmployeeCategories() {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-scale-in">
+          <div className="bg-white rounded-none shadow-none w-full max-w-md overflow-hidden animate-scale-in">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
               <h3 className="text-lg font-bold text-gray-800">
                 {editingCat ? 'Sửa danh mục' : 'Thêm danh mục mới'}
@@ -169,7 +169,7 @@ export default function EmployeeCategories() {
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-none focus:ring-2 focus:ring-primary outline-none"
                   value={formData.tenDanhMuc}
                   onChange={(e) => setFormData({ ...formData, tenDanhMuc: e.target.value })}
                   placeholder="Ví dụ: Sách Văn Học"
@@ -179,7 +179,7 @@ export default function EmployeeCategories() {
               <div className="space-y-1">
                 <label className="text-sm font-bold text-gray-700">Mô tả</label>
                 <textarea
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none min-h-[100px]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-none focus:ring-2 focus:ring-primary outline-none min-h-[100px]"
                   value={formData.mo_ta}
                   onChange={(e) => setFormData({ ...formData, mo_ta: e.target.value })}
                   placeholder="Nhập mô tả cho danh mục..."
@@ -190,13 +190,13 @@ export default function EmployeeCategories() {
                 <button 
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-gray-600 font-bold hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-200 rounded-none text-gray-600 font-bold hover:bg-gray-50 transition-colors"
                 >
                   Hủy
                 </button>
                 <button 
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-green-500 shadow-md shadow-green-200 transition-all"
+                  className="flex-1 px-4 py-2 bg-primary text-white rounded-none font-bold hover:bg-green-500 shadow-none shadow-green-200 transition-all"
                 >
                   {editingCat ? 'Cập nhật' : 'Thêm ngay'}
                 </button>
@@ -208,3 +208,6 @@ export default function EmployeeCategories() {
     </div>
   );
 }
+
+
+
