@@ -21,23 +21,10 @@ SET time_zone = "+00:00";
 -- Database: `db_nhasach`
 --
 
--- --------------------------------------------------------
+DROP DATABASE IF EXISTS db_nhasach;
+CREATE DATABASE db_nhasach;
+USE db_nhasach;
 
---
--- Table structure for table `accounttoken`
---
-
-CREATE TABLE `accounttoken` (
-  `id` int NOT NULL,
-  `user_id` int NOT NULL,
-  `user_type` enum('customer','employee','admin','') NOT NULL,
-  `token` text NOT NULL,
-  `device` text NOT NULL,
-  `created_at` datetime NOT NULL,
-  `expires_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `chitietgiohang`
@@ -774,14 +761,26 @@ INSERT INTO `vanphongpham` (`vpp_id`, `sanpham_id`) VALUES
 (8, 51);
 
 --
--- Indexes for dumped tables
+-- personal_access_tokens Table
 --
+CREATE TABLE `personal_access_tokens` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `abilities` text COLLATE utf8mb4_unicode_ci,
+  `tokenable_id` bigint(20) unsigned NOT NULL,
+  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personal_access_tokens_token_unique` (`token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Indexes for table `accounttoken`
+-- Indexes for dumped tables
 --
-ALTER TABLE `accounttoken`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `chitietgiohang`
@@ -937,11 +936,6 @@ ALTER TABLE `vanphongpham`
 -- AUTO_INCREMENT for dumped tables
 --
 
---
--- AUTO_INCREMENT for table `accounttoken`
---
-ALTER TABLE `accounttoken`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `chitietgiohang`

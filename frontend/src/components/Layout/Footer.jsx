@@ -11,7 +11,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-white border-t border-slate-100 pt-16 pb-8">
-      <div className="container mx-auto px-4 max-w-[1600px]">
+      <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-16">
           
           {/* Logo & Info */}
@@ -74,7 +74,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-slate-50 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-xs font-medium text-slate-400 italic">
+          <p className="text-xs font-medium text-slate-400">
             © 2025 BookZone. Tất cả quyền được bảo lưu.
           </p>
           

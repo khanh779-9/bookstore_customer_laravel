@@ -18,6 +18,9 @@ import {
   FiTruck,
   FiZap,
 } from "react-icons/fi";
+import Loading from "../components/Common/Loading";
+import Input from "../components/Common/Input";
+import { cn } from "../utils/cn";
 
 const BANNERS = [
   {
@@ -104,9 +107,9 @@ export default function Home() {
   return (
     <MotionConfig reducedMotion={shouldReduceMotion ? "user" : "never"}>
       <div className="bg-background min-h-screen">
-        <main>
+        <main className="container">
           <section className="py-6">
-            <div className="container mx-auto px-4 max-w-[1600px]">
+            <div className="mx-auto px-4">
               <h1 className="sr-only">Trang chủ cửa hàng sách</h1>
 
               <div className="relative aspect-[21/9] md:aspect-[3/1] rounded-2xl overflow-hidden shadow-sm group">
@@ -131,7 +134,7 @@ export default function Home() {
                       <motion.h2
                         initial={{ y: 14, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        className="text-2xl md:text-4xl font-bold mb-3 serif max-w-xl"
+                        className="text-2xl md:text-4xl font-bold mb-3 max-w-xl"
                       >
                         {BANNERS[currentBanner].title}
                       </motion.h2>
@@ -253,9 +256,9 @@ export default function Home() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {loadingDiscounted ? (
-                  [...Array(4)].map((_, i) => (
-                    <div key={i} className="aspect-[3/4] rounded-xl shimmer" />
-                  ))
+                  <div className="col-span-full">
+                    <Loading message="Đang săn tìm ưu đãi..." />
+                  </div>
                 ) : discountedError ? (
                   <div className="col-span-full py-10 text-center text-slate-400 font-medium">
                     Không tải được sản phẩm khuyến mãi.
@@ -281,7 +284,7 @@ export default function Home() {
                     Flash Sale
                   </span>
 
-                  <h2 className="text-3xl md:text-5xl font-bold mb-6 serif leading-tight">
+                  <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
                     Đăng ký thành viên - Nhận ngay ưu đãi 20%
                   </h2>
 
@@ -297,11 +300,12 @@ export default function Home() {
                     <label htmlFor="email" className="sr-only">
                       Email của bạn
                     </label>
-                    <input
+                    <Input
                       id="email"
                       type="email"
                       placeholder="Email của bạn..."
-                      className="bg-white/10 border border-white/20 rounded-xl py-3 px-6 text-sm flex-1 outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                      className="bg-white/10 border border-white/20 rounded-xl py-3 px-6 text-sm flex-1 outline-none focus:ring-2 focus:ring-primary/50 transition-all text-white placeholder:text-slate-400"
+                      containerClassName="flex-1"
                     />
                     <button
                       type="submit"
@@ -314,7 +318,7 @@ export default function Home() {
 
                 <div className="hidden md:block w-1/3 p-12">
                   <div className="aspect-square rounded-full border-[1.5rem] border-primary/20 flex items-center justify-center p-8 animate-float">
-                    <div className="w-full h-full bg-primary rounded-full flex items-center justify-center text-white text-6xl font-black shadow-2xl shadow-primary/40">
+                    <div className="w-full h-full bg-primary rounded-full flex items-center justify-center text-white text-6xl font-bold shadow-2xl shadow-primary/40">
                       20%
                     </div>
                   </div>
@@ -343,9 +347,9 @@ export default function Home() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {loadingBestSellers ? (
-                  [...Array(8)].map((_, i) => (
-                    <div key={i} className="aspect-[3/4] rounded-xl shimmer" />
-                  ))
+                  <div className="col-span-full">
+                    <Loading message="Đang liệt kê sách bán chạy..." />
+                  </div>
                 ) : bestSellersError ? (
                   <div className="col-span-full py-10 text-center text-slate-400 font-medium">
                     Không tải được sản phẩm bán chạy.

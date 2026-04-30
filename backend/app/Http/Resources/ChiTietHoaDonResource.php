@@ -18,6 +18,7 @@ class ChiTietHoaDonResource extends JsonResource
             'id' => $this->cthd_id,
             'product_id' => $this->sanpham_id,
             'product_name' => $this->sanPham->ten_hien_thi ?? null,
+            'image' => $this->sanPham->hinhanh ?? null,
             'quantity' => $this->soluong,
             'unit_price' => (float) $this->dongia,
             'subtotal' => (float) $this->thanhtien,

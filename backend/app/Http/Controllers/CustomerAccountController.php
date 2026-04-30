@@ -34,6 +34,7 @@ class CustomerAccountController extends Controller
             'email' => ['required', 'email', 'unique:khachhang,email,'.$customer->khachhang_id.',khachhang_id'],
             'sdt' => ['nullable', 'string', 'max:20'],
             'diachi' => ['nullable', 'string', 'max:500'],
+            'ngaysinh' => ['nullable', 'date'],
         ]);
 
         $customer->update($validated);

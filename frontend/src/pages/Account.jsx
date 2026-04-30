@@ -1,313 +1,583 @@
-import { useState, useEffect } from 'react';
-import api from '../api/client';
-import { useAuth } from '../contexts/AuthContext';
-import { FiUser, FiPackage, FiKey, FiLogOut, FiEdit2, FiTrash2, FiPlus, FiMapPin, FiCalendar, FiPhone, FiMail } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { useEffect, useMemo, useState } from "react";
+import api from "../api/client";
+import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  FiUser,
+  FiPackage,
+  FiKey,
+  FiLogOut,
+  FiEdit2,
+  FiTrash2,
+  FiPlus,
+  FiMapPin,
+  FiCalendar,
+  FiPhone,
+  FiSave,
+  FiX,
+} from "react-icons/fi";
+import toast from "react-hot-toast";
+import { cn } from "../utils/cn";
+import Loading from "../components/Common/Loading";
+import ConfirmModal from "../components/Common/ConfirmModal";
+import Input from "../components/Common/Input";
+import TextArea from "../components/Common/TextArea";
 
 export default function Account() {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('info');
+
+  const [activeTab, setActiveTab] = useState("info");
   const [profile, setProfile] = useState({
-    ho: '',
-    tendem: '',
-    ten: '',
-    sdt: '',
-    ngaysinh: ''
+    ho: "",
+    tendem: "",
+    ten: "",
+    sdt: "",
+    ngaysinh: "",
   });
   const [addresses, setAddresses] = useState([]);
+  const [orderCount, setOrderCount] = useState(0);
   const [loading, setLoading] = useState(true);
+
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
-  const [newAddress, setNewAddress] = useState('');
+  const [newAddress, setNewAddress] = useState("");
+  const [confirmDeleteAddr, setConfirmDeleteAddr] = useState({ isOpen: false, id: null });
 
   useEffect(() => {
-    if (user) {
+    let mounted = true;
+
+    const loadData = async () => {
+      if (!user) {
+        if (mounted) setLoading(false);
+        return;
+      }
+
       setLoading(true);
-      api.get('/profile').then(res => {
-        const p = res.data.customer;
+      try {
+        const [accountRes, addrRes, orderRes] = await Promise.all([
+          api.get("/account"),
+          api.get("/addresses"),
+          api.get("/orders"),
+        ]);
+
+        if (!mounted) return;
+
+        const p = accountRes.data.data || accountRes.data || {};
         setProfile({
-          ho: p.ho || '',
-          tendem: p.tendem || '',
-          ten: p.ten || '',
-          sdt: p.sdt || '',
-          ngaysinh: p.ngaysinh ? p.ngaysinh.split(' ')[0] : ''
+          ho: p.ho || "",
+          tendem: p.tendem || "",
+          ten: p.ten || "",
+          sdt: p.phone || p.sdt || "",
+          ngaysinh: p.birthday ? p.birthday.split(" ")[0] : "",
         });
-        setAddresses(res.data.addresses || []);
-        setLoading(false);
-      }).catch(() => setLoading(false));
-    }
+
+        setAddresses(Array.isArray(addrRes.data) ? addrRes.data : []);
+        setOrderCount(orderRes.data.data ? orderRes.data.data.length : (Array.isArray(orderRes.data) ? orderRes.data.length : 0));
+      } catch {
+        toast.error("Không tải được dữ liệu tài khoản");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadData();
+
+    return () => {
+      mounted = false;
+    };
   }, [user]);
+
+  const fullName = useMemo(() => {
+    return [profile.ho, profile.tendem, profile.ten].filter(Boolean).join(" ");
+  }, [profile.ho, profile.tendem, profile.ten]);
+
+  const initials = useMemo(() => {
+    const first = profile.ho?.[0] || "";
+    const last = profile.ten?.[0] || "";
+    return `${first}${last}`.toUpperCase();
+  }, [profile.ho, profile.ten]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
+
     try {
-      await api.post('/profile/update', profile);
-      toast.success('Cập nhật hồ sơ thành công');
-    } catch (err) {
-      toast.error('Lỗi cập nhật hồ sơ');
+      const payload = { ...profile };
+      if (user?.email) payload.email = user.email;
+
+      await api.put("/account/profile", payload);
+      toast.success("Cập nhật hồ sơ thành công");
+    } catch {
+      toast.error("Lỗi cập nhật hồ sơ");
     }
   };
 
   const handleSaveAddress = async (e) => {
     e.preventDefault();
+
     try {
       if (editingAddress) {
-        await api.post(`/addresses/${editingAddress.dcgh_id}/update`, { diachi: newAddress });
-        toast.success('Cập nhật địa chỉ thành công');
+        await api.put(`/addresses/${editingAddress.dcgh_id}`, {
+          diachi: newAddress,
+        });
+        toast.success("Cập nhật địa chỉ thành công");
       } else {
-        await api.post('/addresses/add', { diachi: newAddress });
-        toast.success('Thêm địa chỉ mới thành công');
+        await api.post("/addresses", { diachi: newAddress });
+        toast.success("Thêm địa chỉ mới thành công");
       }
-      const res = await api.get('/profile');
-      setAddresses(res.data.addresses);
+
+      const res = await api.get("/addresses");
+      setAddresses(Array.isArray(res.data) ? res.data : []);
       setShowAddressModal(false);
       setEditingAddress(null);
-      setNewAddress('');
-    } catch (err) {
-      toast.error('Lỗi lưu địa chỉ');
+      setNewAddress("");
+    } catch {
+      toast.error("Lỗi lưu địa chỉ");
     }
   };
 
-  const handleDeleteAddress = async (id) => {
-    if (!window.confirm('Bạn có chắc muốn xóa địa chỉ này?')) return;
+  const handleDeleteAddress = (id) => {
+    setConfirmDeleteAddr({ isOpen: true, id });
+  };
+
+  const onConfirmDeleteAddr = async () => {
+    const id = confirmDeleteAddr.id;
     try {
       await api.delete(`/addresses/${id}`);
-      toast.success('Đã xóa địa chỉ');
-      setAddresses(addresses.filter(a => a.dcgh_id !== id));
-    } catch (err) {
-      toast.error('Lỗi xóa địa chỉ');
+      toast.success("Đã xóa địa chỉ");
+      setAddresses((prev) => prev.filter((a) => a.dcgh_id !== id));
+    } catch {
+      toast.error("Lỗi xóa địa chỉ");
+    } finally {
+      setConfirmDeleteAddr({ isOpen: false, id: null });
     }
   };
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent"></div>
-    </div>
-  );
+  const openAddAddress = () => {
+    setEditingAddress(null);
+    setNewAddress("");
+    setShowAddressModal(true);
+  };
+
+  const openEditAddress = (addr) => {
+    setEditingAddress(addr);
+    setNewAddress(addr.diachi || "");
+    setShowAddressModal(true);
+  };
+
+  const [passwordForm, setPasswordForm] = useState({
+    old_password: "",
+    password: "",
+    password_confirmation: "",
+  });
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (passwordForm.password !== passwordForm.password_confirmation) {
+      return toast.error("Mật khẩu xác nhận không khớp");
+    }
+
+    try {
+      await api.put("/account/password", passwordForm);
+      toast.success("Đổi mật khẩu thành công");
+      setPasswordForm({
+        old_password: "",
+        password: "",
+        password_confirmation: "",
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Lỗi đổi mật khẩu");
+    }
+  };
+
+  if (loading) {
+    return <Loading message="Đang chuẩn bị hồ sơ của bạn..." />;
+  }
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-7xl">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        {/* Sidebar */}
-        <aside className="lg:col-span-3 space-y-6">
-          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-            <div className="p-8 text-center bg-gray-50/50 border-b border-gray-50">
-              <div className="w-24 h-24 bg-primary text-white rounded-full flex items-center justify-center text-3xl font-black mx-auto mb-4 shadow-xl shadow-green-100">
-                {(profile.ho?.[0] || '') + (profile.ten?.[0] || '')}
+    <div className="min-h-screen bg-slate-50">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <aside className="lg:col-span-3">
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden lg:sticky lg:top-24">
+              <div className="p-6 text-center bg-gradient-to-b from-slate-50 to-white border-b border-slate-100">
+                <div className="w-20 h-20 mx-auto rounded-2xl bg-primary text-white flex items-center justify-center text-2xl font-bold shadow-md shadow-primary/20">
+                  {initials || <FiUser />}
+                </div>
+
+                <h2 className="mt-4 text-lg font-bold text-secondary">
+                  {fullName || "Tài khoản"}
+                </h2>
+                <p className="text-xs text-slate-400 mt-1 break-all">
+                  {user?.email}
+                </p>
               </div>
-              <h2 className="font-black text-gray-900 italic text-xl">{profile.ho} {profile.tendem} {profile.ten}</h2>
-              <p className="text-xs text-gray-400 font-bold italic mt-1">{user?.email}</p>
+
+              <nav className="p-3 space-y-1">
+                <SidebarButton
+                  active={activeTab === "info"}
+                  onClick={() => setActiveTab("info")}
+                  icon={<FiUser />}
+                  label="Thông tin tài khoản"
+                />
+
+                <Link
+                  to="/orders"
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+                >
+                  <span className="flex items-center gap-3">
+                    <FiPackage className="text-slate-400" />
+                    Đơn hàng của tôi
+                  </span>
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-slate-100 text-slate-500">
+                    {orderCount}
+                  </span>
+                </Link>
+
+                <SidebarButton
+                  active={activeTab === "password"}
+                  onClick={() => setActiveTab("password")}
+                  icon={<FiKey />}
+                  label="Đổi mật khẩu"
+                />
+
+                <button
+                  onClick={logout}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition mt-2"
+                >
+                  <FiLogOut className="text-red-400" />
+                  Đăng xuất
+                </button>
+              </nav>
+            </div>
+          </aside>
+
+          <main className="lg:col-span-9 space-y-6">
+            <div className="lg:hidden bg-white border border-slate-200 rounded-2xl p-2 shadow-sm flex gap-2 overflow-x-auto">
+              <MobileTab
+                active={activeTab === "info"}
+                onClick={() => setActiveTab("info")}
+                icon={<FiUser />}
+                label="Hồ sơ"
+              />
+              <MobileTab
+                active={activeTab === "password"}
+                onClick={() => setActiveTab("password")}
+                icon={<FiKey />}
+                label="Mật khẩu"
+              />
+              <Link
+                to="/orders"
+                className="shrink-0 px-4 py-2 rounded-xl text-sm font-medium text-slate-600 bg-slate-50"
+              >
+                Đơn hàng
+              </Link>
             </div>
 
-            <nav className="p-4 space-y-2">
-              <button 
-                onClick={() => setActiveTab('info')}
-                className={`w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-sm transition-all ${activeTab === 'info' ? 'bg-primary text-white shadow-lg shadow-green-100' : 'text-gray-500 hover:bg-gray-50'}`}
-              >
-                <FiUser className="text-lg" /> Thông tin tài khoản
-              </button>
-              <Link 
-                to="/orders"
-                className="w-full flex items-center justify-between px-6 py-4 rounded-2xl font-black text-sm text-gray-500 hover:bg-gray-50 transition-all"
-              >
-                <div className="flex items-center gap-3"><FiPackage className="text-lg" /> Đơn hàng của tôi</div>
-                <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full text-[10px]">{addresses.length}</span>
-              </Link>
-              <button 
-                onClick={() => setActiveTab('password')}
-                className={`w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-sm transition-all ${activeTab === 'password' ? 'bg-primary text-white shadow-lg shadow-green-100' : 'text-gray-500 hover:bg-gray-50'}`}
-              >
-                <FiKey className="text-lg" /> Đổi mật khẩu
-              </button>
-              <button 
-                onClick={logout}
-                className="w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-sm text-red-500 hover:bg-red-50 transition-all mt-4"
-              >
-                <FiLogOut className="text-lg" /> Đăng xuất
-              </button>
-            </nav>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="lg:col-span-9">
-          {activeTab === 'info' && (
-            <div className="space-y-8">
-              <section className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-8 border-b border-gray-50">
-                  <h3 className="text-xl font-black text-gray-900 italic">Thông tin cá nhân</h3>
-                </div>
-                <div className="p-8 md:p-10">
-                  <form onSubmit={handleUpdateProfile} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Họ</label>
-                        <input 
-                          type="text" 
-                          value={profile.ho} 
-                          onChange={e => setProfile({...profile, ho: e.target.value})}
-                          className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold"
-                          placeholder="Họ"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Tên đệm</label>
-                        <input 
-                          type="text" 
-                          value={profile.tendem} 
-                          onChange={e => setProfile({...profile, tendem: e.target.value})}
-                          className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold"
-                          placeholder="Tên đệm"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Tên</label>
-                        <input 
-                          type="text" 
-                          value={profile.ten} 
-                          onChange={e => setProfile({...profile, ten: e.target.value})}
-                          className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold"
-                          placeholder="Tên"
-                        />
-                      </div>
+            {activeTab === "info" && (
+              <div className="space-y-6">
+                <SectionCard
+                  title="Thông tin cá nhân"
+                  subtitle="Cập nhật hồ sơ và thông tin liên hệ"
+                >
+                  <form onSubmit={handleUpdateProfile} className="space-y-5">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Input
+                        label="Họ"
+                        value={profile.ho}
+                        onChange={(e) => setProfile({ ...profile, ho: e.target.value })}
+                        placeholder="Họ"
+                      />
+                      <Input
+                        label="Tên đệm"
+                        value={profile.tendem}
+                        onChange={(e) => setProfile({ ...profile, tendem: e.target.value })}
+                        placeholder="Tên đệm"
+                      />
+                      <Input
+                        label="Tên"
+                        value={profile.ten}
+                        onChange={(e) => setProfile({ ...profile, ten: e.target.value })}
+                        placeholder="Tên"
+                      />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2"><FiPhone /> Số điện thoại</label>
-                        <input 
-                          type="tel" 
-                          value={profile.sdt} 
-                          onChange={e => setProfile({...profile, sdt: e.target.value})}
-                          className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold"
-                          placeholder="Số điện thoại"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2"><FiCalendar /> Ngày sinh</label>
-                        <input 
-                          type="date" 
-                          value={profile.ngaysinh} 
-                          onChange={e => setProfile({...profile, ngaysinh: e.target.value})}
-                          className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold"
-                        />
-                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        label="Số điện thoại"
+                        icon={FiPhone}
+                        value={profile.sdt}
+                        onChange={(e) => setProfile({ ...profile, sdt: e.target.value })}
+                        placeholder="Số điện thoại"
+                      />
+                      <Input
+                        label="Ngày sinh"
+                        icon={FiCalendar}
+                        type="date"
+                        value={profile.ngaysinh}
+                        onChange={(e) => setProfile({ ...profile, ngaysinh: e.target.value })}
+                      />
                     </div>
 
-                    <button type="submit" className="bg-primary text-white font-black py-4 px-12 rounded-2xl shadow-xl shadow-green-100 hover:scale-[1.02] active:scale-100 transition-all">
-                      CẬP NHẬT HỒ SƠ
-                    </button>
+                    <div className="pt-1">
+                      <button
+                        type="submit"
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-white text-sm font-semibold shadow-sm hover:shadow-md hover:-translate-y-[1px] transition"
+                      >
+                        <FiSave />
+                        Cập nhật hồ sơ
+                      </button>
+                    </div>
                   </form>
-                </div>
-              </section>
+                </SectionCard>
 
-              <section className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-8 border-b border-gray-50 flex items-center justify-between">
-                  <h3 className="text-xl font-black text-gray-900 italic">Địa chỉ giao hàng</h3>
-                  <button 
-                    onClick={() => { setEditingAddress(null); setNewAddress(''); setShowAddressModal(true); }}
-                    className="flex items-center gap-2 bg-primary/10 text-primary font-black py-2 px-4 rounded-xl hover:bg-primary hover:text-white transition-all text-xs"
-                  >
-                    <FiPlus /> THÊM MỚI
-                  </button>
-                </div>
-                <div className="p-8">
+                <SectionCard
+                  title="Địa chỉ giao hàng"
+                  subtitle="Quản lý địa chỉ nhận hàng của bạn"
+                  action={
+                    <button
+                      onClick={openAddAddress}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-semibold hover:bg-primary hover:text-white transition"
+                    >
+                      <FiPlus />
+                      Thêm mới
+                    </button>
+                  }
+                >
                   {addresses.length === 0 ? (
-                    <div className="py-12 text-center space-y-4">
-                      <FiMapPin className="text-4xl text-gray-200 mx-auto" />
-                      <p className="text-gray-400 font-bold italic">Chưa có địa chỉ giao hàng nào</p>
-                    </div>
+                    <EmptyState
+                      icon={<FiMapPin />}
+                      title="Chưa có địa chỉ giao hàng nào"
+                      desc="Thêm một địa chỉ để đặt hàng nhanh hơn."
+                      action={
+                        <button
+                          onClick={openAddAddress}
+                          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold"
+                        >
+                          <FiPlus />
+                          Thêm địa chỉ
+                        </button>
+                      }
+                    />
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {addresses.map((addr) => (
-                        <div key={addr.dcgh_id} className="p-6 rounded-3xl border-2 border-gray-50 hover:border-primary/20 transition-all group relative">
-                          <div className="flex justify-between items-start mb-4">
-                            <div className="w-10 h-10 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center text-lg group-hover:bg-primary group-hover:text-white transition-all">
+                        <div
+                          key={addr.dcgh_id}
+                          className="group rounded-2xl border border-slate-200 bg-white p-4 hover:border-primary/20 hover:shadow-sm transition"
+                        >
+                          <div className="flex items-start justify-between gap-4 mb-3">
+                            <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition">
                               <FiMapPin />
                             </div>
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button 
-                                onClick={() => { setEditingAddress(addr); setNewAddress(addr.diachi); setShowAddressModal(true); }}
-                                className="p-2 text-gray-400 hover:text-primary transition-colors"
-                              ><FiEdit2 /></button>
-                              <button 
+
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => openEditAddress(addr)}
+                                className="p-2 rounded-lg text-slate-400 hover:text-primary hover:bg-slate-50 transition"
+                                aria-label="Sửa địa chỉ"
+                              >
+                                <FiEdit2 />
+                              </button>
+                              <button
+                                type="button"
                                 onClick={() => handleDeleteAddress(addr.dcgh_id)}
-                                className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                              ><FiTrash2 /></button>
+                                className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+                                aria-label="Xóa địa chỉ"
+                              >
+                                <FiTrash2 />
+                              </button>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-600 font-bold italic leading-relaxed line-clamp-2">{addr.diachi}</p>
+
+                          <p className="text-sm text-slate-600 leading-relaxed">
+                            {addr.diachi}
+                          </p>
                         </div>
                       ))}
                     </div>
                   )}
-                </div>
-              </section>
-            </div>
-          )}
-
-          {activeTab === 'password' && (
-            <section className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-              <div className="p-8 border-b border-gray-50">
-                <h3 className="text-xl font-black text-gray-900 italic">Đổi mật khẩu</h3>
+                </SectionCard>
               </div>
-              <div className="p-8 md:p-10">
-                <form className="space-y-6 max-w-md">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Mật khẩu hiện tại</label>
-                    <input type="password" required className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Mật khẩu mới</label>
-                    <input type="password" required className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Xác nhận mật khẩu mới</label>
-                    <input type="password" required className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold" />
-                  </div>
-                  <button type="submit" className="bg-primary text-white font-black py-4 px-12 rounded-2xl shadow-xl shadow-green-100 hover:scale-[1.02] active:scale-100 transition-all">
-                    CẬP NHẬT MẬT KHẨU
+            )}
+
+            {activeTab === "password" && (
+              <SectionCard
+                title="Đổi mật khẩu"
+                subtitle="Cập nhật mật khẩu để tăng bảo mật cho tài khoản"
+              >
+                <form
+                  onSubmit={handleChangePassword}
+                  className="space-y-4 max-w-xl"
+                >
+                  <Input
+                    label="Mật khẩu hiện tại"
+                    type="password"
+                    placeholder="Nhập mật khẩu hiện tại"
+                    value={passwordForm.old_password}
+                    onChange={(e) => setPasswordForm({ ...passwordForm, old_password: e.target.value })}
+                  />
+                  <Input
+                    label="Mật khẩu mới"
+                    type="password"
+                    placeholder="Nhập mật khẩu mới"
+                    value={passwordForm.password}
+                    onChange={(e) => setPasswordForm({ ...passwordForm, password: e.target.value })}
+                  />
+                  <Input
+                    label="Xác nhận mật khẩu mới"
+                    type="password"
+                    placeholder="Nhập lại mật khẩu mới"
+                    value={passwordForm.password_confirmation}
+                    onChange={(e) => setPasswordForm({ ...passwordForm, password_confirmation: e.target.value })}
+                  />
+
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-white text-sm font-semibold shadow-sm hover:shadow-md hover:-translate-y-[1px] transition"
+                  >
+                    <FiSave />
+                    Cập nhật mật khẩu
                   </button>
                 </form>
-              </div>
-            </section>
-          )}
-        </main>
+              </SectionCard>
+            )}
+          </main>
+        </div>
       </div>
 
-      {/* Address Modal */}
       {showAddressModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddressModal(false)}></div>
-          <div className="relative bg-white w-full max-w-lg rounded-[3rem] p-10 shadow-2xl animate-modal-up">
-            <h3 className="text-2xl font-black text-gray-900 italic mb-8">{editingAddress ? 'Sửa địa chỉ' : 'Thêm địa chỉ mới'}</h3>
-            <form onSubmit={handleSaveAddress} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Địa chỉ chi tiết</label>
-                <textarea 
-                  required 
-                  rows="4"
-                  className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white outline-none transition-all font-bold resize-none"
-                  placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"
-                  value={newAddress}
-                  onChange={e => setNewAddress(e.target.value)}
-                />
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => setShowAddressModal(false)}
+          />
+
+          <div className="relative w-full max-w-lg rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <div>
+                <h3 className="text-lg font-bold text-secondary">
+                  {editingAddress ? "Sửa địa chỉ" : "Thêm địa chỉ mới"}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Nhập địa chỉ chi tiết để giao hàng chính xác hơn
+                </p>
               </div>
-              <div className="flex gap-4">
-                <button 
-                  type="button" 
+
+              <button
+                type="button"
+                onClick={() => setShowAddressModal(false)}
+                className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition flex items-center justify-center"
+                aria-label="Đóng"
+              >
+                <FiX />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveAddress} className="p-5 space-y-4">
+              <TextArea
+                label="Địa chỉ chi tiết"
+                rows={4}
+                placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                value={newAddress}
+                onChange={(e) => setNewAddress(e.target.value)}
+              />
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
                   onClick={() => setShowAddressModal(false)}
-                  className="flex-1 py-4 border-2 border-gray-100 rounded-2xl font-black text-gray-400 hover:bg-gray-50 transition-all"
-                >HỦY</button>
-                <button 
-                  type="submit" 
-                  className="flex-1 py-4 bg-primary text-white font-black rounded-2xl shadow-xl shadow-green-100 hover:scale-[1.02] active:scale-100 transition-all"
-                >LƯU ĐỊA CHỈ</button>
+                  className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:shadow-md transition"
+                >
+                  <FiSave />
+                  Lưu địa chỉ
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={confirmDeleteAddr.isOpen}
+        onClose={() => setConfirmDeleteAddr({ isOpen: false, id: null })}
+        onConfirm={onConfirmDeleteAddr}
+        title="Xóa địa chỉ"
+        message="Bạn có chắc chắn muốn xóa địa chỉ giao hàng này không?"
+        confirmText="Xóa ngay"
+        type="danger"
+      />
+    </div>
+  );
+}
+
+function SidebarButton({ active, onClick, icon, label }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition",
+        active
+          ? "bg-primary text-white shadow-sm"
+          : "text-slate-600 hover:bg-slate-50"
+      )}
+    >
+      <span className={active ? "text-white" : "text-slate-400"}>{icon}</span>
+      {label}
+    </button>
+  );
+}
+
+function MobileTab({ active, onClick, icon, label }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition",
+        active
+          ? "bg-primary text-white"
+          : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+      )}
+    >
+      <span>{icon}</span>
+      {label}
+    </button>
+  );
+}
+
+function SectionCard({ title, subtitle, action, children }) {
+  return (
+    <section className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="px-5 md:px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-bold text-secondary">{title}</h3>
+          {subtitle && (
+            <p className="text-sm text-slate-400 mt-1">{subtitle}</p>
+          )}
+        </div>
+        {action}
+      </div>
+
+      <div className="p-5 md:p-6">{children}</div>
+    </section>
+  );
+}
+
+function EmptyState({ icon, title, desc, action }) {
+  return (
+    <div className="py-10 text-center">
+      <div className="w-12 h-12 mx-auto rounded-2xl bg-slate-50 text-slate-300 flex items-center justify-center text-xl">
+        {icon}
+      </div>
+      <h4 className="mt-4 text-sm font-semibold text-secondary">{title}</h4>
+      <p className="mt-2 text-sm text-slate-400">{desc}</p>
+      {action}
     </div>
   );
 }

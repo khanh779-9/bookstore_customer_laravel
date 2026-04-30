@@ -9,12 +9,15 @@ import {
   FiArrowLeft, FiShoppingBag, FiTruck, FiShield 
 } from 'react-icons/fi';
 import { cn } from '../utils/cn';
+import Loading from '../components/Common/Loading';
+import TextArea from '../components/Common/TextArea';
 
 export default function Checkout() {
   const { cart = [], total, fetchCart } = useCart();
   const navigate = useNavigate();
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [form, setForm] = useState({
     dcgh_id: '',
     phuongthuc_thanhtoan: 'tien_mat',
@@ -26,12 +29,13 @@ export default function Checkout() {
       navigate('/cart');
       return;
     }
+    setPageLoading(true);
     api.get('/addresses').then(res => {
       setAddresses(res.data);
       if (res.data.length > 0) {
         setForm(prev => ({ ...prev, dcgh_id: res.data[0].dcgh_id.toString() }));
       }
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => setPageLoading(false));
   }, [cart.length, navigate]);
 
   const handleSubmit = async (e) => {
@@ -54,6 +58,7 @@ export default function Checkout() {
   };
 
   if (cart.length === 0) return null;
+  if (pageLoading) return <Loading message="Đang chuẩn bị trang thanh toán..." />;
 
   return (
     <div className="bg-background min-h-screen pb-24">
@@ -161,8 +166,7 @@ export default function Checkout() {
                 className="space-y-6"
               >
                 <h2 className="text-xl font-black text-secondary serif">Ghi chú đơn hàng</h2>
-                <textarea 
-                  className="input-premium min-h-[120px] resize-none" 
+                <TextArea 
                   placeholder="Bạn có yêu cầu đặc biệt gì cho đơn hàng này không?"
                   value={form.ghichu}
                   onChange={e => setForm({...form, ghichu: e.target.value})}

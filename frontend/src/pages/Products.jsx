@@ -18,6 +18,8 @@ import {
   FiChevronsLeft,
   FiChevronsRight,
 } from "react-icons/fi";
+import Loading from "../components/Common/Loading";
+import Select from "../components/Common/Select";
 import { cn } from "../utils/cn";
 
 export default function Products() {
@@ -87,12 +89,12 @@ export default function Products() {
     <div className="bg-background min-h-screen pb-24">
       <div className="container mx-auto py-8 ">
         {/* HEADER */}
-        <div className="mb-8 flex justify-between items-end gap-4">
+        <div className="mb-4 flex justify-between items-end gap-4">
           <div>
             <h1 className="text-2xl font-bold text-secondary">
               {q ? `Kết quả: "${q}"` : "Tất cả sản phẩm"}
             </h1>
-            <p className="text-xs text-slate-400 font-semibold uppercase">
+            <p className="text-xs pt-2 text-slate-400 font-semibold uppercase">
               {pagination.total} sản phẩm
             </p>
           </div>
@@ -100,28 +102,30 @@ export default function Products() {
           <div className="flex gap-3">
             <button
               onClick={() => setShowMobileFilter(true)}
-              className="lg:hidden px-4 py-2 bg-white border rounded-lg text-sm"
+              className="lg:hidden px-4 py-2 bg-white border text-sm"
             >
               <FiFilter /> Lọc
             </button>
 
-            <select
+            <Select
               value={sortBy}
               onChange={(e) => updateFilter("sort_by", e.target.value)}
-              className="bg-white border rounded-lg px-3 py-2 text-sm"
-            >
-              <option value="newest">Mới nhất</option>
-              <option value="price_asc">Giá tăng</option>
-              <option value="price_desc">Giá giảm</option>
-              <option value="best_selling">Bán chạy</option>
-            </select>
+              placeholder="Sắp xếp"
+              options={[
+                { id: "newest", name: "Mới nhất" },
+                { id: "price_asc", name: "Giá tăng" },
+                { id: "price_desc", name: "Giá giảm" },
+                { id: "best_selling", name: "Bán chạy" },
+              ]}
+              className="py-2 min-w-[140px]"
+            />
           </div>
         </div>
 
         <div className="flex gap-8">
           {/* ===== FILTER PANEL ===== */}
           <aside className="hidden lg:block w-72 shrink-0 sticky top-24 h-fit">
-            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-6">
+            <div className="bg-white border border-slate-200 p-5 space-y-6">
               {/* Header */}
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-sm">Bộ lọc</h3>
@@ -178,8 +182,10 @@ export default function Products() {
               <Section title="Nhà xuất bản">
                 <Select
                   value={publisherId}
-                  onChange={(v) => updateFilter("publisher_id", v)}
+                  onChange={(e) => updateFilter("publisher_id", e.target.value)}
                   options={publishers}
+                  placeholder="Chọn NXB..."
+                  className="py-2"
                 />
               </Section>
 
@@ -189,8 +195,10 @@ export default function Products() {
               <Section title="Nhà cung cấp">
                 <Select
                   value={providerId}
-                  onChange={(v) => updateFilter("provider_id", v)}
+                  onChange={(e) => updateFilter("provider_id", e.target.value)}
                   options={providers}
+                  placeholder="Chọn NCC..."
+                  className="py-2"
                 />
               </Section>
             </div>
@@ -278,8 +286,11 @@ export default function Products() {
                       </h4>
                       <Select
                         value={publisherId}
-                        onChange={(v) => updateFilter("publisher_id", v)}
+                        onChange={(e) =>
+                          updateFilter("publisher_id", e.target.value)
+                        }
                         options={publishers}
+                        placeholder="Chọn NXB..."
                       />
                     </div>
 
@@ -290,8 +301,11 @@ export default function Products() {
                       </h4>
                       <Select
                         value={providerId}
-                        onChange={(v) => updateFilter("provider_id", v)}
+                        onChange={(e) =>
+                          updateFilter("provider_id", e.target.value)
+                        }
                         options={providers}
+                        placeholder="Chọn NCC..."
                       />
                     </div>
                   </div>
@@ -323,17 +337,10 @@ export default function Products() {
           {/* ===== PRODUCTS ===== */}
           <main className="flex-1">
             {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                {[...Array(8)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-[3/4] bg-slate-100 animate-pulse rounded-xl"
-                  />
-                ))}
-              </div>
+              <Loading message="Đang tìm sản phẩm phù hợp..." />
             ) : products.length === 0 ? (
               <div className="text-center py-20">
-                <FiSearch className="text-4xl text-slate-200 mb-3" />
+                <FiSearch className="text-4xl text-slate-200 mx-auto mb-3" />
                 <p className="text-slate-500">Không có sản phẩm</p>
               </div>
             ) : (
@@ -357,7 +364,12 @@ export default function Products() {
 
                     {/* Prev Page */}
                     <PaginationButton
-                      onClick={() => updateFilter("page", Math.max(1, pagination.currentPage - 1))}
+                      onClick={() =>
+                        updateFilter(
+                          "page",
+                          Math.max(1, pagination.currentPage - 1),
+                        )
+                      }
                       disabled={pagination.currentPage === 1}
                       icon={<FiChevronLeft className="w-4 h-4" />}
                       label="Trang trước"
@@ -365,7 +377,10 @@ export default function Products() {
 
                     {/* Page Numbers */}
                     <div className="flex items-center gap-1.5 px-2">
-                      {Array.from({ length: pagination.lastPage }, (_, i) => i + 1).map((p) => {
+                      {Array.from(
+                        { length: pagination.lastPage },
+                        (_, i) => i + 1,
+                      ).map((p) => {
                         // Logic to show only a few pages if many
                         if (
                           pagination.lastPage > 7 &&
@@ -374,7 +389,11 @@ export default function Products() {
                           Math.abs(p - pagination.currentPage) > 1
                         ) {
                           if (Math.abs(p - pagination.currentPage) === 2) {
-                            return <span key={p} className="text-slate-300 px-1">...</span>;
+                            return (
+                              <span key={p} className="text-slate-300 px-1">
+                                ...
+                              </span>
+                            );
                           }
                           return null;
                         }
@@ -384,13 +403,13 @@ export default function Products() {
                             key={p}
                             onClick={() => {
                               updateFilter("page", p);
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              window.scrollTo({ top: 0, behavior: "smooth" });
                             }}
                             className={cn(
-                              "w-10 h-10 rounded-xl text-sm font-bold transition-all duration-200",
+                              "w-10 h-10 text-sm font-bold transition-all duration-200 border border-slate-200 cursor-pointer",
                               p === pagination.currentPage
-                                ? "bg-primary text-white shadow-lg shadow-primary/25 scale-110"
-                                : "bg-white text-slate-500 hover:bg-slate-50 hover:text-primary border border-slate-100"
+                                ? "bg-primary text-white"
+                                : "bg-white text-slate-500 hover:bg-slate-50 hover:text-primary",
                             )}
                           >
                             {p}
@@ -401,7 +420,15 @@ export default function Products() {
 
                     {/* Next Page */}
                     <PaginationButton
-                      onClick={() => updateFilter("page", Math.min(pagination.lastPage, pagination.currentPage + 1))}
+                      onClick={() =>
+                        updateFilter(
+                          "page",
+                          Math.min(
+                            pagination.lastPage,
+                            pagination.currentPage + 1,
+                          ),
+                        )
+                      }
                       disabled={pagination.currentPage === pagination.lastPage}
                       icon={<FiChevronRight className="w-4 h-4" />}
                       label="Trang sau"
@@ -454,23 +481,6 @@ function FilterButton({ active, onClick, children }) {
   );
 }
 
-function Select({ value, onChange, options }) {
-  return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm"
-    >
-      <option value="">Tất cả</option>
-      {options.map((o) => (
-        <option key={o.id} value={o.id}>
-          {o.name}
-        </option>
-      ))}
-    </select>
-  );
-}
-
 function PaginationButton({ onClick, disabled, icon, label }) {
   return (
     <button
@@ -478,10 +488,10 @@ function PaginationButton({ onClick, disabled, icon, label }) {
       disabled={disabled}
       title={label}
       className={cn(
-        'w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200',
+        "w-10 h-10 flex items-center justify-center transition-all duration-200 border border-slate-200",
         disabled
-          ? 'text-slate-200 cursor-not-allowed'
-          : 'bg-white text-slate-500 hover:bg-slate-50 hover:text-primary border border-slate-100 shadow-sm active:scale-95'
+          ? "text-slate-200 cursor-not-allowed"
+          : "bg-white text-slate-500 hover:bg-slate-50 hover:text-primary shadow-sm active:scale-95 cursor-pointer",
       )}
     >
       {icon}

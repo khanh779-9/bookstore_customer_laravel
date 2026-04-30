@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\KhachHang;
-use App\Models\AccountToken;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -14,7 +13,8 @@ class AuthService
      */
     public function login(array $credentials, string $userAgent): array
     {
-        $customer = KhachHang::where('email', $credentials['email'])->first();
+        $email = strtolower(trim($credentials['email']));
+        $customer = KhachHang::where('email', $email)->first();
         
         if (!$customer || !Hash::check($credentials['password'], $customer->password)) {
             throw new \Exception('Email hoặc mật khẩu không đúng.', 401);
@@ -22,15 +22,6 @@ class AuthService
 
         $token = $customer->createToken($userAgent ?: 'web')->plainTextToken;
         
-        AccountToken::create([
-            'user_id' => $customer->khachhang_id,
-            'user_type' => 'customer',
-            'token' => $token,
-            'device' => $userAgent ?: 'web',
-            'created_at' => now(),
-            'expires_at' => now()->addDays(7),
-        ]);
-
         return [
             'customer' => $customer,
             'token' => $token
@@ -46,8 +37,10 @@ class AuthService
             'ho' => $data['ho'] ?? '',
             'tendem' => $data['tendem'] ?? '',
             'ten' => $data['ten'],
-            'email' => $data['email'],
+            'email' => strtolower(trim($data['email'])),
             'password' => Hash::make($data['password']),
+            'sdt' => $data['sdt'] ?? null,
+            'diachi' => $data['diachi'] ?? null,
             'ngaythamgia' => now(),
         ]);
 

@@ -8,14 +8,27 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class SanPhamResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
+     * Cache wishlist IDs for the current request to avoid N+1.
      */
+    protected static $wishlistIds = null;
+
     public function toArray(Request $request): array
     {
+        if (self::$wishlistIds === null) {
+            $user = $request->user();
+            if ($user && $user->khachhang_id) {
+                self::$wishlistIds = \Illuminate\Support\Facades\DB::table('sanphamyeuthich')
+                    ->where('khachhang_id', $user->khachhang_id)
+                    ->pluck('sanpham_id')
+                    ->all();
+            } else {
+                self::$wishlistIds = [];
+            }
+        }
+
         return [
             'id' => $this->sanpham_id,
+            'is_wishlisted' => in_array($this->sanpham_id, self::$wishlistIds),
             'name' => $this->tenSP ?: ($this->relationLoaded('sach') ? $this->sach->tenSach : null),
             'display_name' => $this->ten_hien_thi,
             'category_id' => $this->danhmucSP_id,

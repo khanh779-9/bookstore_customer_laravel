@@ -46,14 +46,14 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/reset-password', [\App\Http\Controllers\AuthController::class, 'reset']);
     Route::post('/auth/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
 
-    // Cart
-    Route::get('/cart', [CartController::class, 'index']);
-    Route::post('/cart', [CartController::class, 'add']);
-    Route::patch('/cart/{id}', [CartController::class, 'update']);
-    Route::delete('/cart/{id}', [CartController::class, 'remove']);
-
     // ── Customer (auth required) ─────────────────────────
     Route::middleware('auth:sanctum')->group(function () {
+        // Cart
+        Route::get('/cart', [CartController::class, 'index']);
+        Route::post('/cart', [CartController::class, 'add']);
+        Route::patch('/cart/{id}', [CartController::class, 'update']);
+        Route::delete('/cart/{id}', [CartController::class, 'remove']);
+        Route::post('/cart/merge', [CartController::class, 'merge']);
         Route::post('/auth/logout', [CustomerAccountController::class, 'logout']);
         Route::get('/auth/me', [CustomerAccountController::class, 'me']);
 
@@ -80,9 +80,6 @@ Route::prefix('v1')->group(function () {
 
         // Reviews
         Route::post('/products/{id}/reviews', [ProductController::class, 'submitReview']);
-
-        // Cart Merge
-        Route::post('/cart/merge', [CartController::class, 'merge']);
 
         // Notifications
         Route::get('/notifications', [NotificationController::class, 'index']);

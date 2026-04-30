@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/client';
 import ProductCard from '../components/Product/ProductCard';
+import Loading from '../components/Common/Loading';
 import { FiHeart } from 'react-icons/fi';
 
 export default function Wishlist() {
@@ -15,7 +16,7 @@ export default function Wishlist() {
     }).catch(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="loading-spinner"><div className="spinner"></div></div>;
+  if (loading) return <Loading message="Đang tìm các món đồ bạn yêu thích..." />;
 
   return (
     <div className="wishlist-page">

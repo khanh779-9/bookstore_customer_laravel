@@ -16,6 +16,8 @@ class RegisterRequest extends FormRequest
             'ten' => ['required', 'string', 'max:50'],
             'email' => ['required', 'email', 'unique:khachhang,email'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'sdt' => ['nullable', 'string', 'max:20'],
+            'diachi' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

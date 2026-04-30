@@ -5,11 +5,12 @@ import { motion } from "framer-motion";
 import { useToast } from "../../contexts/ToastContext";
 import { useState } from "react";
 import { cn } from "../../utils/cn";
+import api from "../../api/client";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { showToast } = useToast();
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(product.is_wishlisted || false);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -17,15 +18,17 @@ export default function ProductCard({ product }) {
     addToCart(product, 1);
   };
 
-  const toggleWishlist = (e) => {
+  const toggleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const next = !isWishlisted;
-    setIsWishlisted(next);
-    showToast(
-      next ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích",
-      "success",
-    );
+    
+    try {
+      const res = await api.post("/wishlist/toggle", { sanpham_id: product.id });
+      setIsWishlisted(res.data.added);
+      showToast(res.data.message, "success");
+    } catch (err) {
+      showToast(err.response?.data?.message || "Vui lòng đăng nhập", "error");
+    }
   };
 
   const hasPromo = product.promo_price && product.promo_price < product.price;
@@ -69,7 +72,7 @@ export default function ProductCard({ product }) {
             type="button"
             onClick={toggleWishlist}
             className={cn(
-              "w-7 h-7 rounded-lg flex items-center justify-center shadow-sm transition",
+              "w-7 h-7 rounded-lg flex items-center justify-center shadow-sm transition cursor-pointer",
               isWishlisted
                 ? "bg-red-500 text-white"
                 : "bg-white text-slate-400 hover:text-red-500",
@@ -110,7 +113,7 @@ export default function ProductCard({ product }) {
           <button
             type="button"
             onClick={handleAddToCart}
-            className="w-8 h-8 flex items-center justify-center bg-slate-50 text-slate-500 hover:bg-primary hover:text-white rounded-lg transition shadow-sm"
+            className="w-8 h-8 flex items-center justify-center bg-slate-50 text-slate-500 hover:bg-primary hover:text-white rounded-lg transition shadow-sm cursor-pointer"
           >
             <FiShoppingCart className="w-4 h-4" />
           </button>

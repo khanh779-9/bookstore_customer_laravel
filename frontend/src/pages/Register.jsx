@@ -13,6 +13,8 @@ import {
 } from "react-icons/fi";
 import { useToast } from "../contexts/ToastContext";
 import { cn } from "../utils/cn";
+import Input from "../components/Common/Input";
+import TextArea from "../components/Common/TextArea";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -51,8 +53,8 @@ export default function Register() {
       await mergeCart();
       showToast("Đăng ký thành công", "success");
       navigate("/account");
-    } catch {
-      showToast("Lỗi đăng ký tài khoản", "error");
+    } catch (err) {
+      showToast(err.response?.data?.message || "Lỗi đăng ký tài khoản", "error");
     } finally {
       setLoading(false);
     }
@@ -83,73 +85,78 @@ export default function Register() {
             {/* NAME */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <Input
-                icon={<FiUser />}
+                icon={FiUser}
                 placeholder="Họ"
                 value={form.ho}
-                onChange={(v) => handleChange("ho", v)}
+                onChange={(e) => handleChange("ho", e.target.value)}
               />
               <Input
                 placeholder="Tên đệm"
                 value={form.tendem}
-                onChange={(v) => handleChange("tendem", v)}
+                onChange={(e) => handleChange("tendem", e.target.value)}
               />
               <Input
                 placeholder="Tên"
                 value={form.ten}
-                onChange={(v) => handleChange("ten", v)}
+                onChange={(e) => handleChange("ten", e.target.value)}
               />
             </div>
 
             {/* CONTACT */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
-                icon={<FiMail />}
+                icon={FiMail}
                 type="email"
                 placeholder="Email"
                 value={form.email}
-                onChange={(v) => handleChange("email", v)}
+                onChange={(e) => handleChange("email", e.target.value)}
               />
               <Input
-                icon={<FiPhone />}
+                icon={FiPhone}
                 placeholder="Số điện thoại"
                 value={form.sdt}
-                onChange={(v) => handleChange("sdt", v)}
+                onChange={(e) => handleChange("sdt", e.target.value)}
               />
             </div>
 
             {/* PASSWORD */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
-                icon={<FiLock />}
+                icon={FiLock}
                 type={showPassword ? "text" : "password"}
                 placeholder="Mật khẩu"
                 value={form.password}
-                onChange={(v) => handleChange("password", v)}
-                rightIcon={
+                onChange={(e) => handleChange("password", e.target.value)}
+                className="pr-12"
+                suffix={
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    className="text-slate-400 hover:text-secondary transition-colors"
                   >
-                    {showPassword ? <FiEyeOff /> : <FiEye />}
+                    {showPassword ? (
+                      <FiEyeOff className="w-4 h-4" />
+                    ) : (
+                      <FiEye className="w-4 h-4" />
+                    )}
                   </button>
                 }
               />
               <Input
-                icon={<FiLock />}
+                icon={FiLock}
                 type={showPassword ? "text" : "password"}
                 placeholder="Xác nhận"
                 value={form.password_confirmation}
-                onChange={(v) =>
-                  handleChange("password_confirmation", v)
+                onChange={(e) =>
+                  handleChange("password_confirmation", e.target.value)
                 }
               />
             </div>
 
             {/* ADDRESS */}
-            <textarea
+            <TextArea
               rows="2"
               placeholder="Địa chỉ"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
               value={form.diachi}
               onChange={(e) => handleChange("diachi", e.target.value)}
             />
@@ -179,38 +186,6 @@ export default function Register() {
           </form>
         </div>
       </div>
-    </div>
-  );
-}
-
-/* ===== INPUT ===== */
-
-function Input({ icon, rightIcon, onChange, ...props }) {
-  return (
-    <div className="relative">
-      {icon && (
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-          {icon}
-        </span>
-      )}
-
-      <input
-        {...props}
-        onChange={(e) => onChange(e.target.value)}
-        className={cn(
-          "w-full border border-slate-200 rounded-lg py-2.5 text-sm outline-none transition",
-          "focus:ring-2 focus:ring-primary/20 focus:border-primary",
-          "bg-white hover:border-slate-300",
-          icon ? "pl-9" : "px-3",
-          rightIcon && "pr-9"
-        )}
-      />
-
-      {rightIcon && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-          {rightIcon}
-        </span>
-      )}
     </div>
   );
 }
