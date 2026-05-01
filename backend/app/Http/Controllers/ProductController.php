@@ -115,7 +115,7 @@ class ProductController extends Controller
     public function wishlist(Request $request)
     {
         $customerId = $this->getCustomerId();
-        if ($customerId <= 0) return $this->handleAuthFailure($request);
+        if ($customerId <= 0) return $this->handleFailure($request, 'Vui lòng đăng nhập.', 401);
 
         $products = $this->wishlistService->getWishlist($customerId);
 
@@ -126,13 +126,15 @@ class ProductController extends Controller
     public function toggleWishlist(Request $request)
     {
         $customerId = $this->getCustomerId();
-        if ($customerId <= 0) return $this->handleAuthFailure($request);
+        if ($customerId <= 0) return $this->handleFailure($request, 'Vui lòng đăng nhập.', 401);
 
         $validated = $request->validate(['sanpham_id' => ['required', 'integer']]);
-        $result = $this->wishlistService->toggle($customerId, (int)$validated['sanpham_id']);
-
-        if ($request->expectsJson()) return response()->json($result);
-        return redirect()->back()->with('success', $result['message']);
+        try {
+            $result = $this->wishlistService->toggle($customerId, (int)$validated['sanpham_id']);
+            return $this->handleSuccess($request, $result['message'], ['added' => $result['added']]);
+        } catch (\Exception $e) {
+            return $this->handleFailure($request, $e->getMessage());
+        }
     }
 
     /**
@@ -141,53 +143,17 @@ class ProductController extends Controller
     public function submitReview(ReviewRequest $request, int $id)
     {
         $customerId = $this->getCustomerId();
-        if ($customerId <= 0) return $this->handleAuthFailure($request);
+        if ($customerId <= 0) return $this->handleFailure($request, 'Vui lòng đăng nhập.', 401);
 
-        $product = SanPham::findOrFail($id);
-        
-        // Additional business check: has purchased and not yet reviewed
-        $hasPurchased = DB::table('hoadon')
-            ->join('chitiethoadon', 'chitiethoadon.hoadon_id', '=', 'hoadon.hoadon_id')
-            ->where('hoadon.khachhang_id', $customerId)
-            ->where('chitiethoadon.sanpham_id', $id)
-            ->exists();
-
-        if (!$hasPurchased) {
-            return response()->json(['message' => 'Bạn phải mua sản phẩm mới có thể đánh giá.'], 403);
+        try {
+            $review = $this->productService->addReview($customerId, $id, $request->validated());
+            return $this->handleSuccess($request, 'Cảm ơn bạn đã đánh giá!', $review);
+        } catch (\Exception $e) {
+            return $this->handleFailure($request, $e->getMessage(), 403);
         }
-
-        $alreadyReviewed = DanhGia::where('khachhang_id', $customerId)->where('sanpham_id', $id)->exists();
-        if ($alreadyReviewed) {
-            return response()->json(['message' => 'Bạn đã đánh giá sản phẩm này rồi.'], 403);
-        }
-
-        $review = DanhGia::create([
-            'khachhang_id' => $customerId,
-            'sanpham_id' => $id,
-            'rating' => $request->rating,
-            'noi_dung' => $request->noi_dung,
-            'ngay_danh_gia' => now(),
-        ]);
-
-        return response()->json(['message' => 'Cảm ơn bạn đã đánh giá!', 'review' => $review]);
     }
 
     public function categories() { return DanhMucResource::collection(DanhMucSanPham::orderBy('tenDanhMuc')->get()); }
     public function publishers() { return NhaXuatBanResource::collection(NhaXuatBan::orderBy('ten')->get()); }
     public function providers() { return NhaCungCapResource::collection(NhaCungCap::orderBy('ten')->get()); }
-
-    private function getCustomerId(): int
-    {
-        if (request()->hasSession()) {
-            $id = request()->session()->get('customer_id') ?? request()->session()->get('customer.id');
-            if ($id) return (int)$id;
-        }
-        return (int) (request()->user()?->getAuthIdentifier() ?? 0);
-    }
-
-    private function handleAuthFailure(Request $request)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => 'Vui lòng đăng nhập.'], 401);
-        return redirect()->route('customer.login')->with('error', 'Vui lòng đăng nhập.');
-    }
 }
