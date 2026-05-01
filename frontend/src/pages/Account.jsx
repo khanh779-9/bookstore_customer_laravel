@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import api from "../api/client";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../contexts/ToastContext";
 import {
   FiUser,
   FiPackage,
@@ -17,13 +18,14 @@ import {
   FiX,
 } from "react-icons/fi";
 import { cn } from "../utils/cn";
-import Loading from "../components/Common/Loading";
-import ConfirmModal from "../components/Common/ConfirmModal";
-import Input from "../components/Common/Input";
-import TextArea from "../components/Common/TextArea";
+import { Loading } from "@/shared/ui";
+import { ConfirmModal } from "@/shared/ui";
+import { Input } from "@/shared/ui";
+import { TextArea } from "@/shared/ui";
 
 export default function Account() {
   const { user, logout } = useAuth();
+  const { showToast } = useToast();
 
   const [activeTab, setActiveTab] = useState("info");
   const [profile, setProfile] = useState({
@@ -82,7 +84,7 @@ export default function Account() {
               : 0,
         );
       } catch {
-        toast.error("Không tải được dữ liệu tài khoản");
+        showToast("Không tải được dữ liệu tài khoản", "error");
       } finally {
         if (mounted) setLoading(false);
       }
@@ -113,9 +115,9 @@ export default function Account() {
       if (user?.email) payload.email = user.email;
 
       await api.put("/account/profile", payload);
-      toast.success("Cập nhật hồ sơ thành công");
+      showToast("Cập nhật hồ sơ thành công", "success");
     } catch {
-      toast.error("Lỗi cập nhật hồ sơ");
+      showToast("Lỗi cập nhật hồ sơ", "error");
     }
   };
 
@@ -127,10 +129,10 @@ export default function Account() {
         await api.put(`/addresses/${editingAddress.dcgh_id}`, {
           diachi: newAddress,
         });
-        toast.success("Cập nhật địa chỉ thành công");
+        showToast("Cập nhật địa chỉ thành công");
       } else {
         await api.post("/addresses", { diachi: newAddress });
-        toast.success("Thêm địa chỉ mới thành công");
+        showToast("Thêm địa chỉ mới thành công");
       }
 
       const res = await api.get("/addresses");
@@ -139,7 +141,7 @@ export default function Account() {
       setEditingAddress(null);
       setNewAddress("");
     } catch {
-      toast.error("Lỗi lưu địa chỉ");
+      showToast("Lỗi lưu địa chỉ", "error");
     }
   };
 
@@ -151,10 +153,10 @@ export default function Account() {
     const id = confirmDeleteAddr.id;
     try {
       await api.delete(`/addresses/${id}`);
-      toast.success("Đã xóa địa chỉ");
+      showToast("Đã xóa địa chỉ", "success");
       setAddresses((prev) => prev.filter((a) => a.dcgh_id !== id));
     } catch {
-      toast.error("Lỗi xóa địa chỉ");
+      showToast("Lỗi xóa địa chỉ", "error");
     } finally {
       setConfirmDeleteAddr({ isOpen: false, id: null });
     }
@@ -181,19 +183,19 @@ export default function Account() {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (passwordForm.password !== passwordForm.password_confirmation) {
-      return toast.error("Mật khẩu xác nhận không khớp");
+      return showToast("Mật khẩu xác nhận không khớp", "error");
     }
 
     try {
       await api.put("/account/password", passwordForm);
-      toast.success("Đổi mật khẩu thành công");
+      showToast("Đổi mật khẩu thành công");
       setPasswordForm({
         old_password: "",
         password: "",
         password_confirmation: "",
       });
     } catch (err) {
-      toast.error(err.response?.data?.message || "Lỗi đổi mật khẩu");
+      showToast(err.response?.data?.message || "Lỗi đổi mật khẩu", "error");
     }
   };
 

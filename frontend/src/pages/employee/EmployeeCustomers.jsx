@@ -1,4 +1,4 @@
- import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../api/client';
 import { FiEye, FiMail, FiPhone } from 'react-icons/fi';
 import { useToast } from '../../contexts/ToastContext';
@@ -13,11 +13,7 @@ export default function EmployeeCustomers() {
   const [searchTerm, setSearchTerm] = useState('');
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [searchTerm]);
-
-  const fetchCustomers = async (page = 1) => {
+  const fetchCustomers = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const res = await api.get('/employee/customers', { params: { page, q: searchTerm } });
@@ -28,12 +24,16 @@ export default function EmployeeCustomers() {
           last_page: res.data.meta.last_page
         });
       }
-    } catch (e) {
+    } catch {
       showToast('Không thể tải danh sách khách hàng', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, showToast]);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
 
 
   const columns = [

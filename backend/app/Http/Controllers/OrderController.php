@@ -16,10 +16,12 @@ use Illuminate\Validation\Rule;
 class OrderController extends Controller
 {
     protected $orderService;
+    protected $cartService;
 
-    public function __construct(OrderService $orderService)
+    public function __construct(OrderService $orderService, \App\Services\CartService $cartService)
     {
         $this->orderService = $orderService;
+        $this->cartService = $cartService;
     }
 
     /**
@@ -55,7 +57,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $customerId = $this->getCustomerId();
-        if ($customerId <= 0) return $this->handleAuthFailure($request);
+        if ($customerId <= 0) return $this->handleFailure($request, 'Vui lòng đăng nhập.', 401);
 
         $orders = HoaDon::where('khachhang_id', $customerId)
             ->orderByDesc('hoadon_id')
@@ -71,7 +73,7 @@ class OrderController extends Controller
     public function show(Request $request, int $id)
     {
         $customerId = $this->getCustomerId();
-        if ($customerId <= 0) return $this->handleAuthFailure($request);
+        if ($customerId <= 0) return $this->handleFailure($request, 'Vui lòng đăng nhập.', 401);
 
         $order = HoaDon::with('chiTiet.sanPham')
             ->where('hoadon_id', $id)
@@ -100,10 +102,7 @@ class OrderController extends Controller
             session()->forget('cart');
             session(['last_order_id' => $order->hoadon_id]);
 
-            if ($request->expectsJson()) {
-                return (new HoaDonResource($order))->additional(['message' => 'Đặt hàng thành công.']);
-            }
-            return redirect()->route('customer.checkout.success');
+            return $this->handleSuccess($request, 'Đặt hàng thành công.', new HoaDonResource($order), route('customer.checkout.success'));
         } catch (\Exception $e) {
             return $this->handleFailure($request, $e->getMessage(), 422);
         }
@@ -118,12 +117,12 @@ class OrderController extends Controller
             'trangthai' => ['required', Rule::in(['cho_xac_nhan', 'da_xac_nhan', 'dang_giao_hang', 'da_giao_hang', 'da_huy'])]
         ]);
         
-        $order = $this->orderService->updateStatus($id, $validated['trangthai'], $request->user()?->getAuthIdentifier());
-
-        if ($request->expectsJson()) {
-            return (new HoaDonResource($order))->additional(['message' => 'Đã cập nhật trạng thái.']);
+        try {
+            $order = $this->orderService->updateStatus($id, $validated['trangthai'], $request->user()?->getAuthIdentifier());
+            return $this->handleSuccess($request, 'Đã cập nhật trạng thái.', new HoaDonResource($order));
+        } catch (\Exception $e) {
+            return $this->handleFailure($request, $e->getMessage());
         }
-        return back()->with('success', 'Đã cập nhật trạng thái đơn hàng.');
     }
 
     /**
@@ -134,13 +133,12 @@ class OrderController extends Controller
         $customerId = $this->getCustomerId();
         $order = HoaDon::where('hoadon_id', $id)->where('khachhang_id', $customerId)->firstOrFail();
         
-        // Custom confirmation logic if any
-        $order = $this->orderService->updateStatus($id, HoaDon::STATUS_CONFIRMED);
-
-        if ($request->expectsJson()) {
-            return (new HoaDonResource($order))->additional(['message' => 'Đã xác nhận đơn hàng.']);
+        try {
+            $order = $this->orderService->updateStatus($id, HoaDon::STATUS_CONFIRMED);
+            return $this->handleSuccess($request, 'Đã xác nhận đơn hàng.', new HoaDonResource($order));
+        } catch (\Exception $e) {
+            return $this->handleFailure($request, $e->getMessage());
         }
-        return back()->with('success', 'Đã xác nhận đơn hàng.');
     }
 
     /**
@@ -160,44 +158,11 @@ class OrderController extends Controller
      */
     public function employeeCreateOrder(Request $request)
     {
-        // For now, return not implemented or basic logic
-        return response()->json(['message' => 'Chức năng tạo đơn hàng tại quầy đang được phát triển.'], 501);
-    }
-
-    private function getCustomerId(): int
-    {
-        $user = request()->user();
-        if ($user) return (int) $user->khachhang_id;
-        return (int) (session('customer.id') ?? 0);
+        return $this->handleFailure($request, 'Chức năng tạo đơn hàng tại quầy đang được phát triển.', 501);
     }
 
     private function getCartData(int $customerId): array
     {
-        if ($customerId > 0) {
-            $cart = GioHang::where('khachhang_id', $customerId)->first();
-            if (!$cart) return ['items' => [], 'total' => 0];
-            $items = $cart->chiTiet->map(fn($i) => [
-                'sanpham_id' => $i->sanpham_id,
-                'name' => $i->sanPham->ten_hien_thi,
-                'price' => (float)$i->dongia,
-                'quantity' => $i->soluong,
-                'subtotal' => (float)$i->thanhtien
-            ])->toArray();
-            return ['items' => $items, 'total' => collect($items)->sum('subtotal')];
-        }
-        $items = session('cart', []);
-        return ['items' => $items, 'total' => collect($items)->sum('subtotal')];
-    }
-
-    private function handleAuthFailure(Request $request)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => 'Vui lòng đăng nhập.'], 401);
-        return redirect()->route('customer.login')->with('error', 'Vui lòng đăng nhập.');
-    }
-
-    private function handleFailure(Request $request, string $msg, int $code = 400)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => $msg], $code);
-        return back()->with('error', $msg);
+        return $this->cartService->getCart($customerId);
     }
 }

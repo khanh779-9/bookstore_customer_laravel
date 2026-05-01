@@ -12,8 +12,8 @@ import {
   FiInbox,
 } from "react-icons/fi";
 import { useToast } from "../contexts/ToastContext";
-import Loading from "../components/Common/Loading";
-import ConfirmModal from "../components/Common/ConfirmModal";
+import { Loading } from "@/shared/ui";
+import { ConfirmModal } from "@/shared/ui";
 import { cn } from "../utils/cn";
 
 const TABS = [

@@ -1,0 +1,17 @@
+export { default as Home } from '../../../pages/Home';
+export { default as Products } from '../../../pages/Products';
+export { default as ProductDetail } from '../../../pages/ProductDetail';
+export { default as Cart } from '../../../pages/Cart';
+export { default as Checkout } from '../../../pages/Checkout';
+export { default as Login } from '../../../pages/Login';
+export { default as Register } from '../../../pages/Register';
+export { default as Account } from '../../../pages/Account';
+export { default as Orders } from '../../../pages/Orders';
+export { default as Wishlist } from '../../../pages/Wishlist';
+export { default as Notifications } from '../../../pages/Notifications';
+export { default as Contact } from '../../../pages/Contact';
+export { default as About } from '../../../pages/About';
+export { default as PrivacyPolicy } from '../../../pages/policies/PrivacyPolicy';
+export { default as ReturnPolicy } from '../../../pages/policies/ReturnPolicy';
+export { default as WarrantyPolicy } from '../../../pages/policies/WarrantyPolicy';
+export { default as ShippingPolicy } from '../../../pages/policies/ShippingPolicy';

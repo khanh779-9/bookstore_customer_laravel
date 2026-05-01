@@ -47,11 +47,7 @@ class AuthorController extends Controller
         ]);
         
         $author = TacGia::create($validated);
-        
-        if ($request->expectsJson()) {
-            return (new TacGiaResource($author))->additional(['message' => 'Thêm tác giả thành công!']);
-        }
-        return back()->with('success', 'Thêm tác giả thành công!');
+        return $this->handleSuccess($request, 'Thêm tác giả thành công!', new TacGiaResource($author));
     }
 
     /**
@@ -70,11 +66,7 @@ class AuthorController extends Controller
         ]);
         
         $author->update($validated);
-        
-        if ($request->expectsJson()) {
-            return (new TacGiaResource($author))->additional(['message' => 'Cập nhật tác giả thành công!']);
-        }
-        return back()->with('success', 'Cập nhật tác giả thành công!');
+        return $this->handleSuccess($request, 'Cập nhật tác giả thành công!', new TacGiaResource($author));
     }
 
     /**
@@ -84,10 +76,6 @@ class AuthorController extends Controller
     {
         $author = TacGia::findOrFail($id);
         $author->delete();
-        
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Xóa tác giả thành công!']);
-        }
-        return back()->with('success', 'Xóa tác giả thành công!');
+        return $this->handleSuccess($request, 'Xóa tác giả thành công!');
     }
 }

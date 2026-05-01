@@ -14,9 +14,10 @@ import {
   FiChevronRight,
   FiArrowRight,
 } from "react-icons/fi";
-import Loading from "../components/Common/Loading";
-import ConfirmModal from "../components/Common/ConfirmModal";
+import { Loading } from "@/shared/ui";
+import { ConfirmModal } from "@/shared/ui";
 import { useState } from "react";
+import { formatCurrency, formatProductImage } from "../utils/format";
 
 // ===== Quantity Control =====
 function QuantityControl({ value, onDecrease, onIncrease }) {
@@ -147,13 +148,7 @@ export default function Cart() {
                     className="w-16 h-20 bg-slate-50 rounded-none flex items-center justify-center shrink-0"
                   >
                     <img
-                      src={
-                        item.image?.startsWith("http")
-                          ? item.image
-                          : `/assets/images/products/${
-                              item.image || "defaultProduct.png"
-                            }`
-                      }
+                      src={formatProductImage(item.image)}
                       className="w-full h-full object-contain"
                     />
                   </Link>
@@ -169,7 +164,7 @@ export default function Cart() {
                       </Link>
 
                       <p className="text-xs text-slate-400 mt-1">
-                        {item.price.toLocaleString("vi-VN")}₫
+                        {formatCurrency(item.price)}
                       </p>
                     </div>
 
@@ -193,8 +188,7 @@ export default function Cart() {
 
                       <div className="flex items-center justify-between">
                         <span className="text-primary font-black text-sm">
-                          {(item.price * item.quantity).toLocaleString("vi-VN")}
-                          ₫
+                          {formatCurrency(item.price * item.quantity)}
                         </span>
 
                         <button
@@ -226,7 +220,7 @@ export default function Cart() {
               <div className="space-y-3 mb-6 text-sm">
                 <div className="flex justify-between">
                   <span>Tạm tính</span>
-                  <span>{total.toLocaleString("vi-VN")}₫</span>
+                  <span>{formatCurrency(total)}</span>
                 </div>
 
                 <div className="flex justify-between text-green-500">
@@ -238,7 +232,7 @@ export default function Cart() {
               <div className="flex justify-between text-lg font-black mb-6">
                 <span>Tổng</span>
                 <span className="text-primary">
-                  {total.toLocaleString("vi-VN")}₫
+                  {formatCurrency(total)}
                 </span>
               </div>
 
@@ -267,7 +261,7 @@ export default function Cart() {
         <div>
           <p className="text-xs text-slate-400">Tổng</p>
           <p className="text-lg font-black text-primary">
-            {total.toLocaleString("vi-VN")}₫
+            {formatCurrency(total)}
           </p>
         </div>
 

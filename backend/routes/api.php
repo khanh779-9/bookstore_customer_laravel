@@ -43,8 +43,6 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/register', [\App\Http\Controllers\AuthController::class, 'register']);
     Route::post('/auth/forgot-password', [\App\Http\Controllers\AuthController::class, 'forgot']);
     Route::post('/auth/reset-password', [\App\Http\Controllers\AuthController::class, 'reset']);
-    Route::post('/auth/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
-
     // ── Customer (auth required) ─────────────────────────
     Route::middleware('auth:sanctum')->group(function () {
         // Cart
@@ -53,7 +51,9 @@ Route::prefix('v1')->group(function () {
         Route::patch('/cart/{id}', [CartController::class, 'update']);
         Route::delete('/cart/{id}', [CartController::class, 'remove']);
         Route::post('/cart/merge', [CartController::class, 'merge']);
-        Route::post('/auth/logout', [CustomerAccountController::class, 'logout']);
+        
+        // Auth & Profile
+        Route::post('/auth/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
         Route::get('/auth/me', [CustomerAccountController::class, 'me']);
 
         // Account

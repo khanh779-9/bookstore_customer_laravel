@@ -1,87 +1,46 @@
+import { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 // Layouts
 import CustomerLayout from "./components/Layout/CustomerLayout";
 import EmployeeLayout from "./components/Layout/EmployeeLayout";
-
-// Customer Pages
-import Home from "./pages/Home";
-import Products from "./pages/Products";
-import ProductDetail from "./pages/ProductDetail";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Account from "./pages/Account";
-import Orders from "./pages/Orders";
-import Wishlist from "./pages/Wishlist";
-import Notifications from "./pages/Notifications";
-import Contact from "./pages/Contact";
-import About from "./pages/About";
-
-// Policy Pages
-import PolicyBaoMat from "./pages/policies/PolicyBaoMat";
-import ReturnPolicy from "./pages/policies/ReturnPolicy";
-import WarrantyPolicy from "./pages/policies/WarrantyPolicy";
-import ShippingPolicy from "./pages/policies/ShippingPolicy";
-
-// Employee Pages
-import EmployeeLogin from "./pages/employee/EmployeeLogin";
-import Dashboard from "./pages/employee/Dashboard";
-import EmployeeOrders from "./pages/employee/EmployeeOrders";
-import EmployeeProducts from "./pages/employee/EmployeeProducts";
-import EmployeeCustomers from "./pages/employee/EmployeeCustomers";
-import EmployeeCategories from "./pages/employee/EmployeeCategories";
-import EmployeePublishers from "./pages/employee/EmployeePublishers";
-import EmployeeProviders from "./pages/employee/EmployeeProviders";
-import EmployeeEmployees from "./pages/employee/EmployeeEmployees";
-import EmployeeReports from "./pages/employee/EmployeeReports";
+import { customerRoutes } from "./modules/customer/routes";
+import { internalLoginRoute, internalRoutes } from "./modules/internal/routes";
+import { Loading } from "./shared/ui";
 
 function App() {
+  const InternalLoginComponent = internalLoginRoute.component;
+
   return (
     <div className="font-sans bg-gray-50 text-gray-800 min-h-screen">
-      <Routes>
+      <Suspense
+        fallback={
+          <div className="py-16">
+            <Loading />
+          </div>
+        }
+      >
+        <Routes>
         {/* Customer Routes with Layout */}
         <Route element={<CustomerLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<ProductDetail />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} />
-
-          {/* Policies */}
-          <Route path="/privacy-policy" element={<PolicyBaoMat />} />
-          <Route path="/return-policy" element={<ReturnPolicy />} />
-          <Route path="/warranty-policy" element={<WarrantyPolicy />} />
-          <Route path="/shipping-delivery" element={<ShippingPolicy />} />
-
-          {/* Customer Auth Routes */}
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/notifications" element={<Notifications />} />
+          {customerRoutes.map(({ path, component: Component }) => (
+            <Route key={path} path={path} element={<Component />} />
+          ))}
         </Route>
 
         {/* Employee Routes */}
-        <Route path="/internal/login" element={<EmployeeLogin />} />
+        <Route
+          path={internalLoginRoute.path}
+          element={<InternalLoginComponent />}
+        />
         <Route path="/internal" element={<EmployeeLayout />}>
           <Route
             index
             element={<Navigate to="/internal/dashboard" replace />}
           />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="orders" element={<EmployeeOrders />} />
-          <Route path="products" element={<EmployeeProducts />} />
-          <Route path="categories" element={<EmployeeCategories />} />
-          <Route path="publishers" element={<EmployeePublishers />} />
-          <Route path="providers" element={<EmployeeProviders />} />
-          <Route path="customers" element={<EmployeeCustomers />} />
-          <Route path="employees" element={<EmployeeEmployees />} />
-          <Route path="reports" element={<EmployeeReports />} />
+          {internalRoutes.map(({ path, component: Component }) => (
+            <Route key={path} path={path} element={<Component />} />
+          ))}
           <Route
             path="settings"
             element={
@@ -107,7 +66,8 @@ function App() {
             </div>
           }
         />
-      </Routes>
+        </Routes>
+      </Suspense>
     </div>
   );
 }

@@ -1,11 +1,9 @@
 import {
   FiBookOpen,
-  FiTruck,
   FiShield,
   FiHeart,
   FiMapPin,
   FiGlobe,
-  FiTool,
   FiZap,
   FiStar,
 } from "react-icons/fi";

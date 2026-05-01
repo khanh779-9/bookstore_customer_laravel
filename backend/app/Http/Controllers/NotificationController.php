@@ -36,8 +36,7 @@ class NotificationController extends Controller
             ->where('trang_thai', notification_unread_code())
             ->update(['trang_thai' => notification_read_code()]);
 
-        if ($request->expectsJson()) return response()->json(['message' => 'Đã đánh dấu tất cả là đã đọc.']);
-        return back()->with('success', 'Đã đánh dấu tất cả là đã đọc.');
+        return $this->handleSuccess($request, 'Đã đánh dấu tất cả là đã đọc.');
     }
 
     /**
@@ -54,10 +53,7 @@ class NotificationController extends Controller
             
         $note->update(['trang_thai' => $newStatus]);
 
-        if ($request->expectsJson()) {
-            return (new ThongBaoResource($note))->additional(['message' => 'Đã cập nhật trạng thái.']);
-        }
-        return back()->with('success', 'Đã cập nhật trạng thái thông báo.');
+        return $this->handleSuccess($request, 'Đã cập nhật trạng thái.', new ThongBaoResource($note));
     }
 
     /**
@@ -70,14 +66,6 @@ class NotificationController extends Controller
         $note = ThongBao::where('thongbao_id', $id)->where('khachhang_id', $customerId)->firstOrFail();
         $note->update(['trang_thai' => notification_archived_code()]);
 
-        if ($request->expectsJson()) return response()->json(['message' => 'Đã lưu trữ thông báo.']);
-        return back()->with('success', 'Đã lưu trữ thông báo.');
-    }
-
-    private function getCustomerId(): int
-    {
-        $user = auth()->user();
-        if ($user) return (int) $user->khachhang_id;
-        return (int) (session('customer.id') ?? 0);
+        return $this->handleSuccess($request, 'Đã lưu trữ thông báo.');
     }
 }

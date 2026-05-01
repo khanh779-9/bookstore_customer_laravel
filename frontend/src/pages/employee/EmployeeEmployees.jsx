@@ -1,4 +1,4 @@
- import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../api/client';
 import { FiShield } from 'react-icons/fi';
 import { useToast } from '../../contexts/ToastContext';
@@ -17,9 +17,7 @@ export default function EmployeeEmployees() {
   const [formData, setFormData] = useState({ ho: '', ten: '', email: '', role: 'nhanvien', password: '' });
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-  useEffect(() => { fetchItems(); }, [searchTerm]);
-
-  const fetchItems = async (page = 1) => {
+  const fetchItems = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const res = await api.get('/employee/employees', { params: { page, q: searchTerm } });
@@ -30,9 +28,11 @@ export default function EmployeeEmployees() {
           last_page: res.data.meta.last_page
         });
       }
-    } catch (error) { showToast('Lỗi tải dữ liệu', 'error'); }
+    } catch { showToast('Lỗi tải dữ liệu', 'error'); }
     finally { setLoading(false); }
-  };
+  }, [searchTerm, showToast]);
+
+  useEffect(() => { fetchItems(); }, [fetchItems]);
 
   const handleOpenModal = (item = null) => {
     if (item) {

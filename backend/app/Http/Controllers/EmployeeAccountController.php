@@ -22,69 +22,7 @@ use Illuminate\Support\Facades\Hash;
 
 class EmployeeAccountController extends Controller
 {
-    public function showLogin(Request $request)
-    {
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Sử dụng frontend route /internal/login để đăng nhập.']);
-        }
-
-        return redirect('/internal/login');
-    }
-
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'ma_nhan_vien' => ['required', 'string'],
-            'password' => ['required', 'string'],
-        ]);
-
-        $employee = NhanVien::where('nhanvien_id', $credentials['ma_nhan_vien'])->first();
-        if (!$employee || !Hash::check($credentials['password'], $employee->password)) {
-            return response()->json(['message' => 'Mã nhân viên hoặc mật khẩu không đúng.'], 401);
-        }
-
-        if ($employee->trangthai !== 'dang_lam') {
-            return response()->json(['message' => 'Tài khoản của bạn không hoạt động.'], 403);
-        }
-
-        $request->session()->put('employee_id', $employee->nhanvien_id);
-        $request->session()->put('employee', [
-            'id' => $employee->nhanvien_id,
-            'email' => $employee->email,
-            'role' => $employee->role,
-            'ten' => $employee->ten,
-        ]);
-        $token = $employee->createToken($request->header('User-Agent') ?: 'web')->plainTextToken;
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'message' => 'Đăng nhập thành công!',
-                'token' => $token,
-                'data' => [
-                    'id' => $employee->nhanvien_id,
-                    'ten' => $employee->ten,
-                    'email' => $employee->email,
-                    'type' => 'employee',
-                ]
-            ]);
-        }
-
-        return redirect('/internal/dashboard');
-    }
-
-    public function logout(Request $request)
-    {
-        $request->session()->forget(['employee_id', 'employee']);
-        if ($request->user()) {
-            $request->user()->currentAccessToken()?->delete();
-        }
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Đăng xuất thành công!']);
-        }
-
-        return redirect('/internal/login');
-    }
+    // Login and Logout are handled by EmployeeAuthController
 
     public function dashboard(Request $request)
     {

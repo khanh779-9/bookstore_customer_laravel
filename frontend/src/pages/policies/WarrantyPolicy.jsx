@@ -1,4 +1,4 @@
-import { FiShield, FiCheckCircle, FiClock, FiTool, FiHeadphones, FiCamera, FiFileText, FiBox, FiZap, FiAlertCircle } from 'react-icons/fi';
+import { FiShield, FiCheckCircle, FiClock, FiTool, FiHeadphones, FiCamera, FiFileText, FiBox, FiZap } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 export default function WarrantyPolicy() {

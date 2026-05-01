@@ -21,8 +21,7 @@ class EmployeeProductController extends Controller
         ]);
 
         $product = SanPham::create($validated);
-
-        return (new SanPhamResource($product))->additional(['message' => 'Thêm sản phẩm thành công!']);
+        return $this->handleSuccess($request, 'Thêm sản phẩm thành công!', new SanPhamResource($product));
     }
 
     public function update(Request $request, int $id)
@@ -40,16 +39,14 @@ class EmployeeProductController extends Controller
         ]);
 
         $product->update($validated);
-
-        return (new SanPhamResource($product))->additional(['message' => 'Cập nhật sản phẩm thành công!']);
+        return $this->handleSuccess($request, 'Cập nhật sản phẩm thành công!', new SanPhamResource($product));
     }
 
-    public function destroy(int $id)
+    public function destroy(Request $request, int $id)
     {
         $product = SanPham::findOrFail($id);
         $product->delete();
-
-        return response()->json(['message' => 'Xóa sản phẩm thành công!']);
+        return $this->handleSuccess($request, 'Xóa sản phẩm thành công!');
     }
 
     public function uploadImage(Request $request, int $id)
@@ -57,10 +54,9 @@ class EmployeeProductController extends Controller
         $request->validate(['image' => ['required', 'image', 'max:2048']]);
         $product = SanPham::findOrFail($id);
         
-        // Simulating image upload for now
         $path = $request->file('image')->store('products', 'public');
         $product->update(['hinhanh' => $path]);
 
-        return response()->json(['message' => 'Tải ảnh lên thành công!', 'image_url' => asset('storage/' . $path)]);
+        return $this->handleSuccess($request, 'Tải ảnh lên thành công!', ['image_url' => asset('storage/' . $path)]);
     }
 }

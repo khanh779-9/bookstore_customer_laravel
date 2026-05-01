@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import api from '../api/client';
 import { useToast } from './ToastContext';
@@ -38,15 +39,6 @@ export function CartProvider({ children }) {
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
-
-  // 2. Helper to save guest cart
-  const saveGuestCart = useCallback((newItems) => {
-    const newTotal = newItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const cartData = { items: newItems, total: newTotal };
-    setItems(newItems);
-    setTotal(newTotal);
-    localStorage.setItem('guest_cart', JSON.stringify(cartData));
-  }, []);
 
   const mergeCart = useCallback(async () => {
     const guestCart = localStorage.getItem('guest_cart');

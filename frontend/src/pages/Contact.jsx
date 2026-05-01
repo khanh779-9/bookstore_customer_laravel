@@ -8,9 +8,9 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import { useToast } from "../contexts/ToastContext";
-import Input from "../components/Common/Input";
-import TextArea from "../components/Common/TextArea";
-import Checkbox from "../components/Common/Checkbox";
+import { Input } from "@/shared/ui";
+import { TextArea } from "@/shared/ui";
+import { Checkbox } from "@/shared/ui";
 
 export default function Contact() {
   const { showToast } = useToast();
@@ -25,11 +25,6 @@ export default function Contact() {
 
   const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (field) => (e) => {
-    const value =
-      e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();

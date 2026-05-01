@@ -1,4 +1,4 @@
- import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../api/client';
 import { useToast } from '../../contexts/ToastContext';
 import { FiEye, FiCheck, FiX } from 'react-icons/fi';
@@ -11,11 +11,7 @@ export default function EmployeeOrders() {
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async (page = 1) => {
+  const fetchOrders = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const res = await api.get(`/employee/orders?page=${page}`);
@@ -26,19 +22,23 @@ export default function EmployeeOrders() {
           last_page: res.data.meta.last_page
         });
       }
-    } catch (e) {
+    } catch {
       // ignore
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const updateStatus = async (id, status) => {
     try {
       await api.patch(`/employee/orders/${id}/status`, { trangthai: status });
       showToast('Đã cập nhật trạng thái đơn hàng', 'success');
       fetchOrders();
-    } catch (e) {
+    } catch {
       showToast('Lỗi cập nhật trạng thái', 'error');
     }
   };

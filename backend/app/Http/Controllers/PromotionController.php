@@ -58,11 +58,7 @@ class PromotionController extends Controller
 
         try {
             $promotion = $this->promotionService->createPromotion($validated);
-
-            if ($request->expectsJson()) {
-                return (new KhuyenMaiResource($promotion))->additional(['message' => 'Thêm khuyến mãi thành công!']);
-            }
-            return back()->with('success', 'Thêm khuyến mãi thành công!');
+            return $this->handleSuccess($request, 'Thêm khuyến mãi thành công!', new KhuyenMaiResource($promotion));
         } catch (\Exception $e) {
             return $this->handleFailure($request, 'Thêm khuyến mãi thất bại: ' . $e->getMessage());
         }
@@ -82,11 +78,7 @@ class PromotionController extends Controller
         ]);
 
         $promotion->update($validated);
-
-        if ($request->expectsJson()) {
-            return (new KhuyenMaiResource($promotion))->additional(['message' => 'Cập nhật khuyến mãi thành công!']);
-        }
-        return back()->with('success', 'Cập nhật khuyến mãi thành công!');
+        return $this->handleSuccess($request, 'Cập nhật khuyến mãi thành công!', new KhuyenMaiResource($promotion));
     }
 
     /**
@@ -96,9 +88,7 @@ class PromotionController extends Controller
     {
         try {
             $this->promotionService->deletePromotion($id);
-
-            if ($request->expectsJson()) return response()->json(['message' => 'Xóa khuyến mãi thành công!']);
-            return back()->with('success', 'Xóa khuyến mãi thành công!');
+            return $this->handleSuccess($request, 'Xóa khuyến mãi thành công!');
         } catch (\Exception $e) {
             return $this->handleFailure($request, $e->getMessage());
         }
@@ -115,17 +105,11 @@ class PromotionController extends Controller
             'tilegiamgia' => ['required', 'numeric', 'min:0', 'max:100'],
         ]);
 
-        $detail = $this->promotionService->addDetail($id, $validated);
-
-        if ($request->expectsJson()) {
-            return (new ChiTietKhuyenMaiResource($detail->load('sanPham')))->additional(['message' => 'Thêm sản phẩm thành công!']);
+        try {
+            $detail = $this->promotionService->addDetail($id, $validated);
+            return $this->handleSuccess($request, 'Thêm sản phẩm thành công!', new ChiTietKhuyenMaiResource($detail->load('sanPham')));
+        } catch (\Exception $e) {
+            return $this->handleFailure($request, $e->getMessage());
         }
-        return back()->with('success', 'Thêm sản phẩm thành công!');
-    }
-
-    private function handleFailure(Request $request, string $msg, int $code = 400)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => $msg], $code);
-        return back()->with('error', $msg);
     }
 }

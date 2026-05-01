@@ -19,9 +19,9 @@ import {
   FiArrowRight,
   FiCheckCircle,
 } from "react-icons/fi";
-import Loading from "../components/Common/Loading";
-import Input from "../components/Common/Input";
-import TextArea from "../components/Common/TextArea";
+import { Loading } from "@/shared/ui";
+import { Input } from "@/shared/ui";
+import { TextArea } from "@/shared/ui";
 import { cn } from "../utils/cn";
 
 export default function ProductDetail() {
@@ -29,6 +29,7 @@ export default function ProductDetail() {
   const queryClient = useQueryClient();
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
 
   const [quantity, setQuantity] = useState(1);
   const [reviewForm, setReviewForm] = useState({ rating: 5, noi_dung: "" });

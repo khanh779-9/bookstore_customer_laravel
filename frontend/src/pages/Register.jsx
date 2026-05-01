@@ -13,8 +13,8 @@ import {
 } from "react-icons/fi";
 import { useToast } from "../contexts/ToastContext";
 import { cn } from "../utils/cn";
-import Input from "../components/Common/Input";
-import TextArea from "../components/Common/TextArea";
+import { Input } from "@/shared/ui";
+import { TextArea } from "@/shared/ui";
 
 export default function Register() {
   const [form, setForm] = useState({

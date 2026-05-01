@@ -14,150 +14,8 @@ use Laravel\Socialite\Facades\Socialite;
 
 class CustomerAccountController extends Controller
 {
-    public function showLogin(Request $request)
-    {
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Sử dụng frontend route /login để đăng nhập.']);
-        }
+    // Authentication methods are handled by AuthController
 
-        return redirect('/login');
-    }
-
-    public function showRegister(Request $request)
-    {
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Sử dụng frontend route /register để đăng ký.']);
-        }
-
-        return redirect('/register');
-    }
-
-    public function showForgotPassword(Request $request)
-    {
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Sử dụng frontend route /login để khôi phục mật khẩu.']);
-        }
-
-        return redirect('/login');
-    }
-
-    public function login(Request $request, AuthService $authService)
-    {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
-
-        try {
-            $result = $authService->login($validated, (string) $request->userAgent(), $request->ip());
-            $customer = $result['customer'];
-
-            $request->session()->put('customer_id', $customer->khachhang_id);
-            $request->session()->put('customer.id', $customer->khachhang_id);
-
-            if ($request->expectsJson()) {
-                return (new KhachHangResource($customer))->additional([
-                    'message' => 'Đăng nhập thành công!',
-                    'token' => $result['token'],
-                ]);
-            }
-
-            return redirect('/');
-        } catch (\Exception $e) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => $e->getMessage()], 401);
-            }
-
-            return back()->with('error', $e->getMessage());
-        }
-    }
-
-    public function register(Request $request, AuthService $authService)
-    {
-        $validated = $request->validate([
-            'ho' => ['nullable', 'string', 'max:50'],
-            'tendem' => ['nullable', 'string', 'max:50'],
-            'ten' => ['required', 'string', 'max:50'],
-            'email' => ['required', 'email', 'unique:khachhang,email'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'sdt' => ['nullable', 'string', 'max:20'],
-            'diachi' => ['nullable', 'string', 'max:500'],
-        ]);
-
-        try {
-            $result = $authService->register($validated, (string) $request->userAgent(), $request->ip());
-            $customer = $result['customer'];
-
-            $request->session()->put('customer_id', $customer->khachhang_id);
-            $request->session()->put('customer.id', $customer->khachhang_id);
-
-            if ($request->expectsJson()) {
-                return (new KhachHangResource($customer))->additional([
-                    'message' => 'Đăng ký thành công!',
-                    'token' => $result['token'],
-                ]);
-            }
-
-            return redirect('/');
-        } catch (\Exception $e) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => $e->getMessage()], 400);
-            }
-
-            return back()->with('error', $e->getMessage());
-        }
-    }
-
-    public function forgotPassword(Request $request)
-    {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
-        $result = app(PasswordResetService::class)->sendCode($validated['email']);
-
-        return response()->json([
-            'message' => 'Nếu email tồn tại, mã xác minh đã được gửi.',
-            'code' => $result['code'],
-        ]);
-    }
-
-    public function verifyCode(Request $request)
-    {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'code' => ['required', 'digits:6'],
-        ]);
-
-        $isValid = app(PasswordResetService::class)->verifyCode($validated['email'], $validated['code']);
-
-        if (!$isValid) {
-            return response()->json(['message' => 'Mã xác minh không hợp lệ hoặc đã hết hạn.'], 422);
-        }
-
-        return response()->json(['message' => 'Xác minh thành công.']);
-    }
-
-    public function resetPassword(Request $request)
-    {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'code' => ['required', 'digits:6'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-        ]);
-
-        $ok = app(PasswordResetService::class)->resetPassword(
-            $validated['email'],
-            $validated['code'],
-            $validated['password']
-        );
-
-        if (!$ok) {
-            return response()->json(['message' => 'Mã xác minh không hợp lệ hoặc đã hết hạn.'], 422);
-        }
-
-        return response()->json(['message' => 'Đổi mật khẩu thành công.']);
-    }
 
     public function googleLogin(Request $request)
     {
@@ -303,53 +161,14 @@ class CustomerAccountController extends Controller
         return response()->json(['message' => 'Xóa địa chỉ thành công']);
     }
 
-    public function contact(Request $request)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => 'Trang liên hệ', 'path' => '/contact']);
-        return redirect('/contact');
-    }
-
-    public function about(Request $request)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => 'Trang giới thiệu', 'path' => '/about']);
-        return redirect('/about');
-    }
-
-    public function privacyPolicy(Request $request)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => 'Chính sách bảo mật', 'path' => '/privacy-policy']);
-        return redirect('/privacy-policy');
-    }
-
-    public function returnPolicy(Request $request)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => 'Chính sách đổi trả', 'path' => '/return-policy']);
-        return redirect('/return-policy');
-    }
-
-    public function warrantyPolicy(Request $request)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => 'Chính sách bảo hành', 'path' => '/warranty-policy']);
-        return redirect('/warranty-policy');
-    }
-
-    public function shippingDelivery(Request $request)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => 'Chính sách giao hàng', 'path' => '/shipping-delivery']);
-        return redirect('/shipping-delivery');
-    }
 
     public function logout(Request $request)
     {
         $request->session()->forget(['customer_id', 'customer.id']);
         if ($request->user()) {
-            $request->user()->currentAccessToken()->delete();
+            $request->user()->currentAccessToken()?->delete();
         }
 
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Đăng xuất thành công']);
-        }
-
-        return redirect('/login');
+        return response()->json(['message' => 'Đăng xuất thành công']);
     }
 }

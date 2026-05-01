@@ -1,4 +1,4 @@
- import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../api/client';
 import { useToast } from '../../contexts/ToastContext';
 import AdminPageHeader from '../../components/Admin/AdminPageHeader';
@@ -16,9 +16,7 @@ export default function EmployeeProviders() {
   const [formData, setFormData] = useState({ tenNhaCungCap: '', dia_chi: '', so_dien_thoai: '' });
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-  useEffect(() => { fetchItems(); }, [searchTerm]);
-
-  const fetchItems = async (page = 1) => {
+  const fetchItems = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const res = await api.get('/employee/providers', { params: { page, q: searchTerm } });
@@ -29,9 +27,16 @@ export default function EmployeeProviders() {
           last_page: res.data.meta.last_page
         });
       }
-    } catch (error) { showToast('Lỗi tải dữ liệu', 'error'); }
-    finally { setLoading(false); }
-  };
+    } catch { 
+      showToast('Lỗi tải dữ liệu', 'error'); 
+    } finally { 
+      setLoading(false); 
+    }
+  }, [searchTerm, showToast]);
+
+  useEffect(() => { 
+    fetchItems(); 
+  }, [fetchItems]);
 
   const handleOpenModal = (item = null) => {
     if (item) {
@@ -60,7 +65,9 @@ export default function EmployeeProviders() {
       }
       setIsModalOpen(false);
       fetchItems();
-    } catch (error) { showToast(error.response?.data?.message || 'Có lỗi xảy ra', 'error'); }
+    } catch (error) { 
+      showToast(error.response?.data?.message || 'Có lỗi xảy ra', 'error'); 
+    }
   };
 
   const handleDelete = async (id) => {
@@ -69,7 +76,9 @@ export default function EmployeeProviders() {
       await api.delete(`/employee/providers/${id}`);
       showToast('Đã xóa', 'success');
       fetchItems();
-    } catch (error) { showToast('Không thể xóa', 'error'); }
+    } catch { 
+      showToast('Không thể xóa', 'error'); 
+    }
   };
 
 

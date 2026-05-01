@@ -16,7 +16,17 @@ class OrderService
     public function createOrder(int $customerId, array $items, array $data): HoaDon
     {
         return DB::transaction(function () use ($customerId, $items, $data) {
-            $total = collect($items)->sum(fn($item) => $item['soluong'] * $item['price']);
+            // Security check: dcgh_id must belong to customer
+            if (!empty($data['dcgh_id'])) {
+                $addressExists = \App\Models\DiaChiGiaoHang::where('dcgh_id', $data['dcgh_id'])
+                    ->where('khachhang_id', $customerId)
+                    ->exists();
+                if (!$addressExists) {
+                    throw new \Exception('Địa chỉ giao hàng không hợp lệ.');
+                }
+            }
+
+            $total = collect($items)->sum(fn($item) => $item['quantity'] * $item['price']);
 
             $order = HoaDon::create([
                 'khachhang_id' => $customerId,
@@ -31,15 +41,15 @@ class OrderService
             foreach ($items as $item) {
                 $order->chiTiet()->create([
                     'sanpham_id' => $item['sanpham_id'],
-                    'soluong' => $item['soluong'],
+                    'soluong' => $item['quantity'],
                     'dongia' => $item['price'],
-                    'thanhtien' => $item['soluong'] * $item['price'],
+                    'thanhtien' => $item['quantity'] * $item['price'],
                 ]);
 
                 // Update stock
                 $product = SanPham::lockForUpdate()->find($item['sanpham_id']);
                 if ($product) {
-                    $product->decrement('soluongton', $item['soluong']);
+                    $product->decrement('soluongton', $item['quantity']);
                 }
             }
 

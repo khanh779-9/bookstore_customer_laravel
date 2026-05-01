@@ -19,8 +19,8 @@ import {
   FiChevronsLeft,
   FiChevronsRight,
 } from "react-icons/fi";
-import Loading from "../components/Common/Loading";
-import Select from "../components/Common/Select";
+import { Loading } from "@/shared/ui";
+import { Select } from "@/shared/ui";
 import { cn } from "../utils/cn";
 
 export default function Products() {

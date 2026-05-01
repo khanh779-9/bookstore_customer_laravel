@@ -6,7 +6,7 @@ export const notificationService = {
       const response = await api.get('/notifications');
       const notifs = response.data?.data || response.data || [];
       return Array.isArray(notifs) ? notifs : [];
-    } catch (err) {
+    } catch {
       // If backend returns error, gracefully return empty array so UI doesn't crash
       return [];
     }

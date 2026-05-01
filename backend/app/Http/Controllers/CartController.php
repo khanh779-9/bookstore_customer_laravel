@@ -37,11 +37,7 @@ class CartController extends Controller
 
         try {
             $cart = $this->cartService->addItem($this->getCustomerId(), $validated['sanpham_id'], $validated['quantity']);
-            
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'Đã thêm vào giỏ hàng.', 'cart' => $cart]);
-            }
-            return redirect()->route('customer.cart.index')->with('success', 'Đã thêm vào giỏ hàng.');
+            return $this->handleSuccess($request, 'Đã thêm vào giỏ hàng.', $cart);
         } catch (\Exception $e) {
             return $this->handleFailure($request, $e->getMessage());
         }
@@ -56,9 +52,7 @@ class CartController extends Controller
 
         try {
             $this->cartService->updateItem($this->getCustomerId(), $id, $validated['quantity']);
-            
-            if ($request->expectsJson()) return response()->json(['message' => 'Đã cập nhật giỏ hàng.']);
-            return back()->with('success', 'Đã cập nhật giỏ hàng.');
+            return $this->handleSuccess($request, 'Đã cập nhật giỏ hàng.');
         } catch (\Exception $e) {
             return $this->handleFailure($request, $e->getMessage());
         }
@@ -70,9 +64,7 @@ class CartController extends Controller
     public function remove(Request $request, int $id)
     {
         $this->cartService->removeItem($this->getCustomerId(), $id);
-
-        if ($request->expectsJson()) return response()->json(['message' => 'Đã xóa sản phẩm.']);
-        return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng.');
+        return $this->handleSuccess($request, 'Đã xóa sản phẩm.');
     }
 
     /**
@@ -90,22 +82,9 @@ class CartController extends Controller
             foreach ($validated['items'] as $item) {
                 $this->cartService->addItem($this->getCustomerId(), $item['sanpham_id'], $item['quantity']);
             }
-            return response()->json(['message' => 'Đã hợp nhất giỏ hàng.']);
+            return $this->handleSuccess($request, 'Đã hợp nhất giỏ hàng.');
         } catch (\Exception $e) {
             return $this->handleFailure($request, $e->getMessage());
         }
-    }
- 
-    private function getCustomerId(): int
-    {
-        $user = auth()->user();
-        if ($user) return (int) $user->khachhang_id;
-        return (int) (session('customer.id') ?? 0);
-    }
-
-    private function handleFailure(Request $request, string $msg)
-    {
-        if ($request->expectsJson()) return response()->json(['message' => $msg], 422);
-        return back()->with('error', $msg);
     }
 }

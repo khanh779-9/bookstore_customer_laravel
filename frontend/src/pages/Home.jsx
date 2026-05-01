@@ -19,8 +19,8 @@ import {
   FiTruck,
   FiZap,
 } from "react-icons/fi";
-import Loading from "../components/Common/Loading";
-import Input from "../components/Common/Input";
+import { Loading } from "@/shared/ui";
+import { Input } from "@/shared/ui";
 
 const BANNERS = [
   {

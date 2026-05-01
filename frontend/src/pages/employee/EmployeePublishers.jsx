@@ -1,4 +1,4 @@
- import { useState, useEffect } from 'react';
+ import { useState, useEffect, useCallback } from 'react';
 import api from '../../api/client';
 import { useToast } from '../../contexts/ToastContext';
 import AdminPageHeader from '../../components/Admin/AdminPageHeader';
@@ -16,9 +16,7 @@ export default function EmployeePublishers() {
   const [formData, setFormData] = useState({ ten: '', diachi: '', email: '', sdt: '' });
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-  useEffect(() => { fetchItems(); }, [searchTerm]);
-
-  const fetchItems = async (page = 1) => {
+  const fetchItems = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const res = await api.get('/employee/publishers', { params: { page, q: searchTerm } });
@@ -29,9 +27,16 @@ export default function EmployeePublishers() {
           last_page: res.data.meta.last_page
         });
       }
-    } catch (error) { showToast('Lỗi tải dữ liệu', 'error'); }
-    finally { setLoading(false); }
-  };
+    } catch { 
+      showToast('Lỗi tải dữ liệu', 'error'); 
+    } finally { 
+      setLoading(false); 
+    }
+  }, [searchTerm, showToast]);
+
+  useEffect(() => { 
+    fetchItems(); 
+  }, [fetchItems]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +50,9 @@ export default function EmployeePublishers() {
       }
       setIsModalOpen(false);
       fetchItems();
-    } catch (error) { showToast(error.response?.data?.message || 'Có lỗi xảy ra', 'error'); }
+    } catch (error) { 
+      showToast(error.response?.data?.message || 'Có lỗi xảy ra', 'error'); 
+    }
   };
 
   const handleDelete = async (id) => {
@@ -54,7 +61,9 @@ export default function EmployeePublishers() {
       await api.delete(`/employee/publishers/${id}`);
       showToast('Đã xóa', 'success');
       fetchItems();
-    } catch (error) { showToast('Không thể xóa', 'error'); }
+    } catch { 
+      showToast('Không thể xóa', 'error'); 
+    }
   };
 
   const openAdd = () => {

@@ -28,8 +28,7 @@ class EmployeeManagementController extends Controller
         $validated['trangthai'] = 'dang_lam';
 
         $employee = NhanVien::create($validated);
-
-        return (new NhanVienResource($employee))->additional(['message' => 'Thêm nhân viên thành công!']);
+        return $this->handleSuccess($request, 'Thêm nhân viên thành công!', new NhanVienResource($employee));
     }
 
     public function update(Request $request, int $id)
@@ -56,22 +55,20 @@ class EmployeeManagementController extends Controller
         }
 
         $employee->update($validated);
-
-        return (new NhanVienResource($employee))->additional(['message' => 'Cập nhật nhân viên thành công!']);
+        return $this->handleSuccess($request, 'Cập nhật nhân viên thành công!', new NhanVienResource($employee));
     }
 
-    public function destroy(int $id)
+    public function destroy(Request $request, int $id)
     {
         $employee = NhanVien::findOrFail($id);
         $employee->delete();
-
-        return response()->json(['message' => 'Xóa nhân viên thành công!']);
+        return $this->handleSuccess($request, 'Xóa nhân viên thành công!');
     }
 
     public function updateProfile(Request $request)
     {
         $employee = $request->user();
-        if (!$employee) return response()->json(['message' => 'Không tìm thấy nhân viên'], 404);
+        if (!$employee) return $this->handleFailure($request, 'Không tìm thấy nhân viên', 404);
 
         $validated = $request->validate([
             'ho' => ['sometimes', 'required', 'string', 'max:50'],
@@ -81,7 +78,6 @@ class EmployeeManagementController extends Controller
         ]);
 
         $employee->update($validated);
-
-        return (new NhanVienResource($employee))->additional(['message' => 'Cập nhật thông tin cá nhân thành công!']);
+        return $this->handleSuccess($request, 'Cập nhật thông tin cá nhân thành công!', new NhanVienResource($employee));
     }
 }

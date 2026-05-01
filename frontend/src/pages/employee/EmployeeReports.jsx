@@ -21,7 +21,7 @@ export default function EmployeeReports() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [showToast]);
 
   const { revenueByMonth = [] } = data || {};
 

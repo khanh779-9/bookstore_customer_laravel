@@ -1,4 +1,4 @@
- import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../api/client';
 import { useToast } from '../../contexts/ToastContext';
 import AdminPageHeader from '../../components/Admin/AdminPageHeader';
@@ -16,11 +16,7 @@ export default function EmployeeCategories() {
   const [formData, setFormData] = useState({ tenDanhMuc: '', mo_ta: '' });
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-  useEffect(() => {
-    fetchCategories();
-  }, [searchTerm]);
-
-  const fetchCategories = async (page = 1) => {
+  const fetchCategories = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const res = await api.get('/employee/categories', { params: { page, q: searchTerm } });
@@ -31,12 +27,16 @@ export default function EmployeeCategories() {
           last_page: res.data.meta.last_page
         });
       }
-    } catch (error) {
+    } catch {
       showToast('Không thể tải danh sách danh mục', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, showToast]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleOpenModal = (cat = null) => {
     if (cat) {
@@ -61,8 +61,8 @@ export default function EmployeeCategories() {
       }
       setIsModalOpen(false);
       fetchCategories();
-    } catch (error) {
-      showToast(error.response?.data?.message || 'Có lỗi xảy ra', 'error');
+    } catch {
+      showToast('Có lỗi xảy ra', 'error');
     }
   };
 
@@ -72,7 +72,7 @@ export default function EmployeeCategories() {
       await api.delete(`/employee/categories/${id}`);
       showToast('Xóa danh mục thành công', 'success');
       fetchCategories();
-    } catch (error) {
+    } catch {
       showToast('Không thể xóa danh mục', 'error');
     }
   };

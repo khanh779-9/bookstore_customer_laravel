@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../../contexts/CartContext";
-import { FiShoppingCart, FiEye, FiHeart } from "react-icons/fi";
+import { FiShoppingCart, FiHeart } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useToast } from "../../contexts/ToastContext";
 import { useState } from "react";
 import { cn } from "../../utils/cn";
 import api from "../../api/client";
+import { formatCurrency, formatProductImage } from "../../utils/format";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
@@ -57,10 +58,13 @@ export default function ProductCard({ product }) {
           className="block w-full h-[180px] bg-slate-50 flex items-center justify-center p-2 overflow-hidden"
         >
           <img
-            src={`/assets/images/products/${product.image || "defaultProduct.png"}`}
+            src={formatProductImage(product.image)}
             alt={product.display_name}
             className="w-full h-full object-contain"
             loading="lazy"
+            onError={(e) => {
+              e.target.src = "/assets/images/products/defaultProduct.png";
+            }}
           />
 
           {hasPromo && (
@@ -101,15 +105,15 @@ export default function ProductCard({ product }) {
             {hasPromo ? (
               <div className="flex items-baseline gap-1.5">
                 <span className="text-sm font-black text-primary">
-                  {product.promo_price.toLocaleString("vi-VN")}₫
+                  {formatCurrency(product.promo_price)}
                 </span>
                 <span className="text-[10px] text-slate-400 line-through">
-                  {product.price.toLocaleString("vi-VN")}₫
+                  {formatCurrency(product.price)}
                 </span>
               </div>
             ) : (
               <span className="text-sm font-black text-secondary">
-                {product.price.toLocaleString("vi-VN")}₫
+                {formatCurrency(product.price)}
               </span>
             )}
           </div>

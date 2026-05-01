@@ -4,6 +4,7 @@ import api from '../../api/client';
 import { FiUsers, FiShoppingBag, FiBox, FiDollarSign, FiLogOut } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../contexts/ToastContext';
+import { formatCurrency, formatDate } from '../../utils/format';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -54,7 +55,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard 
             label="Tổng doanh thu" 
-            value={`${stats.revenue.toLocaleString('vi-VN')}₫`} 
+            value={formatCurrency(stats.revenue)} 
             icon={<FiDollarSign />} 
             color="bg-emerald-500" 
             lightColor="bg-emerald-50"
@@ -107,8 +108,8 @@ export default function Dashboard() {
                 {recentOrders.map(order => (
                   <tr key={order.hoadon_id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4 font-bold text-slate-900">#{order.hoadon_id}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{new Date(order.ngaytao).toLocaleDateString('vi-VN')}</td>
-                    <td className="px-6 py-4 font-medium text-slate-900">{parseFloat(order.tongtien).toLocaleString('vi-VN')}₫</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{formatDate(order.ngaytao)}</td>
+                    <td className="px-6 py-4 font-medium text-slate-900">{formatCurrency(parseFloat(order.tongtien))}</td>
                     <td className="px-6 py-4">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
                         order.trangthai === 'da_giao_hang' ? 'bg-emerald-100 text-emerald-700' : 

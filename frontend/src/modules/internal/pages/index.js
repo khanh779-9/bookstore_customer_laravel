@@ -1,0 +1,10 @@
+export { default as EmployeeLogin } from '../../../pages/employee/EmployeeLogin';
+export { default as Dashboard } from '../../../pages/employee/Dashboard';
+export { default as EmployeeOrders } from '../../../pages/employee/EmployeeOrders';
+export { default as EmployeeProducts } from '../../../pages/employee/EmployeeProducts';
+export { default as EmployeeCustomers } from '../../../pages/employee/EmployeeCustomers';
+export { default as EmployeeCategories } from '../../../pages/employee/EmployeeCategories';
+export { default as EmployeePublishers } from '../../../pages/employee/EmployeePublishers';
+export { default as EmployeeProviders } from '../../../pages/employee/EmployeeProviders';
+export { default as EmployeeEmployees } from '../../../pages/employee/EmployeeEmployees';
+export { default as EmployeeReports } from '../../../pages/employee/EmployeeReports';

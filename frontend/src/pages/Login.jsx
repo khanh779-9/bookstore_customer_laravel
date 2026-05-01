@@ -6,7 +6,7 @@ import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { useToast } from "../contexts/ToastContext";
 import { cn } from "../utils/cn";
-import Input from "../components/Common/Input";
+import { Input } from "@/shared/ui";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });

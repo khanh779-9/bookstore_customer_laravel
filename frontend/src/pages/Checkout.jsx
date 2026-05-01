@@ -6,11 +6,11 @@ import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
 import { 
   FiMapPin, FiCreditCard, FiCheckCircle, FiChevronRight, 
-  FiArrowLeft, FiShoppingBag, FiTruck, FiShield 
+  FiArrowLeft, FiTruck, FiShield 
 } from 'react-icons/fi';
 import { cn } from '../utils/cn';
-import Loading from '../components/Common/Loading';
-import TextArea from '../components/Common/TextArea';
+import { Loading } from "@/shared/ui";
+import { TextArea } from "@/shared/ui";
 
  export default function Checkout() {
   const { showToast } = useToast();
@@ -197,7 +197,14 @@ import TextArea from '../components/Common/TextArea';
                 {cart.map(item => (
                   <div key={item.sanpham_id} className="flex gap-4">
                     <div className="w-16 h-20 bg-slate-50 rounded-none overflow-hidden p-2 flex-shrink-0">
-                      <img src={`/assets/images/products/${item.image || 'defaultProduct.png'}`} className="w-full h-full object-contain" />
+                      <img 
+                        src={
+                          item.image?.startsWith("http")
+                            ? item.image
+                            : `/assets/images/products/${item.image || 'defaultProduct.png'}`
+                        } 
+                        className="w-full h-full object-contain" 
+                      />
                     </div>
                     <div className="flex-grow min-w-0">
                       <p className="font-bold text-secondary text-sm line-clamp-1">{item.name}</p>

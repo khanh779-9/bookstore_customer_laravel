@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../api/client";
 import { useToast } from "../../contexts/ToastContext";
 import { FiUpload, FiCheck } from "react-icons/fi";
+import { formatCurrency, formatProductImage } from "../../utils/format";
 import AdminPageHeader from "../../components/Admin/AdminPageHeader";
 import AdminDataTable from "../../components/Admin/AdminDataTable";
 import AdminModal from "../../components/Admin/AdminModal";
@@ -41,12 +42,7 @@ export default function EmployeeProducts() {
   const [authors, setAuthors] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    fetchProducts();
-    fetchLookups();
-  }, [searchTerm]);
-
-  const fetchProducts = async (page = 1) => {
+  const fetchProducts = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const res = await api.get(`/employee/products`, { params: { page, q: searchTerm } });
@@ -57,14 +53,14 @@ export default function EmployeeProducts() {
           last_page: res.data.meta.last_page
         });
       }
-    } catch (e) {
+    } catch {
       showToast("Lỗi tải danh sách sản phẩm", "error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, showToast]);
 
-  const fetchLookups = async () => {
+  const fetchLookups = useCallback(async () => {
     try {
       const [pubRes, authRes, catRes] = await Promise.all([
         api.get("/publishers"),
@@ -74,10 +70,15 @@ export default function EmployeeProducts() {
       setPublishers(pubRes.data.data || pubRes.data || []);
       setAuthors(authRes.data.data || authRes.data || []);
       setCategories(catRes.data.data || catRes.data || []);
-    } catch (e) {
+    } catch {
       /* ignore */
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchLookups();
+  }, [fetchProducts, fetchLookups]);
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -204,11 +205,11 @@ export default function EmployeeProducts() {
           <div className="flex items-center gap-4">
             <div className="w-12 h-16 shrink-0 bg-slate-100 rounded-sm overflow-hidden border border-slate-100 shadow-sm">
               <img
-                src={`/assets/images/products/${p.hinhanh}`}
+                src={formatProductImage(p.hinhanh)}
                 alt={name}
                 className="w-full h-full object-cover transition-transform hover:scale-110"
                 onError={(e) =>
-                  (e.target.src = "/assets/image/defaultProduct_2.png")
+                  (e.target.src = "/assets/images/products/defaultProduct.png")
                 }
               />
             </div>
@@ -230,12 +231,12 @@ export default function EmployeeProducts() {
       render: (p) => (
         <span
           className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-            !!p.sach
+            p.sach
               ? "bg-indigo-50 text-indigo-600"
               : "bg-purple-50 text-purple-600"
           }`}
         >
-          {!!p.sach ? "Sách" : "VPP"}
+          {p.sach ? "Sách" : "VPP"}
         </span>
       ),
     },
@@ -243,7 +244,7 @@ export default function EmployeeProducts() {
       header: "Giá bán",
       render: (p) => (
         <span className="font-bold text-primary">
-          {parseFloat(p.gia).toLocaleString("vi-VN")}₫
+          {formatCurrency(parseFloat(p.gia))}
         </span>
       ),
     },

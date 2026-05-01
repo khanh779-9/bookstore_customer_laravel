@@ -13,7 +13,7 @@ import {
   FiXCircle,
 } from "react-icons/fi";
 import { useToast } from "../contexts/ToastContext";
-import Loading from "../components/Common/Loading";
+import { Loading } from "@/shared/ui";
 
 const statusConfig = {
   cho_xac_nhan: {
