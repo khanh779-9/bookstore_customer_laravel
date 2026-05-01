@@ -116,6 +116,27 @@ class OrderController extends Controller
         return back()->with('success', 'Đã xác nhận đơn hàng.');
     }
 
+    /**
+     * Get all orders for employee management.
+     */
+    public function employeeOrders(Request $request)
+    {
+        $orders = HoaDon::with(['khachHang', 'nhanVien'])
+            ->orderByDesc('hoadon_id')
+            ->paginate(10);
+
+        return HoaDonResource::collection($orders);
+    }
+
+    /**
+     * Create order by employee (POS-like or manual entry).
+     */
+    public function employeeCreateOrder(Request $request)
+    {
+        // For now, return not implemented or basic logic
+        return response()->json(['message' => 'Chức năng tạo đơn hàng tại quầy đang được phát triển.'], 501);
+    }
+
     private function getCustomerId(): int
     {
         $user = auth()->user();

@@ -7,12 +7,13 @@ import {
   FiSend,
   FiCheckCircle,
 } from "react-icons/fi";
-import toast from "react-hot-toast";
+import { useToast } from "../contexts/ToastContext";
 import Input from "../components/Common/Input";
 import TextArea from "../components/Common/TextArea";
 import Checkbox from "../components/Common/Checkbox";
 
 export default function Contact() {
+  const { showToast } = useToast();
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -32,7 +33,7 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    toast.success("Tin nhắn đã được gửi thành công!");
+    showToast("Tin nhắn đã được gửi thành công!", "success");
     setSubmitted(true);
     setForm({
       fullName: "",
@@ -55,17 +56,14 @@ export default function Contact() {
           Chúng tôi luôn sẵn lòng lắng nghe! Đừng ngần ngại liên hệ nếu bạn có
           bất kỳ câu hỏi hay góp ý nào.
         </p>
-        <div className="w-24 h-2 bg-primary mx-auto rounded-none"></div>
+        <div className="w-24 h-2 bg-primary mx-auto rounded-full"></div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* LEFT */}
         <div className="lg:col-span-5 space-y-8">
-          <div className="bg-white p-10 shadow-none border border-gray-100 h-full">
+          <div className="bg-white p-10 shadow-sm border border-gray-100 h-full">
             <h2 className="text-2xl font-black text-gray-900 mb-10 flex items-center gap-3">
-              <span className="w-10 h-10 bg-primary/10 text-primary rounded-none flex items-center justify-center">
-                <FiMapPin />
-              </span>
               Thông tin cửa hàng
             </h2>
 
@@ -98,14 +96,14 @@ export default function Contact() {
             </div>
 
             {/* Map */}
-            <div className="mt-12 pt-12 border-t border-gray-100">
-              <h3 className="font-black text-gray-900 mb-6 italic">
+            <div className="mt-8 pt-5 border-t border-gray-100">
+              <h3 className="font-black text-gray-900 mb-3">
                 Tìm chúng tôi trên bản đồ
               </h3>
-              <div className="rounded-none overflow-hidden shadow-none aspect-video">
+              <div className="rounded-md overflow-hidden shadow-xl aspect-video">
                 <iframe
                   src="https://www.google.com/maps?q=Trường+Đại+Học+Công+Nghệ+Sài+Gòn&output=embed"
-                  className="w-full h-full border-0 grayscale hover:grayscale-0 transition-all"
+                  className="w-full h-full border-0 grayscale hover:grayscale-0 transition-all duration-500"
                   loading="lazy"
                 ></iframe>
               </div>
@@ -115,8 +113,8 @@ export default function Contact() {
 
         {/* RIGHT */}
         <div className="lg:col-span-7">
-          <div className="bg-white p-10 md:p-12 shadow-none border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-10 flex items-center gap-3">
+          <div className="bg-white p-10 shadow-sm border border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
               <FiSend className="text-primary" /> Gửi tin nhắn
             </h2>
 
@@ -191,7 +189,7 @@ export default function Contact() {
 function InfoItem({ icon, title, children }) {
   return (
     <div className="flex gap-6 group">
-      <div className="w-14 h-14 bg-gray-50 rounded-none flex items-center justify-center text-2xl text-gray-400 group-hover:bg-primary group-hover:text-white transition-all">
+      <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-2xl text-gray-400 group-hover:bg-primary group-hover:text-white transition-all">
         {icon}
       </div>
       <div>

@@ -11,7 +11,7 @@ import {
   FiTrash2,
   FiInbox,
 } from "react-icons/fi";
-import toast from "react-hot-toast";
+import { useToast } from "../contexts/ToastContext";
 import Loading from "../components/Common/Loading";
 import ConfirmModal from "../components/Common/ConfirmModal";
 import { cn } from "../utils/cn";
@@ -23,7 +23,8 @@ const TABS = [
   { id: "he_thong", label: "Hệ thống", icon: FiInfo },
 ];
 
-export default function Notifications() {
+ export default function Notifications() {
+  const { showToast } = useToast();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
@@ -43,7 +44,7 @@ export default function Notifications() {
       const res = await api.get("/notifications", { params });
       setNotifications(res.data.data || []);
     } catch (e) {
-      toast.error("Không thể tải thông báo");
+      showToast("Không thể tải thông báo", "error");
     } finally {
       setLoading(false);
     }
@@ -53,9 +54,9 @@ export default function Notifications() {
     try {
       await api.post("/notifications/mark-all");
       fetchNotifications();
-      toast.success("Đã đánh dấu tất cả là đã đọc");
+      showToast("Đã đánh dấu tất cả là đã đọc", "success");
     } catch (e) {
-      toast.error("Có lỗi xảy ra");
+      showToast("Có lỗi xảy ra", "error");
     }
   };
 
@@ -81,9 +82,9 @@ export default function Notifications() {
     try {
       await api.post(`/notifications/${id}/archive`);
       setNotifications((prev) => prev.filter((n) => n.id !== id));
-      toast.success("Đã lưu trữ thông báo");
+      showToast("Đã lưu trữ thông báo", "success");
     } catch (e) {
-      toast.error("Lỗi khi lưu trữ");
+      showToast("Lỗi khi lưu trữ", "error");
     } finally {
       setConfirmArchive({ isOpen: false, id: null });
     }

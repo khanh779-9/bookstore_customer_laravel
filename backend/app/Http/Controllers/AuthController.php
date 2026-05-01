@@ -24,11 +24,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-            $result = $this->authService->login($request->validated(), $request->header('User-Agent'));
-
-            $device= $request->header('User-Agent') ?? 'web';
-            $browser = getBrowser($device);
-            $os = getOS($device);
+            $result = $this->authService->login($request->validated(), $request->header('User-Agent'), $request->ip());
 
             return (new KhachHangResource($result['customer']))->additional([
                 'message' => 'Đăng nhập thành công!',
@@ -44,7 +40,7 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         try {
-            $result = $this->authService->register($request->validated(), $request->header('User-Agent'));
+            $result = $this->authService->register($request->validated(), $request->header('User-Agent'), $request->ip());
 
             return (new KhachHangResource($result['customer']))->additional([
                 'message' => 'Đăng ký thành công!',

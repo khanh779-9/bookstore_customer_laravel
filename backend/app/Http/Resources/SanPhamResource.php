@@ -26,23 +26,33 @@ class SanPhamResource extends JsonResource
             }
         }
 
-        return [
+         return [
+            'sanpham_id' => $this->sanpham_id,
             'id' => $this->sanpham_id,
             'is_wishlisted' => in_array($this->sanpham_id, self::$wishlistIds),
-            'name' => $this->tenSP ?: ($this->relationLoaded('sach') ? $this->sach->tenSach : null),
+            'tenSP' => $this->tenSP,
+            'name' => $this->tenSP ?: ($this->relationLoaded('sach') && $this->sach ? $this->sach->tenSach : null),
             'display_name' => $this->ten_hien_thi,
+            'danhmucSP_id' => $this->danhmucSP_id,
             'category_id' => $this->danhmucSP_id,
             'category_name' => $this->danhMuc->tenDanhMuc ?? null,
+            'hinhanh' => $this->hinhanh,
             'image' => $this->hinhanh,
+            'mo_ta' => $this->mo_ta,
             'description' => $this->mo_ta,
+            'soluongton' => $this->soluongton,
             'stock_quantity' => $this->soluongton,
+            'soluongban' => $this->soluongban,
             'sold_quantity' => $this->soluongban,
+            'gia' => (float) $this->gia,
             'price' => (float) $this->gia,
             'promo_price' => (float) $this->gia_khuyen_mai,
             'unit' => $this->donViTinh->ten ?? null,
             'provider' => $this->nhaCungCap->ten ?? null,
             
             // Relationships (conditional)
+            'sach' => new SachResource($this->whenLoaded('sach')),
+            'van_phong_pham' => $this->whenLoaded('vanPhongPham'),
             'book_details' => new SachResource($this->whenLoaded('sach')),
             'stationery_details' => $this->whenLoaded('vanPhongPham'),
             

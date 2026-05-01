@@ -1,25 +1,51 @@
-import { useState, useEffect } from 'react';
+ import { useState, useEffect } from 'react';
 import api from '../../api/client';
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiX } from 'react-icons/fi';
-import toast from 'react-hot-toast';
+import { useToast } from '../../contexts/ToastContext';
+import AdminPageHeader from '../../components/Admin/AdminPageHeader';
+import AdminDataTable from '../../components/Admin/AdminDataTable';
+import AdminModal from '../../components/Admin/AdminModal';
+import AdminSearchInput from '../../components/Admin/AdminSearchInput';
 
 export default function EmployeeProviders() {
+  const { showToast } = useToast();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({ tenNhaCungCap: '', dia_chi: '', so_dien_thoai: '' });
+  const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => { fetchItems(); }, [searchTerm]);
 
-  const fetchItems = async () => {
+  const fetchItems = async (page = 1) => {
     setLoading(true);
     try {
-      const res = await api.get('/employee/providers');
+      const res = await api.get('/employee/providers', { params: { page, q: searchTerm } });
       setItems(res.data.data || []);
-    } catch (error) { toast.error('Lỗi tải dữ liệu'); }
+      if (res.data.meta) {
+        setPagination({
+          current_page: res.data.meta.current_page,
+          last_page: res.data.meta.last_page
+        });
+      }
+    } catch (error) { showToast('Lỗi tải dữ liệu', 'error'); }
     finally { setLoading(false); }
+  };
+
+  const handleOpenModal = (item = null) => {
+    if (item) {
+      setEditingItem(item);
+      setFormData({ 
+        tenNhaCungCap: item.tenNhaCungCap, 
+        dia_chi: item.dia_chi || '', 
+        so_dien_thoai: item.so_dien_thoai || '' 
+      });
+    } else {
+      setEditingItem(null);
+      setFormData({ tenNhaCungCap: '', dia_chi: '', so_dien_thoai: '' });
+    }
+    setIsModalOpen(true);
   };
 
   const handleSubmit = async (e) => {
@@ -27,81 +53,136 @@ export default function EmployeeProviders() {
     try {
       if (editingItem) {
         await api.put(`/employee/providers/${editingItem.nhacungcap_id}`, formData);
-        toast.success('Cập nhật thành công');
+        showToast('Cập nhật thành công', 'success');
       } else {
         await api.post('/employee/providers', formData);
-        toast.success('Thêm thành công');
+        showToast('Thêm thành công', 'success');
       }
       setIsModalOpen(false);
       fetchItems();
-    } catch (error) { toast.error(error.response?.data?.message || 'Có lỗi xảy ra'); }
+    } catch (error) { showToast(error.response?.data?.message || 'Có lỗi xảy ra', 'error'); }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Xác nhận xóa?')) return;
     try {
       await api.delete(`/employee/providers/${id}`);
-      toast.success('Đã xóa');
+      showToast('Đã xóa', 'success');
       fetchItems();
-    } catch (error) { toast.error('Không thể xóa'); }
+    } catch (error) { showToast('Không thể xóa', 'error'); }
   };
 
-  const filtered = items.filter(i => i.tenNhaCungCap.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  const columns = [
+    { 
+      header: 'ID', 
+      accessor: 'nhacungcap_id', 
+      className: 'w-24', 
+      render: (item) => <span className="font-mono text-slate-400 text-xs">#{item.nhacungcap_id}</span> 
+    },
+    { 
+      header: 'Tên Nhà Cung Cấp', 
+      render: (item) => <span className="font-bold text-slate-900">{item.tenNhaCungCap}</span> 
+    },
+    { 
+      header: 'Địa chỉ', 
+      render: (item) => <p className="text-sm text-slate-500 truncate max-w-xs">{item.dia_chi || '---'}</p> 
+    },
+    { header: 'Số điện thoại', accessor: 'so_dien_thoai', cellClassName: 'font-medium text-slate-700' },
+  ];
+
+  const inputStyle = 'w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400 text-sm';
+  const labelStyle = 'block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 ml-1';
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Nhà cung cấp</h1>
-        <button onClick={() => { setEditingItem(null); setFormData({ tenNhaCungCap: '', dia_chi: '', so_dien_thoai: '' }); setIsModalOpen(true); }} className="btn-primary flex items-center gap-2">
-          <FiPlus /> Thêm NCC
-        </button>
-      </div>
+    <div className="space-y-4 bg-slate-50 p-4 md:p-8 min-h-full">
+      <AdminPageHeader 
+        title="Nhà cung cấp" 
+        description="Quản lý các đơn vị cung cấp hàng hóa cho kho sách."
+        onAdd={() => handleOpenModal()}
+        addLabel="Thêm nhà cung cấp"
+      />
 
-      <div className="admin-card">
-        <div className="mb-6 relative max-w-sm">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input type="text" placeholder="Tìm kiếm..." className="w-full pl-10 pr-4 py-2 border rounded-none outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-        </div>
-        <table className="admin-table">
-          <thead>
-            <tr><th>ID</th><th>Tên NCC</th><th>Địa chỉ</th><th>Số điện thoại</th><th className="text-center">Hành động</th></tr>
-          </thead>
-          <tbody>
-            {loading ? <tr><td colSpan="5" className="text-center py-8">Đang tải...</td></tr> : filtered.map(i => (
-              <tr key={i.nhacungcap_id}>
-                <td className="text-gray-400">#{i.nhacungcap_id}</td>
-                <td className="font-bold">{i.tenNhaCungCap}</td>
-                <td>{i.dia_chi || '---'}</td>
-                <td>{i.so_dien_thoai}</td>
-                <td className="flex justify-center gap-2">
-                  <button onClick={() => { setEditingItem(i); setFormData({ tenNhaCungCap: i.tenNhaCungCap, dia_chi: i.dia_chi || '', so_dien_thoai: i.so_dien_thoai || '' }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-none"><FiEdit2 /></button>
-                  <button onClick={() => handleDelete(i.nhacungcap_id)} className="p-2 text-red-600 hover:bg-red-50 rounded-none"><FiTrash2 /></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <AdminSearchInput 
+        value={searchTerm} 
+        onChange={setSearchTerm} 
+        placeholder="Tìm theo tên NCC..." 
+      />
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-none w-full max-w-md">
-            <div className="p-4 border-b flex justify-between">
-              <h3 className="font-bold">{editingItem ? 'Sửa NCC' : 'Thêm NCC'}</h3>
-              <button onClick={() => setIsModalOpen(false)}><FiX /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <input type="text" placeholder="Tên NCC" required className="w-full border p-2 rounded-none" value={formData.tenNhaCungCap} onChange={e => setFormData({...formData, tenNhaCungCap: e.target.value})} />
-              <input type="text" placeholder="Địa chỉ" className="w-full border p-2 rounded-none" value={formData.dia_chi} onChange={e => setFormData({...formData, dia_chi: e.target.value})} />
-              <input type="text" placeholder="Số điện thoại" className="w-full border p-2 rounded-none" value={formData.so_dien_thoai} onChange={e => setFormData({...formData, so_dien_thoai: e.target.value})} />
-              <button type="submit" className="w-full btn-primary mt-4">{editingItem ? 'Cập nhật' : 'Thêm mới'}</button>
-            </form>
+      <AdminDataTable 
+        columns={columns}
+        data={items}
+        loading={loading}
+        onEdit={handleOpenModal}
+        onDelete={handleDelete}
+        idField="nhacungcap_id"
+        emptyMessage="Không tìm thấy nhà cung cấp nào"
+        pagination={{
+          current_page: pagination.current_page,
+          last_page: pagination.last_page,
+          onPageChange: (page) => fetchItems(page)
+        }}
+      />
+
+       <AdminModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={editingItem ? 'Sửa nhà cung cấp' : 'Thêm nhà cung cấp'}
+        subtitle="Thông tin đơn vị cung ứng"
+      >
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1.5">
+            <label className={labelStyle}>Tên nhà cung cấp *</label>
+            <input 
+              type="text" 
+              placeholder="Nhập tên NCC..." 
+              required 
+              className={inputStyle} 
+              value={formData.tenNhaCungCap} 
+              onChange={e => setFormData({...formData, tenNhaCungCap: e.target.value})} 
+            />
           </div>
-        </div>
-      )}
+          
+          <div className="space-y-1.5">
+            <label className={labelStyle}>Địa chỉ trụ sở</label>
+            <input 
+              type="text" 
+              placeholder="Địa chỉ chi tiết..." 
+              className={inputStyle} 
+              value={formData.dia_chi} 
+              onChange={e => setFormData({...formData, dia_chi: e.target.value})} 
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className={labelStyle}>Số điện thoại liên hệ *</label>
+            <input 
+              type="text" 
+              placeholder="Nhập số điện thoại..." 
+              required
+              className={inputStyle} 
+              value={formData.so_dien_thoai} 
+              onChange={e => setFormData({...formData, so_dien_thoai: e.target.value})} 
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-slate-100">
+            <button 
+              type="button" 
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-sm text-sm font-bold hover:bg-slate-100 transition-all cursor-pointer"
+            >
+              Hủy bỏ
+            </button>
+            <button 
+              type="submit" 
+              className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-sm text-sm font-bold shadow-lg shadow-slate-200 hover:bg-slate-800 transition-all cursor-pointer active:scale-[0.98]"
+            >
+              {editingItem ? 'Cập nhật ngay' : 'Thêm NCC mới'}
+            </button>
+          </div>
+        </form>
+      </AdminModal>
     </div>
   );
 }
-
-
-

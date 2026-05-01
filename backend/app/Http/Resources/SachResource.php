@@ -17,6 +17,7 @@ class SachResource extends JsonResource
         return [
             'id' => $this->sach_id,
             'title' => $this->tenSach,
+            'tenSach' => $this->tenSach,
             'publish_year' => $this->namXB,
             'publisher' => $this->nhaxuatban->ten ?? null,
             'author' => $this->tacgia ? trim("{$this->tacgia->ho} {$this->tacgia->tendem} {$this->tacgia->ten}") : null,

@@ -259,3 +259,46 @@ if (! function_exists('employee_status_label')) {
         };
     }
 }
+if (!function_exists('parse_user_agent')) {
+    function parse_user_agent(?string $ua): array
+    {
+        if (!$ua) {
+            return [
+                'os' => 'Không xác định',
+                'browser' => 'Không xác định',
+                'device' => 'Không xác định'
+            ];
+        }
+
+        $os = "Không xác định";
+        $browser = "Không xác định";
+        $device = "Máy tính (Desktop)";
+
+        // OS
+        if (preg_match('/windows|win32/i', $ua)) $os = 'Windows';
+        elseif (preg_match('/macintosh|mac os x/i', $ua)) $os = 'Mac OS';
+        elseif (preg_match('/linux/i', $ua)) $os = 'Linux';
+        elseif (preg_match('/android/i', $ua)) $os = 'Android';
+        elseif (preg_match('/iphone|ipad|ipod/i', $ua)) $os = 'iOS';
+
+        // Browser
+        if (preg_match('/edge/i', $ua)) $browser = 'Edge';
+        elseif (preg_match('/firefox/i', $ua)) $browser = 'Firefox';
+        elseif (preg_match('/chrome/i', $ua)) $browser = 'Chrome';
+        elseif (preg_match('/safari/i', $ua)) $browser = 'Safari';
+        elseif (preg_match('/msie|trident/i', $ua)) $browser = 'Internet Explorer';
+
+        // Device
+        if (preg_match('/mobile|android|iphone|ipod/i', $ua)) {
+            $device = 'Điện thoại di động';
+        } elseif (preg_match('/ipad|tablet/i', $ua)) {
+            $device = 'Máy tính bảng';
+        }
+        
+        return [
+            'os' => $os,
+            'browser' => $browser,
+            'device' => $device
+        ];
+    }
+}

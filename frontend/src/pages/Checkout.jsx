@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api/client';
 import { useCart } from '../contexts/CartContext';
-import toast from 'react-hot-toast';
+import { useToast } from '../contexts/ToastContext';
 import { 
   FiMapPin, FiCreditCard, FiCheckCircle, FiChevronRight, 
   FiArrowLeft, FiShoppingBag, FiTruck, FiShield 
@@ -12,7 +12,8 @@ import { cn } from '../utils/cn';
 import Loading from '../components/Common/Loading';
 import TextArea from '../components/Common/TextArea';
 
-export default function Checkout() {
+ export default function Checkout() {
+  const { showToast } = useToast();
   const { cart = [], total, fetchCart } = useCart();
   const navigate = useNavigate();
   const [addresses, setAddresses] = useState([]);
@@ -47,11 +48,11 @@ export default function Checkout() {
         dcgh_id: form.dcgh_id ? parseInt(form.dcgh_id) : null
       };
       const res = await api.post('/orders', payload);
-      toast.success(res.data.message);
+      showToast(res.data.message, "success");
       await fetchCart();
       navigate('/orders');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Lỗi đặt hàng');
+      showToast(err.response?.data?.message || 'Lỗi đặt hàng', "error");
     } finally {
       setLoading(false);
     }

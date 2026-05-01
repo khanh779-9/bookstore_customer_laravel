@@ -16,7 +16,6 @@ import {
   FiSave,
   FiX,
 } from "react-icons/fi";
-import toast from "react-hot-toast";
 import { cn } from "../utils/cn";
 import Loading from "../components/Common/Loading";
 import ConfirmModal from "../components/Common/ConfirmModal";
@@ -41,7 +40,10 @@ export default function Account() {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [newAddress, setNewAddress] = useState("");
-  const [confirmDeleteAddr, setConfirmDeleteAddr] = useState({ isOpen: false, id: null });
+  const [confirmDeleteAddr, setConfirmDeleteAddr] = useState({
+    isOpen: false,
+    id: null,
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -72,7 +74,13 @@ export default function Account() {
         });
 
         setAddresses(Array.isArray(addrRes.data) ? addrRes.data : []);
-        setOrderCount(orderRes.data.data ? orderRes.data.data.length : (Array.isArray(orderRes.data) ? orderRes.data.length : 0));
+        setOrderCount(
+          orderRes.data.data
+            ? orderRes.data.data.length
+            : Array.isArray(orderRes.data)
+              ? orderRes.data.length
+              : 0,
+        );
       } catch {
         toast.error("Không tải được dữ liệu tài khoản");
       } finally {
@@ -198,7 +206,7 @@ export default function Account() {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <aside className="lg:col-span-3">
-            <div className="bg-white border border-slate-200 rounded-none shadow-none overflow-hidden lg:sticky lg:top-24">
+            <div className="bg-white border border-slate-200 rounded-sm shadow-sm overflow-hidden lg:sticky lg:top-24">
               <div className="p-6 text-center bg-gradient-to-b from-slate-50 to-white border-b border-slate-100">
                 <div className="w-20 h-20 mx-auto rounded-none bg-primary text-white flex items-center justify-center text-2xl font-bold shadow-none shadow-primary/20">
                   {initials || <FiUser />}
@@ -242,7 +250,7 @@ export default function Account() {
 
                 <button
                   onClick={logout}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-none text-sm font-medium text-red-500 hover:bg-red-50 transition mt-2"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-none text-sm font-medium text-red-500 hover:bg-red-50 transition mt-2 cursor-pointer"
                 >
                   <FiLogOut className="text-red-400" />
                   Đăng xuất
@@ -252,7 +260,7 @@ export default function Account() {
           </aside>
 
           <main className="lg:col-span-9 space-y-6">
-            <div className="lg:hidden bg-white border border-slate-200 rounded-none p-2 shadow-none flex gap-2 overflow-x-auto">
+            <div className="lg:hidden bg-white border border-slate-200 p-2 flex gap-2 overflow-x-auto">
               <MobileTab
                 active={activeTab === "info"}
                 onClick={() => setActiveTab("info")}
@@ -284,19 +292,25 @@ export default function Account() {
                       <Input
                         label="Họ"
                         value={profile.ho}
-                        onChange={(e) => setProfile({ ...profile, ho: e.target.value })}
+                        onChange={(e) =>
+                          setProfile({ ...profile, ho: e.target.value })
+                        }
                         placeholder="Họ"
                       />
                       <Input
                         label="Tên đệm"
                         value={profile.tendem}
-                        onChange={(e) => setProfile({ ...profile, tendem: e.target.value })}
+                        onChange={(e) =>
+                          setProfile({ ...profile, tendem: e.target.value })
+                        }
                         placeholder="Tên đệm"
                       />
                       <Input
                         label="Tên"
                         value={profile.ten}
-                        onChange={(e) => setProfile({ ...profile, ten: e.target.value })}
+                        onChange={(e) =>
+                          setProfile({ ...profile, ten: e.target.value })
+                        }
                         placeholder="Tên"
                       />
                     </div>
@@ -306,7 +320,9 @@ export default function Account() {
                         label="Số điện thoại"
                         icon={FiPhone}
                         value={profile.sdt}
-                        onChange={(e) => setProfile({ ...profile, sdt: e.target.value })}
+                        onChange={(e) =>
+                          setProfile({ ...profile, sdt: e.target.value })
+                        }
                         placeholder="Số điện thoại"
                       />
                       <Input
@@ -314,7 +330,9 @@ export default function Account() {
                         icon={FiCalendar}
                         type="date"
                         value={profile.ngaysinh}
-                        onChange={(e) => setProfile({ ...profile, ngaysinh: e.target.value })}
+                        onChange={(e) =>
+                          setProfile({ ...profile, ngaysinh: e.target.value })
+                        }
                       />
                     </div>
 
@@ -381,7 +399,9 @@ export default function Account() {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => handleDeleteAddress(addr.dcgh_id)}
+                                onClick={() =>
+                                  handleDeleteAddress(addr.dcgh_id)
+                                }
                                 className="p-2 rounded-none text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
                                 aria-label="Xóa địa chỉ"
                               >
@@ -415,21 +435,36 @@ export default function Account() {
                     type="password"
                     placeholder="Nhập mật khẩu hiện tại"
                     value={passwordForm.old_password}
-                    onChange={(e) => setPasswordForm({ ...passwordForm, old_password: e.target.value })}
+                    onChange={(e) =>
+                      setPasswordForm({
+                        ...passwordForm,
+                        old_password: e.target.value,
+                      })
+                    }
                   />
                   <Input
                     label="Mật khẩu mới"
                     type="password"
                     placeholder="Nhập mật khẩu mới"
                     value={passwordForm.password}
-                    onChange={(e) => setPasswordForm({ ...passwordForm, password: e.target.value })}
+                    onChange={(e) =>
+                      setPasswordForm({
+                        ...passwordForm,
+                        password: e.target.value,
+                      })
+                    }
                   />
                   <Input
                     label="Xác nhận mật khẩu mới"
                     type="password"
                     placeholder="Nhập lại mật khẩu mới"
                     value={passwordForm.password_confirmation}
-                    onChange={(e) => setPasswordForm({ ...passwordForm, password_confirmation: e.target.value })}
+                    onChange={(e) =>
+                      setPasswordForm({
+                        ...passwordForm,
+                        password_confirmation: e.target.value,
+                      })
+                    }
                   />
 
                   <button
@@ -522,10 +557,10 @@ function SidebarButton({ active, onClick, icon, label }) {
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-3 px-4 py-3 rounded-none text-sm font-medium transition",
+        "w-full flex items-center gap-3 px-4 py-3 rounded-none text-sm font-medium transition cursor-pointer",
         active
           ? "bg-primary text-white shadow-none"
-          : "text-slate-600 hover:bg-slate-50"
+          : "text-slate-600 hover:bg-slate-50",
       )}
     >
       <span className={active ? "text-white" : "text-slate-400"}>{icon}</span>
@@ -542,7 +577,7 @@ function MobileTab({ active, onClick, icon, label }) {
         "shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-none text-sm font-medium transition",
         active
           ? "bg-primary text-white"
-          : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+          : "bg-slate-50 text-slate-600 hover:bg-slate-100",
       )}
     >
       <span>{icon}</span>
@@ -553,7 +588,7 @@ function MobileTab({ active, onClick, icon, label }) {
 
 function SectionCard({ title, subtitle, action, children }) {
   return (
-    <section className="bg-white border border-slate-200 rounded-none shadow-none overflow-hidden">
+    <section className="bg-white border border-slate-200 rounded-sm shadow-sm overflow-hidden">
       <div className="px-5 md:px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-bold text-secondary">{title}</h3>
@@ -581,5 +616,3 @@ function EmptyState({ icon, title, desc, action }) {
     </div>
   );
 }
-
-

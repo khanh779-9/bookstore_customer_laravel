@@ -80,10 +80,10 @@ export default function Footer() {
           
           <button 
             onClick={scrollToTop}
-            className="group flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-primary transition-all uppercase tracking-widest"
+            className="group flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-primary transition-all uppercase tracking-widest cursor-pointer"
           >
             Lên đầu trang
-            <div className="w-8 h-8 bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+            <div className="w-8 h-8 bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all rounded-lg">
               <FiArrowUp />
             </div>
           </button>
@@ -100,7 +100,7 @@ function FooterLink({ to, children }) {
         to={to} 
         className="text-sm text-slate-500 hover:text-primary transition-all flex items-center gap-2 group"
       >
-        <span className="w-1.5 h-1.5 bg-slate-200 group-hover:bg-primary group-hover:scale-125 transition-all"></span>
+        <span className="w-2 h-2 bg-slate-200 group-hover:bg-primary group-hover:scale-125 transition-all rounded-full"></span>
         {children}
       </Link>
     </li>
@@ -111,7 +111,7 @@ function SocialLink({ icon: Icon, href }) {
   return (
     <a 
       href={href} 
-      className="w-10 h-10 bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+      className="w-10 h-10 bg-slate-50 text-slate-400 flex items-center justify-center rounded-md hover:bg-primary hover:text-white transition-all"
     >
       <Icon className="w-5 h-5" />
     </a>

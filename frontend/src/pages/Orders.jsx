@@ -12,7 +12,7 @@ import {
   FiTruck,
   FiXCircle,
 } from "react-icons/fi";
-import toast from "react-hot-toast";
+import { useToast } from "../contexts/ToastContext";
 import Loading from "../components/Common/Loading";
 
 const statusConfig = {
@@ -49,6 +49,7 @@ const statusConfig = {
 };
 
 export default function Orders() {
+  const { showToast } = useToast();
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("id");
   const [orders, setOrders] = useState([]);
@@ -70,7 +71,7 @@ export default function Orders() {
         }
       } catch (err) {
         console.error("Error fetching orders:", err);
-        toast.error("Lỗi tải dữ liệu");
+        showToast("Lỗi tải dữ liệu", "error");
       } finally {
         setLoading(false);
       }

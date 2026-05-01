@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { productService } from "../services/productService";
 import { useCart } from "../contexts/CartContext";
 import { useAuth } from "../contexts/AuthContext";
-import toast from "react-hot-toast";
+import { useToast } from "../contexts/ToastContext";
 import api from "../api/client";
 import {
   FiShoppingCart,
@@ -85,7 +85,7 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
-    toast.success("Đã thêm vào giỏ hàng");
+    showToast("Đã thêm vào giỏ hàng", "success");
   };
 
   const toggleWishlist = async () => {
@@ -94,9 +94,9 @@ export default function ProductDetail() {
         sanpham_id: product.id,
       });
       setIsWishlisted(res.data.added);
-      toast.success(res.data.message);
+      showToast(res.data.message, "success");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Vui lòng đăng nhập");
+      showToast(err.response?.data?.message || "Vui lòng đăng nhập", "error");
     }
   };
 
@@ -104,11 +104,11 @@ export default function ProductDetail() {
     e.preventDefault();
     try {
       await api.post(`/products/${id}/reviews`, reviewForm);
-      toast.success("Cảm ơn bạn đã đánh giá!");
+      showToast("Cảm ơn bạn đã đánh giá!", "success");
       queryClient.invalidateQueries({ queryKey: ["product", id] });
       setReviewForm({ rating: 5, noi_dung: "" });
     } catch (err) {
-      toast.error(err.response?.data?.message || "Lỗi gửi đánh giá");
+      showToast(err.response?.data?.message || "Lỗi gửi đánh giá", "error");
     }
   };
 

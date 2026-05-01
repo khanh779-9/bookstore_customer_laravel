@@ -15,16 +15,16 @@ class HoaDonResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->hoadon_id,
-            'customer_id' => $this->khachhang_id,
+            'hoadon_id' => $this->hoadon_id,
+            'khachhang_id' => $this->khachhang_id,
             'customer_name' => $this->khachHang->ho_ten ?? null,
             'address_id' => $this->dcgh_id,
             'address' => $this->diaChi->diachi ?? null,
-            'created_at' => $this->ngaytao,
-            'total_amount' => (float) $this->tongtien,
-            'status' => $this->trangthai,
-            'payment_method' => $this->phuongthuc_thanhtoan,
-            'note' => $this->ghichu,
+            'ngaytao' => $this->ngaytao,
+            'tongtien' => (float) $this->tongtien,
+            'trangthai' => $this->trangthai,
+            'phuongthuc_thanhtoan' => $this->phuongthuc_thanhtoan,
+            'ghichu' => $this->ghichu,
             'items' => ChiTietHoaDonResource::collection($this->whenLoaded('chiTiet')),
         ];
     }

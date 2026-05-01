@@ -15,7 +15,7 @@ export default function About() {
   return (
     <div className="container mx-auto px-4 space-y-20 pb-20">
       {/* Hero Section */}
-      <section className="relative h-[500px] flex items-center justify-center text-center overflow-hidden bg-gray-900 mx-4 mt-4 rounded-none shadow-none group">
+      <section className="relative h-[500px] flex items-center justify-center text-center overflow-hidden bg-gray-900 mx-4 mt-4 rounded-[20px] shadow-lg group">
         <img
           src="/assets/images/about_background.png"
           alt="About Background"
@@ -32,7 +32,7 @@ export default function About() {
           <div className="mt-10">
             <Link
               to="/products"
-              className="bg-primary hover:bg-primary-dark text-white font-black py-4 px-12 rounded-none transition-all hover:scale-105 active:scale-95 shadow-none shadow-primary-dark/20"
+              className="bg-primary hover:bg-primary-dark text-white font-black py-4 px-12 rounded-[20px] transition-all hover:scale-105 active:scale-95 shadow-none shadow-primary-dark/20"
             >
               Khám Phá Sản Phẩm
             </Link>
@@ -43,7 +43,7 @@ export default function About() {
       {/* Intro Mission */}
       <section className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="inline-block px-4 py-1 bg-primary/10 text-primary rounded-none text-xs font-bold uppercase tracking-widest">
+          <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-[20px] text-xs font-bold uppercase tracking-widest shadow-sm">
             Sứ mệnh của chúng tôi
           </div>
           <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-medium">
@@ -96,11 +96,11 @@ export default function About() {
                 className={`relative flex items-center gap-8 md:gap-0 ${i % 2 === 0 ? "md:flex-row-reverse" : ""}`}
               >
                 <div className="hidden md:block w-1/2"></div>
-                <div className="absolute left-6 md:left-1/2 w-12 h-12 bg-primary text-white rounded-none flex items-center justify-center text-xl shadow-none shadow-green-100 -translate-x-1/2 z-10 border-4 border-white">
+                <div className="absolute left-6 md:left-1/2 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl shadow-sm shadow-gray-300 -translate-x-1/2 z-10 border-4 border-white">
                   {item.icon}
                 </div>
                 <div
-                  className={`flex-1 bg-gray-50 p-8 rounded-none border border-gray-100 hover:shadow-none transition-all ${i % 2 === 0 ? "md:mr-16" : "md:ml-16"}`}
+                  className={`flex-1 bg-gray-50 p-8 rounded-none border border-gray-100 hover:shadow-sm transition-all ${i % 2 === 0 ? "md:mr-16" : "md:ml-16"}`}
                 >
                   <span className="text-primary font-bold text-2xl block mb-2">
                     {item.year}
@@ -150,9 +150,9 @@ export default function About() {
             ].map((value, i) => (
               <div
                 key={i}
-                className="bg-white/5 backdrop-blur-lg p-10 rounded-none border border-white/10 text-center group hover:bg-primary transition-all duration-500"
+                className="bg-white/5 backdrop-blur-lg p-8 rounded-sm border border-white/10 text-center group hover:bg-primary transition-all duration-500"
               >
-                <div className="w-20 h-20 mx-auto mb-8 bg-primary/20 text-primary rounded-none flex items-center justify-center text-3xl group-hover:bg-white group-hover:scale-110 transition-all duration-500">
+                <div className="w-20 h-20 mx-auto mb-8 bg-primary/20 text-primary rounded-full flex items-center justify-center text-3xl group-hover:bg-white group-hover:scale-110 transition-all duration-500">
                   {value.icon}
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-white transition-colors">
@@ -180,7 +180,7 @@ export default function About() {
           <div className="pt-6">
             <Link
               to="/products"
-              className="inline-block bg-primary text-white font-black py-5 px-14 rounded-none hover:bg-green-500 transition-all hover:scale-105 active:scale-95 shadow-none shadow-green-100 text-lg tracking-tight"
+              className="inline-block bg-primary text-white font-black py-5 px-14 rounded-[20px] hover:bg-primary-500 hover:shadow-lg transition-all hover:scale-105 active:scale-95 shadow-primary-100 text-lg tracking-tight"
             >
               XEM TẤT CẢ SẢN PHẨM
             </Link>
@@ -190,6 +190,3 @@ export default function About() {
     </div>
   );
 }
-
-
-

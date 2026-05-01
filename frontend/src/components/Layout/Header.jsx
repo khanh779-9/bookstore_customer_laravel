@@ -267,11 +267,11 @@ export default function Header() {
             {/* Cart */}
             <Link
               to="/cart"
-              className="p-2.5 text-slate-500 hover:text-primary hover:bg-slate-50 transition-all relative"
+              className="p-3 text-slate-500 hover:text-primary hover:bg-slate-50 transition-all relative"
             >
               <FiShoppingCart className="w-5 h-5" />
               {count > 0 && (
-                <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center border-2 border-white">
+                <span className="absolute p-2 top-1 rounded-full right-1 bg-red-500 text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center border-2 border-white">
                   {count > 9 ? "9+" : count}
                 </span>
               )}
@@ -287,9 +287,9 @@ export default function Header() {
                   onClick={() =>
                     setActiveDropdown(activeDropdown === "user" ? null : "user")
                   }
-                  className="flex items-center gap-2 p-1 hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100"
+                  className="flex items-center gap-2 p-1 hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 cursor-pointer"
                 >
-                  <div className="w-8 h-8 bg-primary text-white flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 bg-primary text-white flex items-center justify-center font-bold text-xs rounded-full">
                     {user?.ten?.charAt(0).toUpperCase()}
                   </div>
                   <FiChevronDown
@@ -324,7 +324,7 @@ export default function Header() {
                       <div className="h-[1px] bg-slate-50 my-1"></div>
                       <button
                         onClick={handleLogoutClick}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 transition-all"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 transition-all cursor-pointer"
                       >
                         <FiLogOut /> Đăng xuất
                       </button>
@@ -335,7 +335,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-2 p-2.5 text-slate-600 hover:text-primary transition-all font-bold text-sm"
+                className="flex items-center gap-2 p-2.5 text-slate-600 hover:text-primary transition-all font-bold text-sm cursor-pointer"
               >
                 <FiUser className="w-5 h-5" />
                 <span className="hidden sm:block">Đăng nhập</span>

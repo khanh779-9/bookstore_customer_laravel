@@ -30,7 +30,7 @@ class ThongBao extends Model
             'noi_dung' => $content,
             'ngay_tao' => now(),
             'loai' => $type,
-            'trang_thai' => 'chua_xem',
+            'trang_thai' => notification_unread_code(),
         ]);
     }
 }

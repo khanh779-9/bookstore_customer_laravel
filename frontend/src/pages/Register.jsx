@@ -61,11 +61,11 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-xl">
+    <div className="bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md">
 
         {/* CARD */}
-        <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-none shadow-none p-6 md:p-8">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-sm shadow-sm p-6 md:p-8">
 
           {/* HEADER */}
           <div className="text-center mb-8">
@@ -83,7 +83,7 @@ export default function Register() {
           <form onSubmit={handleSubmit} className="space-y-5">
 
             {/* NAME */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <Input
                 icon={FiUser}
                 placeholder="Họ"
@@ -100,10 +100,10 @@ export default function Register() {
                 value={form.ten}
                 onChange={(e) => handleChange("ten", e.target.value)}
               />
-            </div>
+            </div> */}
 
             {/* CONTACT */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
               <Input
                 icon={FiMail}
                 type="email"
@@ -111,16 +111,16 @@ export default function Register() {
                 value={form.email}
                 onChange={(e) => handleChange("email", e.target.value)}
               />
-              <Input
+              {/* <Input
                 icon={FiPhone}
                 placeholder="Số điện thoại"
                 value={form.sdt}
                 onChange={(e) => handleChange("sdt", e.target.value)}
-              />
+              /> */}
             </div>
 
             {/* PASSWORD */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
               <Input
                 icon={FiLock}
                 type={showPassword ? "text" : "password"}
@@ -154,18 +154,18 @@ export default function Register() {
             </div>
 
             {/* ADDRESS */}
-            <TextArea
+            {/* <TextArea
               rows="2"
               placeholder="Địa chỉ"
               value={form.diachi}
               onChange={(e) => handleChange("diachi", e.target.value)}
-            />
+            /> */}
 
             {/* BUTTON */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-white py-3 rounded-none font-semibold flex items-center justify-center gap-2 shadow-none hover:shadow-none  transition-all disabled:opacity-50"
+              className="w-full bg-primary hover:bg-primary/80 cursor-pointer text-white py-3 rounded-none font-semibold flex items-center justify-center gap-2 shadow-none hover:shadow-none  transition-all disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-none animate-spin" />
