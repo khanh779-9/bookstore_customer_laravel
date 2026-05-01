@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('noi_dung');
             $table->timestamp('ngay_tao')->useCurrent()->useCurrentOnUpdate();
             $table->enum('loai', ['khach_hang', 'don_hang', 'he_thong', 'khuyen_mai', ''])->default('');
-            $table->enum('trang_thai', ['da_doc', 'chua_doc', 'luu_tru', '']).default('chua_doc');
+            $table->enum('trang_thai', ['da_doc', 'chua_doc', 'luu_tru', ''])->default('chua_doc');
             $table->timestamps();
 
             $table->foreign('khachhang_id')->references('khachhang_id')->on('khachhang')->onDelete('cascade');

@@ -95,7 +95,7 @@ class CartController extends Controller
             return $this->handleFailure($request, $e->getMessage());
         }
     }
-
+ 
     private function getCustomerId(): int
     {
         $user = auth()->user();

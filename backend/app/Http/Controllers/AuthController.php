@@ -6,6 +6,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\KhachHangResource;
 use App\Services\AuthService;
+use App\Services\PasswordResetService;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -51,6 +52,41 @@ class AuthController extends Controller
             $status = (is_int($code) && $code >= 100 && $code < 600) ? $code : 400;
             return response()->json(['message' => $e->getMessage()], $status);
         }
+    }
+
+    public function forgot(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $result = app(PasswordResetService::class)->sendCode($validated['email']);
+
+        return response()->json([
+            'message' => 'Nếu email tồn tại, mã xác minh đã được gửi.',
+            'code' => $result['code'],
+        ]);
+    }
+
+    public function reset(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'code' => ['required', 'digits:6'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        $ok = app(PasswordResetService::class)->resetPassword(
+            $validated['email'],
+            $validated['code'],
+            $validated['password']
+        );
+
+        if (!$ok) {
+            return response()->json(['message' => 'Mã xác minh không hợp lệ hoặc đã hết hạn.'], 422);
+        }
+
+        return response()->json(['message' => 'Đổi mật khẩu thành công.']);
     }
 
     /**

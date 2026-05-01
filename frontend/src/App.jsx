@@ -34,6 +34,7 @@ import EmployeeCustomers from "./pages/employee/EmployeeCustomers";
 import EmployeeCategories from "./pages/employee/EmployeeCategories";
 import EmployeePublishers from "./pages/employee/EmployeePublishers";
 import EmployeeProviders from "./pages/employee/EmployeeProviders";
+import EmployeeEmployees from "./pages/employee/EmployeeEmployees";
 import EmployeeReports from "./pages/employee/EmployeeReports";
 
 function App() {
@@ -79,6 +80,7 @@ function App() {
           <Route path="publishers" element={<EmployeePublishers />} />
           <Route path="providers" element={<EmployeeProviders />} />
           <Route path="customers" element={<EmployeeCustomers />} />
+          <Route path="employees" element={<EmployeeEmployees />} />
           <Route path="reports" element={<EmployeeReports />} />
           <Route
             path="settings"

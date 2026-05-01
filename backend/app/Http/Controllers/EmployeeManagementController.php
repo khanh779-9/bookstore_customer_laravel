@@ -17,9 +17,12 @@ class EmployeeManagementController extends Controller
             'ten' => ['required', 'string', 'max:50'],
             'email' => ['required', 'email', 'unique:nhanvien,email'],
             'password' => ['required', 'string', 'min:6'],
-            'vaitro' => ['required', 'string', 'in:admin,quanly,nhanvien'],
+            'role' => ['nullable', 'string', 'in:admin,quanly,nhanvien'],
+            'vaitro' => ['nullable', 'string', 'in:admin,quanly,nhanvien'],
         ]);
 
+        $validated['role'] = $validated['role'] ?? $validated['vaitro'] ?? 'nhanvien';
+        unset($validated['vaitro']);
         $validated['password'] = Hash::make($validated['password']);
         $validated['ngayvaolam'] = now();
         $validated['trangthai'] = 'dang_lam';
@@ -38,9 +41,15 @@ class EmployeeManagementController extends Controller
             'tendem' => ['nullable', 'string', 'max:50'],
             'ten' => ['sometimes', 'required', 'string', 'max:50'],
             'email' => ['sometimes', 'required', 'email', 'unique:nhanvien,email,'.$id.',nhanvien_id'],
+            'role' => ['sometimes', 'required', 'string', 'in:admin,quanly,nhanvien'],
             'vaitro' => ['sometimes', 'required', 'string', 'in:admin,quanly,nhanvien'],
             'trangthai' => ['sometimes', 'required', 'string', 'in:dang_lam,nghi_viec,tam_nghi'],
         ]);
+
+        if (array_key_exists('vaitro', $validated) && !array_key_exists('role', $validated)) {
+            $validated['role'] = $validated['vaitro'];
+        }
+        unset($validated['vaitro']);
 
         if ($request->has('password')) {
             $validated['password'] = Hash::make($request->password);

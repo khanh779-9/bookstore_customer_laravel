@@ -25,6 +25,33 @@ class OrderController extends Controller
     /**
      * Display customer order history.
      */
+    public function create(Request $request)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Sử dụng frontend route /checkout để thanh toán.',
+                'path' => '/checkout',
+            ]);
+        }
+
+        return redirect('/checkout');
+    }
+
+    public function success(Request $request)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Đặt hàng thành công.',
+                'last_order_id' => session('last_order_id'),
+            ]);
+        }
+
+        return redirect('/orders');
+    }
+
+    /**
+     * Display customer order history.
+     */
     public function index(Request $request)
     {
         $customerId = $this->getCustomerId();
@@ -91,7 +118,7 @@ class OrderController extends Controller
             'trangthai' => ['required', Rule::in(['cho_xac_nhan', 'da_xac_nhan', 'dang_giao_hang', 'da_giao_hang', 'da_huy'])]
         ]);
         
-        $order = $this->orderService->updateStatus($id, $validated['trangthai'], auth()->id());
+        $order = $this->orderService->updateStatus($id, $validated['trangthai'], $request->user()?->getAuthIdentifier());
 
         if ($request->expectsJson()) {
             return (new HoaDonResource($order))->additional(['message' => 'Đã cập nhật trạng thái.']);
@@ -139,7 +166,7 @@ class OrderController extends Controller
 
     private function getCustomerId(): int
     {
-        $user = auth()->user();
+        $user = request()->user();
         if ($user) return (int) $user->khachhang_id;
         return (int) (session('customer.id') ?? 0);
     }

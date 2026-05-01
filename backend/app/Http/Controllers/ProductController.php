@@ -32,6 +32,19 @@ class ProductController extends Controller
     /**
      * Display a listing of the products.
      */
+    public function home(Request $request)
+    {
+        if ($request->expectsJson() || $request->is('api/*')) {
+            $products = SanPham::orderByDesc('sanpham_id')->paginate(12);
+            return SanPhamResource::collection($products);
+        }
+
+        return redirect('/');
+    }
+
+    /**
+     * Display a listing of the products.
+     */
     public function index(ProductSearchRequest $request)
     {
         $products = $this->productService->getFilteredProducts($request->validated());
@@ -169,7 +182,7 @@ class ProductController extends Controller
             $id = request()->session()->get('customer_id') ?? request()->session()->get('customer.id');
             if ($id) return (int)$id;
         }
-        return auth()->id() ?? 0;
+        return (int) (request()->user()?->getAuthIdentifier() ?? 0);
     }
 
     private function handleAuthFailure(Request $request)
