@@ -1,190 +1,129 @@
-import {
-  FiBookOpen,
-  FiShield,
-  FiHeart,
-  FiMapPin,
-  FiGlobe,
-  FiZap,
-  FiStar,
-} from "react-icons/fi";
+import { FiBookOpen, FiShield, FiHeart, FiMapPin, FiGlobe, FiStar, FiZap, FiArrowRight } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function About() {
   return (
-    <div className="container mx-auto px-4 space-y-20 pb-20">
+    <div className="bg-white min-h-screen pb-32">
       {/* Hero Section */}
-      <section className="relative h-[500px] flex items-center justify-center text-center overflow-hidden bg-gray-900 mx-4 mt-4 rounded-[20px] shadow-lg group">
-        <img
+      <section className="relative h-[600px] flex items-center overflow-hidden bg-slate-900">
+        <motion.img
+          initial={{ scale: 1.1, opacity: 0 }}
+          animate={{ scale: 1, opacity: 0.4 }}
+          transition={{ duration: 1.5 }}
           src="/assets/images/about_background.png"
           alt="About Background"
-          className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60"></div>
-        <div className="relative z-10 container mx-auto px-4">
-          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
-            Câu chuyện về <span className="text-primary">BookZone</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto leading-relaxed font-semibold">
-            "Khai nguồn hứng sáng tạo"
-          </p>
-          <div className="mt-10">
-            <Link
-              to="/products"
-              className="bg-primary hover:bg-primary-dark text-white font-black py-4 px-12 rounded-[20px] transition-all hover:scale-105 active:scale-95 shadow-none shadow-primary-dark/20"
-            >
-              Khám Phá Sản Phẩm
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/40 to-transparent"></div>
+        <div className="relative z-10 container mx-auto px-6">
+          <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }}>
+            <span className="text-primary font-black uppercase tracking-[0.4em] text-xs mb-4 block">Về chúng tôi</span>
+            <h1 className="text-5xl md:text-8xl font-black text-white mb-8 tracking-tighter leading-none uppercase italic">
+              Khai nguồn <br/> <span className="text-primary">Sáng tạo</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-300 max-w-2xl leading-relaxed font-medium mb-12">
+              BookZone không chỉ là một nhà sách, chúng tôi là trạm dừng chân cho những tâm hồn yêu tri thức và sự sáng tạo.
+            </p>
+            <Link to="/products" className="inline-flex items-center gap-4 bg-white text-slate-900 px-10 py-5 font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-2xl">
+              Khám Phá Sản Phẩm <FiArrowRight size={20} />
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Intro Mission */}
-      <section className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-[20px] text-xs font-bold uppercase tracking-widest shadow-sm">
-            Sứ mệnh của chúng tôi
+      {/* Mission Section */}
+      <section className="py-32 container mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-20 items-center">
+          <div className="space-y-8">
+            <div className="w-20 h-1.5 bg-primary"></div>
+            <h2 className="text-4xl md:text-6xl font-black text-secondary uppercase tracking-tighter leading-none">Sứ mệnh mang <br/> Tri thức tới mọi nhà</h2>
+            <p className="text-lg text-slate-500 leading-relaxed font-medium">
+              Chào mừng đến với BookZone, nơi mỗi sản phẩm không chỉ là một công cụ mà còn là nguồn cảm hứng cho sự sáng tạo và học hỏi. Chúng tôi tin rằng những vật dụng nhỏ bé trên bàn làm việc có sức mạnh to lớn để biến ý tưởng thành hiện thực.
+            </p>
           </div>
-          <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-medium">
-            Chào mừng đến với BookZone, nơi mỗi sản phẩm không chỉ là một công
-            cụ mà còn là nguồn cảm hứng cho sự sáng tạo và học hỏi. Chúng tôi
-            tin rằng những vật dụng nhỏ bé trên bàn làm việc có sức mạnh to lớn
-            để biến ý tưởng thành hiện thực.
-          </p>
-          <div className="w-24 h-1 bg-gray-100 mx-auto rounded-none"></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-slate-50 p-10 space-y-4">
+              <h3 className="text-4xl font-black text-slate-200">01.</h3>
+              <p className="font-black text-secondary uppercase tracking-widest text-xs">Chất lượng tuyển chọn</p>
+            </div>
+            <div className="bg-slate-900 p-10 space-y-4 text-white">
+              <h3 className="text-4xl font-black text-white/10">02.</h3>
+              <p className="font-black text-primary uppercase tracking-widest text-xs">Giao hàng hỏa tốc</p>
+            </div>
+            <div className="bg-primary p-10 space-y-4 text-white">
+              <h3 className="text-4xl font-black text-white/20">03.</h3>
+              <p className="font-black text-white uppercase tracking-widest text-xs">Hỗ trợ tận tâm</p>
+            </div>
+            <div className="bg-slate-50 p-10 space-y-4">
+              <h3 className="text-4xl font-black text-slate-200">04.</h3>
+              <p className="font-black text-secondary uppercase tracking-widest text-xs">Giá trị bền vững</p>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Timeline Section */}
-      <section className="container mx-auto px-4">
-        <div className="max-w-5xl mx-auto bg-white rounded-none p-12 md:p-20 shadow-none border border-gray-100 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-none -mr-32 -mt-32 blur-3xl"></div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-16 text-center">
-            Hành Trình Của Chúng Tôi
-          </h2>
+      <section className="py-32 bg-slate-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-24">
+            <h2 className="text-4xl md:text-6xl font-black text-secondary uppercase tracking-tighter italic">Hành trình phát triển</h2>
+            <p className="text-xs text-slate-400 font-black uppercase tracking-[0.3em] mt-4">Từ một cửa hàng nhỏ đến chuỗi cung ứng toàn quốc</p>
+          </div>
 
-          <div className="relative space-y-12 before:absolute before:left-6 md:before:left-1/2 before:top-2 before:bottom-2 before:w-1 before:bg-gray-100 before:-translate-x-1/2">
+          <div className="relative space-y-20 before:absolute before:left-1/2 before:top-0 before:bottom-0 before:w-px before:bg-slate-200 before:hidden md:before:block">
             {[
-              {
-                year: "2015",
-                title: "Thành lập cửa hàng",
-                desc: "Cửa hàng nhỏ đầu tiên ra đời từ niềm đam mê về giấy và bút, mang đến những sản phẩm được chọn lọc kĩ lưỡng cho cộng đồng địa phương.",
-                icon: <FiBookOpen />,
-              },
-              {
-                year: "2018",
-                title: "Mở chi nhánh thứ hai",
-                desc: "Mở rộng quy mô để phục vụ được nhiều khách hàng hơn, đồng thời giới thiệu thêm nhiều dòng sản phẩm sáng tạo và độc đáo.",
-                icon: <FiMapPin />,
-              },
-              {
-                year: "2020",
-                title: "Ra mắt website bán hàng",
-                desc: "Đưa BookZone lên không gian số, giúp khách hàng trên cả nước dễ dàng tiếp cận và mua sắm tiện lợi hơn.",
-                icon: <FiGlobe />,
-              },
-              {
-                year: "2022",
-                title: "Sự kiện cộng đồng đầu tiên",
-                desc: "Tổ chức workshop calligraphy, tạo sân chơi sáng tạo và kết nối những người có cùng đam mê, khẳng định vai trò gắn kết cộng đồng.",
-                icon: <FiStar />,
-              },
+              { year: "2015", title: "Khởi đầu đam mê", desc: "Cửa hàng nhỏ đầu tiên ra đời từ niềm đam mê về giấy và bút, mang đến những sản phẩm chọn lọc.", icon: <FiBookOpen /> },
+              { year: "2018", title: "Vươn mình mạnh mẽ", desc: "Mở rộng quy mô phục vụ nhiều khách hàng hơn, giới thiệu dòng sản phẩm độc quyền.", icon: <FiMapPin /> },
+              { year: "2020", title: "Chuyển đổi số", desc: "Ra mắt hệ thống website BookZone, giúp mua sắm tiện lợi hơn bao giờ hết.", icon: <FiGlobe /> },
+              { year: "2024", title: "Định vị dẫn đầu", desc: "Tổ chức các sự kiện workshop, tạo sân chơi gắn kết cộng đồng yêu sách.", icon: <FiStar /> },
             ].map((item, i) => (
-              <div
-                key={i}
-                className={`relative flex items-center gap-8 md:gap-0 ${i % 2 === 0 ? "md:flex-row-reverse" : ""}`}
-              >
-                <div className="hidden md:block w-1/2"></div>
-                <div className="absolute left-6 md:left-1/2 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl shadow-sm shadow-gray-300 -translate-x-1/2 z-10 border-4 border-white">
+              <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                key={i} className={cn("flex flex-col md:flex-row items-center gap-10 md:gap-20", i % 2 !== 0 && "md:flex-row-reverse")}>
+                <div className="flex-1 text-center md:text-right">
+                  <div className={cn("inline-block px-6 py-2 bg-slate-900 text-white font-black text-2xl mb-4", i % 2 !== 0 && "md:text-left")}>{item.year}</div>
+                  <h3 className="text-xl font-black text-secondary uppercase tracking-tight mb-2">{item.title}</h3>
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-sm ml-auto mr-auto md:mr-0">{item.desc}</p>
+                </div>
+                <div className="w-16 h-16 bg-primary text-white flex items-center justify-center text-2xl rounded-full shadow-2xl z-10 border-4 border-white shrink-0">
                   {item.icon}
                 </div>
-                <div
-                  className={`flex-1 bg-gray-50 p-8 rounded-none border border-gray-100 hover:shadow-sm transition-all ${i % 2 === 0 ? "md:mr-16" : "md:ml-16"}`}
-                >
-                  <span className="text-primary font-bold text-2xl block mb-2">
-                    {item.year}
-                  </span>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-500 leading-relaxed text-sm">
-                    {item.desc}
-                  </p>
-                </div>
-              </div>
+                <div className="flex-1 hidden md:block"></div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Core Values */}
-      <section className="bg-gray-900 py-24 rounded-none mx-4 overflow-hidden relative">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-3xl md:text-5xl font-bold text-white">
-              Giá Trị Cốt Lõi
-            </h2>
-            <p className="text-gray-400 max-w-xl mx-auto">
-              Nền tảng vững chắc cho mọi hoạt động tại BookZone
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <FiShield />,
-                title: "Chất Lượng",
-                desc: "Chúng tôi cam kết cung cấp những sản phẩm có chất lượng tối ưu, được lựa chọn kỹ lưỡng từ nhà sản xuất uy tín trong và ngoài nước.",
-              },
-              {
-                icon: <FiZap />,
-                title: "Sáng Tạo",
-                desc: "Luôn tìm kiếm và cập nhật những sản phẩm độc đáo, khơi nguồn cảm hứng sáng tạo cho người dùng trong công việc và học tập.",
-              },
-              {
-                icon: <FiHeart />,
-                title: "Tận Tâm",
-                desc: "Khách hàng là trọng tâm trong mọi hoạt động. Đội ngũ của chúng tôi luôn sẵn sàng hỗ trợ bạn một cách nhiệt tình nhất.",
-              },
-            ].map((value, i) => (
-              <div
-                key={i}
-                className="bg-white/5 backdrop-blur-lg p-8 rounded-sm border border-white/10 text-center group hover:bg-primary transition-all duration-500"
-              >
-                <div className="w-20 h-20 mx-auto mb-8 bg-primary/20 text-primary rounded-full flex items-center justify-center text-3xl group-hover:bg-white group-hover:scale-110 transition-all duration-500">
-                  {value.icon}
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-white transition-colors">
-                  {value.title}
-                </h3>
-                <p className="text-gray-400 leading-relaxed group-hover:text-white/90 transition-colors font-light">
-                  {value.desc}
-                </p>
-              </div>
-            ))}
-          </div>
+      {/* Values Section */}
+      <section className="py-32 container mx-auto px-6">
+        <div className="grid md:grid-cols-3 gap-8">
+          <ValueCard icon={<FiShield />} title="Chất Lượng" desc="Tuyển chọn khắt khe từ những NXB uy tín nhất toàn cầu." />
+          <ValueCard icon={<FiZap />} title="Sáng Tạo" desc="Luôn cập nhật những đầu sách và văn phòng phẩm độc đáo." />
+          <ValueCard icon={<FiHeart />} title="Tận Tâm" desc="Hỗ trợ khách hàng 24/7 với tất cả lòng nhiệt thành." />
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="container mx-auto px-4 text-center py-20">
-        <div className="max-w-3xl mx-auto space-y-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-            Sẵn sàng để sáng tạo cùng chúng tôi?
-          </h2>
-          <p className="text-gray-500 text-lg md:text-xl">
-            Khám phá bộ sưu tập sản phẩm đa dạng và tìm kiếm nguồn cảm hứng mới
-            ngay hôm nay.
-          </p>
-          <div className="pt-6">
-            <Link
-              to="/products"
-              className="inline-block bg-primary text-white font-black py-5 px-14 rounded-[20px] hover:bg-primary-500 hover:shadow-lg transition-all hover:scale-105 active:scale-95 shadow-primary-100 text-lg tracking-tight"
-            >
-              XEM TẤT CẢ SẢN PHẨM
-            </Link>
-          </div>
+      <section className="py-40 text-center bg-slate-900 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+        <div className="relative z-10 space-y-10">
+          <h2 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none italic">Sẵn sàng để khai phá <br/> tri thức?</h2>
+          <Link to="/products" className="btn-primary px-16 py-6 text-sm">BẮT ĐẦU NGAY BÂY GIỜ</Link>
         </div>
       </section>
+    </div>
+  );
+}
+
+function ValueCard({ icon, title, desc }) {
+  return (
+    <div className="p-12 border border-slate-100 text-center hover:border-primary transition-all group">
+      <div className="w-20 h-20 mx-auto mb-10 bg-slate-50 text-slate-300 flex items-center justify-center text-4xl group-hover:bg-primary group-hover:text-white transition-all rounded-sm shadow-sm">
+        {icon}
+      </div>
+      <h3 className="text-xl font-black text-secondary uppercase tracking-widest mb-4">{title}</h3>
+      <p className="text-slate-400 font-medium leading-relaxed">{desc}</p>
     </div>
   );
 }

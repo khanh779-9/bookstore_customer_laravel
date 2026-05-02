@@ -32,7 +32,10 @@ export default function Login() {
       showToast("Đăng nhập thành công", "success");
       navigate("/account");
     } catch (err) {
-      showToast(err.response?.data?.message || "Email hoặc mật khẩu không đúng", "error");
+      showToast(
+        err.response?.data?.message || "Email hoặc mật khẩu không đúng",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -123,6 +126,17 @@ export default function Login() {
               </Link>
             </p>
 
+            {/* INTERNAL LOGIN */}
+            <p className="text-center text-sm text-slate-500">
+              Nội bộ?{" "}
+              <Link
+                to="/internal"
+                className="text-primary font-medium hover:underline"
+              >
+                Đăng nhập
+              </Link>
+            </p>
+
             {/* DIVIDER */}
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-slate-200" />
@@ -151,6 +165,3 @@ export default function Login() {
     </div>
   );
 }
-
-
-

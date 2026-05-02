@@ -1,48 +1,43 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../api/client';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('auth_user');
-    return saved ? JSON.parse(saved) : null;
+    const savedUser = localStorage.getItem('auth_user');
+    return savedUser ? JSON.parse(savedUser) : null;
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
-    // Backend returns { data: user, token: '...', message: '...' }
-    const { data: userData, token } = res.data;
+  const login = useCallback(async (credentials) => {
+    const response = await api.post('/auth/login', credentials);
+    const { token, user: userData } = response.data;
     
     localStorage.setItem('auth_token', token);
     localStorage.setItem('auth_user', JSON.stringify(userData));
     setUser(userData);
-    return res.data;
-  };
+    return response.data;
+  }, []);
 
-  const register = async (data) => {
-    const res = await api.post('/auth/register', data);
-    // Backend returns { data: user, token: '...', message: '...' }
-    const { data: userData, token } = res.data;
-    
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    }
-    localStorage.setItem('auth_user', JSON.stringify(userData));
-    setUser(userData);
-    return res.data;
-  };
+  const register = useCallback(async (data) => {
+    const response = await api.post('/auth/register', data);
+    return response.data;
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await api.post('/auth/logout');
     } catch (e) { /* ignore */ }
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
     setUser(null);
-  };
+  }, []);
+
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   const isAuthenticated = !!user;
 

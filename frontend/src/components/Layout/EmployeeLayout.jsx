@@ -13,15 +13,32 @@ import {
   FiBook,
   FiBarChart2,
   FiX,
+  FiBell,
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { notificationService } from "../../services/notificationService";
+import ConfirmModal from "../Common/ConfirmModal";
 
 export default function EmployeeLayout() {
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1024);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  // Queries
+  const { data: notifications = [] } = useQuery({
+    queryKey: ["employee-notifications"],
+    queryFn: () => notificationService.getNotifications(),
+    enabled: isAuthenticated,
+    refetchInterval: 60000, // Refresh every minute
+  });
+
+  const notificationCount = notifications.filter(
+    (n) => n.status === "chua_doc",
+  ).length;
 
   useEffect(() => {
     const handleResize = () => {
@@ -45,6 +62,11 @@ export default function EmployeeLayout() {
   }, [location.pathname, isMobile]);
 
   const handleLogout = async () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = async () => {
+    setShowLogoutConfirm(false);
     await logout();
     navigate("/internal/login");
   };
@@ -152,8 +174,10 @@ export default function EmployeeLayout() {
       </aside>
 
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col min-w-0 max-w-full transition-all duration-300 ${!isMobile ? (sidebarOpen ? "pl-72" : "pl-20") : ""}`}>
-        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 sticky top-0 z-[30] backdrop-blur-md bg-white/80">
+      <div
+        className={`flex-1 flex flex-col min-w-0 max-w-full transition-all duration-300 ${!isMobile ? (sidebarOpen ? "pl-72" : "pl-20") : ""}`}
+      >
+        <header className="h-15 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 sticky top-0 z-[30] backdrop-blur-md bg-white/80">
           <button
             className="w-10 h-10 flex items-center justify-center rounded-sm bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all shadow-sm border border-slate-200 cursor-pointer active:scale-95"
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -162,6 +186,19 @@ export default function EmployeeLayout() {
           </button>
 
           <div className="flex items-center gap-4 ml-4">
+            <button
+              onClick={() => navigate("/internal/notifications")}
+              className="relative p-2 text-slate-600 hover:text-primary hover:bg-primary/10 rounded-sm transition-all"
+              title="Thông báo"
+            >
+              <FiBell size={20} />
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-lg">
+                  {notificationCount > 99 ? "99+" : notificationCount}
+                </span>
+              )}
+            </button>
+
             <div className="text-right hidden sm:block">
               <div className="text-sm font-black text-slate-900 tracking-tight">
                 {user?.ho} {user?.ten}
@@ -182,6 +219,16 @@ export default function EmployeeLayout() {
           </div>
         </main>
       </div>
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={confirmLogout}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị không?"
+        confirmText="Đăng xuất ngay"
+        type="danger"
+      />
     </div>
   );
 }

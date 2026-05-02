@@ -15,5 +15,15 @@ export const notificationService = {
   markAllRead: async () => {
     const response = await api.post('/notifications/mark-all');
     return response.data;
+  },
+
+  toggleRead: async (id) => {
+    const response = await api.post(`/notifications/${id}/toggle`);
+    return response.data;
+  },
+
+  archive: async (id) => {
+    const response = await api.post(`/notifications/${id}/archive`);
+    return response.data;
   }
 };

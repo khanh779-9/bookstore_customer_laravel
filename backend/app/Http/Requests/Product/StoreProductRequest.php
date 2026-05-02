@@ -24,7 +24,6 @@ class StoreProductRequest extends FormRequest
             'type' => ['required', 'string', 'in:book,stationery'],
             
             // Book specific fields
-            'tenSach' => ['required_if:type,book', 'string', 'max:255'],
             'tacgia_id' => ['required_if:type,book', 'integer', 'exists:tacgia,tacgia_id'],
             'nhaxuatban_id' => ['required_if:type,book', 'integer', 'exists:nhaxuatban,nhaxuatban_id'],
             'namXB' => ['required_if:type,book', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],

@@ -23,7 +23,6 @@ class UpdateProductRequest extends FormRequest
             'mo_ta' => ['nullable', 'string'],
             
             // Book specific fields (optional update)
-            'tenSach' => ['nullable', 'string', 'max:255'],
             'tacgia_id' => ['nullable', 'integer', 'exists:tacgia,tacgia_id'],
             'nhaxuatban_id' => ['nullable', 'integer', 'exists:nhaxuatban,nhaxuatban_id'],
             'namXB' => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],

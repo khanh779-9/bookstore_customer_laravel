@@ -124,10 +124,10 @@ class ProductService
 
             if ($data['type'] === 'book') {
                 $product->sach()->create([
-                    'tacgia_id' => $data['tacgia_id'],
-                    'nhaxuatban_id' => $data['nhaxuatban_id'],
-                    'namXB' => $data['namXB'],
-                    'loaisach_code' => $data['loaisach_code'],
+                    'tacgia_id' => $data['tacgia_id'] ?? null,
+                    'nhaxuatban_id' => $data['nhaxuatban_id'] ?? null,
+                    'namXB' => $data['namXB'] ?? null,
+                    'loaisach_code' => $data['loaisach_code'] ?? null,
                 ]);
             }
 
@@ -149,12 +149,22 @@ class ProductService
                 $product->data_json = array_merge($currentAttributes, $data['attributes']);
             }
 
-            // Cập nhật các trường thông thường khác
+            // Cập nhật các trường thông thường khác cho SanPham
             $product->fill($data);
             $product->save();
 
             if ($product->sach) {
-                $product->sach->update($data);
+                // Chỉ lấy các trường hợp lệ cho bảng 'sach'
+                $bookData = \Illuminate\Support\Arr::only($data, [
+                    'tacgia_id', 
+                    'nhaxuatban_id', 
+                    'namXB', 
+                    'loaisach_code'
+                ]);
+                
+                if (!empty($bookData)) {
+                    $product->sach->update($bookData);
+                }
             }
 
             return $product;

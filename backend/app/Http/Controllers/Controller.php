@@ -23,6 +23,19 @@ abstract class Controller
     }
 
     /**
+     * Get the current authenticated employee ID.
+     */
+    protected function getEmployeeId(): int
+    {
+        $user = auth()->user() ?? request()->user();
+        if ($user && isset($user->nhanvien_id)) {
+            return (int) $user->nhanvien_id;
+        }
+
+        return 0;
+    }
+
+    /**
      * Handle request failures consistently.
      */
     protected function handleFailure(\Illuminate\Http\Request $request, string $message, int $code = 400)

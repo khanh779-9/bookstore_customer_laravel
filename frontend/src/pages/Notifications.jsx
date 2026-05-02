@@ -194,7 +194,7 @@ const TABS = [
                       </div>
                       <p
                         className={cn(
-                          "text-sm leading-relaxed mb-4",
+                          "text-sm leading-relaxed mb-4 whitespace-pre-line",
                           notif.status === "chua_doc"
                             ? "text-slate-600 font-medium"
                             : "text-slate-400",

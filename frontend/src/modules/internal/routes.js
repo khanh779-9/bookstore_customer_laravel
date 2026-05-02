@@ -26,4 +26,5 @@ export const internalRoutes = [
   { path: 'customers', component: EmployeeCustomers },
   { path: 'employees', component: EmployeeEmployees },
   { path: 'reports', component: EmployeeReports },
+  { path: 'notifications', component: lazy(() => import('@/pages/employee/EmployeeNotifications')) },
 ];

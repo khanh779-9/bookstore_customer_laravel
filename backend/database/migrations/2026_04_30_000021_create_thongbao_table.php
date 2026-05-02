@@ -10,15 +10,17 @@ return new class extends Migration
     {
         Schema::create('thongbao', function (Blueprint $table) {
             $table->id('thongbao_id');
-            $table->unsignedBigInteger('khachhang_id');
+            $table->unsignedBigInteger('khachhang_id')->nullable();
+            $table->unsignedBigInteger('nhanvien_id')->nullable();
             $table->text('tieu_de');
             $table->text('noi_dung');
             $table->timestamp('ngay_tao')->useCurrent()->useCurrentOnUpdate();
-            $table->enum('loai', ['khach_hang', 'don_hang', 'he_thong', 'khuyen_mai', ''])->default('');
+            $table->enum('loai', ['khach_hang', 'don_hang', 'he_thong', 'noi_bo', ''])->default('');
             $table->enum('trang_thai', ['da_doc', 'chua_doc', 'luu_tru', ''])->default('chua_doc');
             $table->timestamps();
 
             $table->foreign('khachhang_id')->references('khachhang_id')->on('khachhang')->onDelete('cascade');
+            $table->foreign('nhanvien_id')->references('nhanvien_id')->on('nhanvien')->onDelete('cascade');
         });
     }
 

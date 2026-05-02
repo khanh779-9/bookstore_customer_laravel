@@ -1,399 +1,154 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { productService } from "../services/productService";
-import ProductCard from "../components/Product/ProductCard";
 import { useAuth } from "../contexts/AuthContext";
-import {
-  AnimatePresence,
-  MotionConfig,
-  motion,
-  useReducedMotion,
-} from "framer-motion";
-import { useEffect, useState } from "react";
-import {
-  FiArrowRight,
-  FiChevronLeft,
-  FiChevronRight,
-  FiShield,
-  FiStar,
-  FiTruck,
-  FiZap,
-} from "react-icons/fi";
-import { Loading } from "@/shared/ui";
-import { Input } from "@/shared/ui";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useCallback } from "react";
+import { FiArrowRight, FiChevronLeft, FiChevronRight, FiShield, FiStar, FiTruck, FiZap } from "react-icons/fi";
+import { Loading, Input } from "@/shared/ui";
+import ProductSection from "../components/Product/ProductSection";
 
 const BANNERS = [
-  {
-    id: 1,
-    title: "Tri Thức Cho Mọi Nhà",
-    desc: "Giảm đến 50% cho học sinh - sinh viên toàn quốc.",
-    image: "/assets/banners/1600w-iUbywlem9dU.jpg",
-    alt: "Banner khuyến mãi tri thức cho mọi nhà",
-  },
-  {
-    id: 2,
-    title: "Flash Sale Cuối Tuần",
-    desc: "Sách mới đồng giá chỉ từ 49k. Số lượng có hạn!",
-    image: "/assets/banners/ROHTO_Main-Banner-Web.webp",
-    alt: "Banner flash sale cuối tuần",
-  },
-  {
-    id: 3,
-    title: "Sách Kim Đồng",
-    desc: "Khám phá những cuốn sách Kim Đồng đã cập bến cửa hàng.",
-    image:
-      "/assets/banners/banner-fb-post-1800_1200-px_b670871b6d974df8bca2fbfa4dc558f6_1024x1024.png",
-    alt: "Banner sách Kim Đồng",
-  },
-  {
-    id: 4,
-    title: "Ưu đãi VP Bank",
-    desc: "Khám phá những cuốn sách Kim Đồng đã cập bến cửa hàng.",
-    image: "/assets/banners/VPBANK-T10-Web1920x450.webp",
-    alt: "Banner ưu đãi VP Bank",
-  },
+  { id: 1, title: "TRI THỨC LÀ SỨC MẠNH", desc: "Giảm đến 50% cho toàn bộ sách giáo khoa và tham khảo.", image: "/assets/banners/1600w-iUbywlem9dU.jpg" },
+  { id: 2, title: "FLASH SALE CUỐI TUẦN", desc: "Sách mới đồng giá từ 49k. Chỉ diễn ra trong 48 giờ!", image: "/assets/banners/ROHTO_Main-Banner-Web.webp" },
+  { id: 3, title: "THẾ GIỚI TRUYỆN TRANH", desc: "Cập nhật những tập mới nhất từ các nhà xuất bản hàng đầu.", image: "/assets/banners/banner-fb-post-1800_1200-px_b670871b6d974df8bca2fbfa4dc558f6_1024x1024.png" },
 ];
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const [currentBanner, setCurrentBanner] = useState(0);
-  const shouldReduceMotion = useReducedMotion();
 
-  const {
-    data: discountedProducts = [],
-    isLoading: loadingDiscounted,
-    isError: discountedError,
-  } = useQuery({
+  // Data Fetching
+  const { data: discounted = [], isLoading: loadingDiscounted } = useQuery({
     queryKey: ["discounted-products", isAuthenticated],
-    queryFn: async () => {
-      const res = await productService.getProducts({
-        promoted_only: true,
-        limit: 8,
-      });
-      return res.data;
-    },
+    queryFn: async () => (await productService.getProducts({ promoted_only: true, limit: 8 })).data
   });
 
-  const {
-    data: bestSellers = [],
-    isLoading: loadingBestSellers,
-    isError: bestSellersError,
-  } = useQuery({
+  const { data: bestSellers = [], isLoading: loadingBestSellers } = useQuery({
     queryKey: ["best-sellers", isAuthenticated],
-    queryFn: async () => {
-      const res = await productService.getProducts({
-        sort_by: "best_selling",
-        limit: 8,
-      });
-      return res.data;
-    },
+    queryFn: async () => (await productService.getProducts({ sort_by: "best_selling", limit: 8 })).data
+  });
+
+  const { data: newest = [], isLoading: loadingNewest } = useQuery({
+    queryKey: ["newest-products", isAuthenticated],
+    queryFn: async () => (await productService.getProducts({ sort_by: "newest", limit: 8 })).data
   });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
-    }, 6000);
-
+    const timer = setInterval(() => setCurrentBanner(p => (p + 1) % BANNERS.length), 8000);
     return () => clearInterval(timer);
   }, []);
 
-  const goPrev = () => {
-    setCurrentBanner((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
-  };
-
-  const goNext = () => {
-    setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
-  };
+  const moveBanner = useCallback((dir) => {
+    setCurrentBanner(p => (p + dir + BANNERS.length) % BANNERS.length);
+  }, []);
 
   return (
-    <MotionConfig reducedMotion={shouldReduceMotion ? "user" : "never"}>
-      <div className="bg-background min-h-screen">
-        <main className="container">
-          <section className="py-6">
-            <div className="mx-auto px-4">
-              <h1 className="sr-only">Trang chủ cửa hàng sách</h1>
-
-              <div className="relative aspect-[21/9] md:aspect-[3/1] rounded-[24px] overflow-hidden group shadow-xl">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentBanner}
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.02 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="absolute inset-0"
-                  >
-                    {/* IMAGE */}
-                    <img
-                      src={BANNERS[currentBanner].image}
-                      alt={BANNERS[currentBanner].alt}
-                      className="w-full h-full object-fill"
-                      loading="eager"
-                    />
-
-                    {/* GRADIENT OVERLAY */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-
-                    {/* CONTENT */}
-                    <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-10 md:px-20 text-white">
-                      <motion.h2
-                        initial={{ y: 30, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 0.5 }}
-                        className="text-3xl md:text-5xl font-extrabold mb-4 max-w-xl text-white leading-tight"
-                      >
-                        {BANNERS[currentBanner].title}
-                      </motion.h2>
-
-                      <motion.p
-                        initial={{ y: 30, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.1, duration: 0.5 }}
-                        className="text-sm md:text-lg text-white/85 mb-8 max-w-lg"
-                      >
-                        {BANNERS[currentBanner].desc}
-                      </motion.p>
-
-                      <motion.div
-                        initial={{ y: 30, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                      >
-                        <Link
-                          to="/products"
-                          className="inline-flex items-center gap-2 px-8 py-3 text-sm uppercase tracking-widest bg-white text-black font-semibold rounded-full hover:bg-black hover:text-white transition-all duration-300 shadow-lg"
-                        >
-                          Khám phá ngay <FiArrowRight />
-                        </Link>
-                      </motion.div>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* LEFT ARROW */}
-                <button
-                  onClick={goPrev}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center text-white hover:scale-110 hover:bg-white/40 transition-all opacity-0 group-hover:opacity-100"
-                >
-                  <FiChevronLeft className="w-6 h-6" />
-                </button>
-
-                {/* RIGHT ARROW */}
-                <button
-                  onClick={goNext}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center text-white hover:scale-110 hover:bg-white/40 transition-all opacity-0 group-hover:opacity-100"
-                >
-                  <FiChevronRight className="w-6 h-6" />
-                </button>
-
-                {/* INDICATOR */}
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full">
-                  {BANNERS.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentBanner(idx)}
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        idx === currentBanner
-                          ? "w-8 bg-white"
-                          : "w-2 bg-white/50 hover:bg-white"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="py-8">
-            <div className="container mx-auto px-4">
-              <ul className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                <li>
-                  <FeatureItem
-                    icon={FiTruck}
-                    title="Giao hàng nhanh"
-                    desc="Toàn quốc 2-3 ngày"
-                  />
-                </li>
-                <li>
-                  <FeatureItem
-                    icon={FiShield}
-                    title="Bảo mật tuyệt đối"
-                    desc="Thanh toán an toàn"
-                  />
-                </li>
-                <li>
-                  <FeatureItem
-                    icon={FiStar}
-                    title="Sách chất lượng"
-                    desc="Tuyển chọn kỹ lưỡng"
-                  />
-                </li>
-                <li>
-                  <FeatureItem
-                    icon={FiZap}
-                    title="Hỗ trợ 24/7"
-                    desc="Giải đáp mọi thắc mắc"
-                  />
-                </li>
-              </ul>
-            </div>
-          </section>
-
-          <section className="py-12">
-            <div className="container mx-auto px-4 max-w-[1600px]">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-8 bg-red-500 rounded-none" />
-                  <h2 className="text-2xl font-bold text-secondary">
-                    Đang khuyến mãi
-                  </h2>
-                </div>
-
-                <Link
-                  to="/products?promoted_only=1"
-                  className="text-sm font-bold text-red-500 hover:underline flex items-center gap-1"
-                >
-                  Xem tất cả <FiArrowRight />
+    <div className="bg-white min-h-screen pb-20">
+      {/* Hero Banner Section */}
+      <section className="relative h-[400px] md:h-[600px] overflow-hidden bg-slate-900">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentBanner}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            className="absolute inset-0"
+          >
+            <img src={BANNERS[currentBanner].image} className="w-full h-full object-cover opacity-60" alt="" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+            <div className="absolute inset-0 flex flex-col justify-center container mx-auto px-6">
+              <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
+                <span className="text-primary font-black uppercase tracking-[0.4em] text-xs mb-4 block">Độc quyền tại BookZone</span>
+                <h2 className="text-4xl md:text-7xl font-black text-white leading-none mb-6 max-w-4xl uppercase tracking-tighter italic">
+                  {BANNERS[currentBanner].title}
+                </h2>
+                <p className="text-slate-300 text-lg md:text-xl max-w-2xl mb-10 font-medium leading-relaxed">
+                  {BANNERS[currentBanner].desc}
+                </p>
+                <Link to="/products" className="inline-flex items-center gap-4 bg-white text-slate-900 px-10 py-5 font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-2xl">
+                  Khám phá bộ sưu tập <FiArrowRight size={20} />
                 </Link>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {loadingDiscounted ? (
-                  <div className="col-span-full">
-                    <Loading message="Đang săn tìm ưu đãi..." />
-                  </div>
-                ) : discountedError ? (
-                  <div className="col-span-full py-10 text-center text-slate-400 font-medium">
-                    Không tải được sản phẩm khuyến mãi.
-                  </div>
-                ) : discountedProducts.length === 0 ? (
-                  <div className="col-span-full py-10 text-center text-slate-400 font-medium">
-                    Hiện chưa có sản phẩm khuyến mãi mới.
-                  </div>
-                ) : (
-                  discountedProducts.map((p) => (
-                    <ProductCard key={p.id} product={p} />
-                  ))
-                )}
-              </div>
+              </motion.div>
             </div>
-          </section>
+          </motion.div>
+        </AnimatePresence>
 
-          <section className="py-12">
-            <div className="container mx-auto px-4">
-              <div className="bg-secondary rounded-md overflow-hidden shadow-lg flex flex-col md:flex-row items-center">
-                <div className="p-4 md:p-12 flex-1 text-white">
-                  <span className="text-xs font-bold uppercase tracking-[0.3em] text-primary mb-2 block">
-                    Flash Sale
-                  </span>
+        {/* Banner Controls */}
+        <div className="absolute bottom-10 right-10 flex gap-4 z-20">
+          <button onClick={() => moveBanner(-1)} className="w-14 h-14 border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-slate-900 transition-all"><FiChevronLeft size={24} /></button>
+          <button onClick={() => moveBanner(1)} className="w-14 h-14 border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-slate-900 transition-all"><FiChevronRight size={24} /></button>
+        </div>
+      </section>
 
-                  <h2 className="text-2xl md:text-4xl font-bold mb-4 text-white leading-tight">
-                    Đăng ký thành viên - Nhận ngay ưu đãi 20%
-                  </h2>
+      {/* Feature Icons */}
+      <section className="py-12 border-b border-slate-50">
+        <div className="container mx-auto px-4 grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <Feature icon={FiTruck} title="GIAO HÀNG HỎA TỐC" desc="Nhận sách ngay trong ngày" />
+          <Feature icon={FiShield} title="THANH TOÁN AN TOÀN" desc="Bảo mật thông tin 100%" />
+          <Feature icon={FiStar} title="SÁCH CHÍNH HÃNG" desc="Tuyển chọn từ NXB uy tín" />
+          <Feature icon={FiZap} title="ƯU ĐÃI KHỦNG" desc="Giảm giá lên đến 70%" />
+        </div>
+      </section>
 
-                  <p className="text-slate-300 mb-4 max-w-md">
-                    Nhận thông báo về những đầu sách mới nhất và các chương
-                    trình khuyến mãi độc quyền chỉ dành cho thành viên.
-                  </p>
+      {/* Product Sections */}
+      <ProductSection 
+        title="Sách đang giảm giá" 
+        subtitle="Ưu đãi cực lớn dành riêng cho bạn"
+        items={discounted} 
+        loading={loadingDiscounted} 
+        viewAllLink="/products?promoted_only=1"
+        color="red"
+      />
 
-                  <form
-                    className="flex flex-col sm:flex-row items-stretch gap-2"
-                    onSubmit={(e) => e.preventDefault()}
-                  >
-                    <label htmlFor="email" className="sr-only">
-                      Email của bạn
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Email của bạn..."
-                      className="bg-white/10 border border-white/20 rounded-none py-3 px-6 text-sm flex-1 outline-none focus:ring-2 focus:ring-primary/50 transition-all text-white placeholder:text-slate-400"
-                      containerClassName="flex-1"
-                    />
-                    <button
-                      type="submit"
-                      className="btn-primary whitespace-nowrap"
-                    >
-                      Đăng ký
-                    </button>
-                  </form>
-                </div>
-
-                <div className="hidden md:block w-1/5 p-6">
-                  <div className="aspect-square border-[1.5rem] border-primary/20 flex items-center justify-center p-4 rounded-full">
-                    <div className="w-full h-full bg-primary flex items-center justify-center text-white text-4xl font-bold  rounded-full">
-                      20%
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <section className="py-20 bg-slate-900 overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/10 -skew-x-12 translate-x-1/2" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="flex-1">
+              <span className="text-primary font-black uppercase tracking-widest text-[10px] mb-4 block">Newsletter</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-6">Đăng ký nhận <br/> Ưu đãi 20%</h2>
+              <p className="text-slate-400 text-lg mb-10 max-w-lg">Đừng bỏ lỡ những đầu sách hay nhất và các chương trình khuyến mãi độc quyền hàng tuần.</p>
+              <form className="flex max-w-md bg-white/5 p-1 border border-white/10" onSubmit={e => e.preventDefault()}>
+                <input type="email" placeholder="Địa chỉ email của bạn..." className="flex-1 bg-transparent px-6 py-4 text-white outline-none font-bold" />
+                <button className="bg-primary text-white px-8 font-black uppercase text-xs tracking-widest hover:bg-white hover:text-slate-900 transition-all">Gửi ngay</button>
+              </form>
             </div>
-          </section>
-
-          <section className="py-12 pb-24">
-            <div className="container mx-auto px-4 max-w-[1600px]">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-8 bg-amber-500 rounded-none" />
-                  <h2 className="text-2xl font-bold text-secondary">
-                    Bán chạy nhất
-                  </h2>
-                </div>
-
-                <Link
-                  to="/products?sort_by=best_selling"
-                  className="text-sm font-bold text-amber-600 hover:underline flex items-center gap-1"
-                >
-                  Khám phá tất cả <FiArrowRight />
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {loadingBestSellers ? (
-                  <div className="col-span-full">
-                    <Loading message="Đang liệt kê sách bán chạy..." />
-                  </div>
-                ) : bestSellersError ? (
-                  <div className="col-span-full py-10 text-center text-slate-400 font-medium">
-                    Không tải được sản phẩm bán chạy.
-                  </div>
-                ) : (
-                  bestSellers.map((p) => <ProductCard key={p.id} product={p} />)
-                )}
-              </div>
+            <div className="hidden lg:block w-96 h-96 border-[40px] border-primary/20 rounded-full flex items-center justify-center">
+              <span className="text-9xl font-black text-white/5 select-none tracking-tighter">BOK</span>
             </div>
-          </section>
-        </main>
-      </div>
-    </MotionConfig>
+          </div>
+        </div>
+      </section>
+
+      <ProductSection 
+        title="Sách bán chạy" 
+        subtitle="Những tựa sách được yêu thích nhất"
+        items={bestSellers} 
+        loading={loadingBestSellers} 
+        viewAllLink="/products?sort_by=best_selling"
+        color="amber"
+      />
+
+      <ProductSection 
+        title="Sách mới cập bến" 
+        subtitle="Vừa lên kệ tại nhà sách"
+        items={newest} 
+        loading={loadingNewest} 
+        viewAllLink="/products?sort_by=newest"
+        color="primary"
+      />
+    </div>
   );
 }
 
-function FeatureItem({ icon: Icon, title, desc }) {
+function Feature({ icon: Icon, title, desc }) {
   return (
-    <div
-      className="group flex items-center gap-4 p-5 rounded-[16px]
-      border border-slate-200/70 bg-white
-      shadow-sm hover:shadow-lg hover:-translate-y-1
-      transition-all duration-300"
-    >
-      {/* ICON */}
-      <div
-        className="w-11 h-11 rounded-[14px]
-        bg-gradient-to-br from-slate-50 to-slate-100
-        flex items-center justify-center
-        text-primary shrink-0
-        group-hover:scale-110 transition-transform duration-300"
-      >
-        <Icon className="w-5 h-5" aria-hidden="true" />
+    <div className="flex flex-col items-center text-center group">
+      <div className="w-16 h-16 bg-slate-50 flex items-center justify-center text-slate-400 mb-4 group-hover:bg-primary group-hover:text-white transition-all rounded-sm">
+        <Icon size={24} />
       </div>
-
-      {/* TEXT */}
-      <div className="flex-1">
-        <h3 className="text-sm font-semibold text-slate-800 mb-1">{title}</h3>
-
-        <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
-      </div>
+      <h3 className="text-xs font-black text-secondary tracking-widest mb-1">{title}</h3>
+      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{desc}</p>
     </div>
   );
 }

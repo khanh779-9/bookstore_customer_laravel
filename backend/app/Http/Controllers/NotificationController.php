@@ -14,14 +14,27 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         $customerId = $this->getCustomerId();
+        $employeeId = $this->getEmployeeId();
 
-        $notifications = ThongBao::where('khachhang_id', $customerId)
-            ->when($request->query('loai'), fn($q, $v) => $q->where('loai', $v))
+        $query = ThongBao::query();
+
+        if ($employeeId > 0) {
+            $query->where(function($q) use ($employeeId) {
+                $q->where('nhanvien_id', $employeeId)
+                  ->orWhere(function($sq) {
+                      $sq->where('loai', 'noi_bo')->whereNull('nhanvien_id');
+                  });
+            });
+        } else {
+            $query->where('khachhang_id', $customerId);
+        }
+
+        $notifications = $query->when($request->query('loai'), fn($q, $v) => $q->where('loai', $v))
             ->when($request->query('trang_thai'), fn($q, $v) => $q->where('trang_thai', $v))
             ->orderByDesc('thongbao_id')
             ->paginate(12);
 
-        if ($request->expectsJson()) return ThongBaoResource::collection($notifications);
+        if ($request->expectsJson() || $request->is('api/*')) return ThongBaoResource::collection($notifications);
         return view('customer.notifications', compact('notifications'));
     }
 

@@ -17,7 +17,6 @@ class Sach extends Model
 
     protected $fillable = [
         'sanpham_id',
-        'tenSach',
         'nhaxuatban_id',
         'namXB',
         'tacgia_id',

@@ -1,12 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import api from "../../api/client";
 import { useToast } from "../../contexts/ToastContext";
-import { FiUpload, FiCheck } from "react-icons/fi";
 import { formatCurrency, formatProductImage } from "../../utils/format";
 import AdminPageHeader from "../../components/Admin/AdminPageHeader";
 import AdminDataTable from "../../components/Admin/AdminDataTable";
-import AdminModal from "../../components/Admin/AdminModal";
 import AdminSearchInput from "../../components/Admin/AdminSearchInput";
+import ProductFormModal from "./ProductFormModal";
 
 const INIT_FORM = {
   type: "Sach",
@@ -17,7 +16,6 @@ const INIT_FORM = {
   mo_ta: "",
   hinhanh: "",
   attributes: {},
-  // Book specific
   nhaxuatban_id: "",
   tacgia_id: "",
   loaisach_code: "",
@@ -33,15 +31,13 @@ export default function EmployeeProducts() {
   const [formData, setFormData] = useState({ ...INIT_FORM });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [imageFile, setImageFile] = useState(null);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
-  const [newAttrKey, setNewAttrKey] = useState("");
-  const [newAttrValue, setNewAttrValue] = useState("");
 
-  // Lookup data
-  const [publishers, setPublishers] = useState([]);
-  const [authors, setAuthors] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [lookups, setLookups] = useState({
+    publishers: [],
+    authors: [],
+    categories: []
+  });
 
   const fetchProducts = useCallback(async (page = 1) => {
     setLoading(true);
@@ -61,43 +57,30 @@ export default function EmployeeProducts() {
     }
   }, [searchTerm, showToast]);
 
-  const fetchLookups = useCallback(async () => {
-    try {
-      const [pubRes, authRes, catRes] = await Promise.all([
-        api.get("/publishers"),
-        api.get("/authors"),
-        api.get("/categories"),
-      ]);
-      setPublishers(pubRes.data.data || pubRes.data || []);
-      setAuthors(authRes.data.data || authRes.data || []);
-      setCategories(catRes.data.data || catRes.data || []);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
   useEffect(() => {
+    const fetchLookups = async () => {
+      try {
+        const [pub, auth, cat] = await Promise.all([
+          api.get("/publishers"),
+          api.get("/authors"),
+          api.get("/categories"),
+        ]);
+        setLookups({
+          publishers: pub.data.data || pub.data || [],
+          authors: auth.data.data || auth.data || [],
+          categories: cat.data.data || cat.data || []
+        });
+      } catch { /* ignore */ }
+    };
     fetchProducts();
     fetchLookups();
-  }, [fetchProducts, fetchLookups]);
-
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const openAdd = () => {
-    setEditingId(null);
-    setFormData({ ...INIT_FORM });
-    setImageFile(null);
-    setShowModal(true);
-  };
+  }, [fetchProducts]);
 
   const openEdit = (p) => {
-    const isSach = !!p.sach;
     setEditingId(p.sanpham_id);
     setFormData({
-      type: isSach ? "Sach" : "VPP",
+      sanpham_id: p.sanpham_id,
+      type: p.sach ? "Sach" : "VPP",
       danhmucSP_id: String(p.danhmucSP_id || "1"),
       tenSP: p.tenSP || "",
       gia: p.gia ?? "",
@@ -105,69 +88,40 @@ export default function EmployeeProducts() {
       mo_ta: p.mo_ta || "",
       hinhanh: p.hinhanh || "",
       attributes: p.attributes || {},
-      // Book
       nhaxuatban_id: p.sach?.nhaxuatban_id || "",
       tacgia_id: p.sach?.tacgia_id || "",
       loaisach_code: p.sach?.loaisach_code || "",
       namXB: p.sach?.namXB || "",
     });
-    setImageFile(null);
     setShowModal(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleFormSubmit = async (data, imageFile) => {
     setIsSubmitting(true);
     try {
       const payload = {
-        type: formData.type.toLowerCase(),
-        tenSP: formData.tenSP,
-        danhmucSP_id: parseInt(formData.danhmucSP_id),
-        gia: parseFloat(formData.gia),
-        soluongton: parseInt(formData.soluongton),
-        mo_ta: formData.mo_ta || null,
-        hinhanh: formData.hinhanh || null,
-        attributes: formData.attributes,
+        ...data,
+        type: data.type.toLowerCase(),
+        danhmucSP_id: parseInt(data.danhmucSP_id),
+        gia: parseFloat(data.gia),
+        soluongton: parseInt(data.soluongton),
       };
- 
-      if (formData.type === "Sach") {
-        payload.tenSach = formData.tenSP;
-        if (formData.nhaxuatban_id)
-          payload.nhaxuatban_id = parseInt(formData.nhaxuatban_id);
-        if (formData.tacgia_id)
-          payload.tacgia_id = parseInt(formData.tacgia_id);
-        if (formData.loaisach_code)
-          payload.loaisach_code = formData.loaisach_code;
-        if (formData.namXB) payload.namXB = parseInt(formData.namXB);
-      }
 
-      if (editingId) {
-        await api.put(`/employee/products/${editingId}`, payload);
-        showToast("Cập nhật sản phẩm thành công", "success");
-      } else {
-        const res = await api.post("/employee/products", payload);
-        if (imageFile && res.data?.product?.sanpham_id) {
-          const fd = new FormData();
-          fd.append("hinhanh_file", imageFile);
-          await api.post(
-            `/employee/products/${res.data.product.sanpham_id}/image`,
-            fd,
-            {
-              headers: { "Content-Type": "multipart/form-data" },
-            },
-          );
-        }
-        showToast("Thêm sản phẩm thành công", "success");
-      }
+      const res = editingId 
+        ? await api.put(`/employee/products/${editingId}`, payload)
+        : await api.post("/employee/products", payload);
 
-      if (editingId && imageFile) {
+      const productId = editingId || res.data?.product?.sanpham_id;
+
+      if (imageFile && productId) {
         const fd = new FormData();
         fd.append("hinhanh_file", imageFile);
-        await api.post(`/employee/products/${editingId}/image`, fd, {
+        await api.post(`/employee/products/${productId}/image`, fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
 
+      showToast(`${editingId ? "Cập nhật" : "Thêm"} sản phẩm thành công`, "success");
       setShowModal(false);
       fetchProducts();
     } catch (e) {
@@ -188,93 +142,56 @@ export default function EmployeeProducts() {
     }
   };
 
-  const filtered = products.filter((p) => {
-    const name = (p.tenSP || "").toLowerCase();
-    return name.includes(searchTerm.toLowerCase());
-  });
-
-  const columns = [
+  const columns = useMemo(() => [
     {
       header: "Sản phẩm",
-      render: (p) => {
-        const name = p.tenSP || `SP #${p.sanpham_id}`;
-        return (
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-16 shrink-0 bg-slate-100 rounded-sm overflow-hidden border border-slate-100 shadow-sm">
-              <img
-                src={formatProductImage(p.hinhanh)}
-                alt={name}
-                className="w-full h-full object-cover transition-transform hover:scale-110"
-                onError={(e) =>
-                  (e.target.src = "/assets/images/products/defaultProduct.png")
-                }
-              />
-            </div>
-            <div className="min-w-0">
-              <div className="font-bold text-slate-900 truncate max-w-[300px]">
-                {name}
-              </div>
-              <div className="text-[10px] text-slate-400 font-bold tracking-widest">
-                ID: #{p.sanpham_id}
-              </div>
-            </div>
+      render: (p) => (
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-16 shrink-0 bg-slate-100 rounded-sm overflow-hidden border border-slate-100 shadow-sm">
+            <img
+              src={formatProductImage(p.hinhanh)}
+              alt={p.tenSP}
+              className="w-full h-full object-cover transition-transform hover:scale-110"
+              onError={(e) => (e.target.src = "/assets/images/products/defaultProduct.png")}
+            />
           </div>
-        );
-      },
+          <div className="min-w-0">
+            <div className="font-bold text-slate-900 truncate max-w-[300px]">{p.tenSP}</div>
+            <div className="text-[10px] text-slate-400 font-bold tracking-widest">ID: #{p.sanpham_id}</div>
+          </div>
+        </div>
+      ),
     },
     {
       header: "Loại",
       cellClassName: "text-center",
       render: (p) => (
-        <span
-          className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-            p.sach
-              ? "bg-indigo-50 text-indigo-600"
-              : "bg-purple-50 text-purple-600"
-          }`}
-        >
+        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${p.sach ? "bg-indigo-50 text-indigo-600" : "bg-purple-50 text-purple-600"}`}>
           {p.sach ? "Sách" : "VPP"}
         </span>
       ),
     },
     {
       header: "Giá bán",
-      render: (p) => (
-        <span className="font-bold text-primary">
-          {formatCurrency(parseFloat(p.gia))}
-        </span>
-      ),
+      render: (p) => <span className="font-bold text-primary">{formatCurrency(parseFloat(p.gia))}</span>,
     },
     {
       header: "Tồn kho",
       cellClassName: "text-center",
       render: (p) => (
-        <span
-          className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-            p.soluongton > 10
-              ? "bg-emerald-50 text-emerald-600"
-              : p.soluongton === 0
-                ? "bg-rose-50 text-rose-600"
-                : "bg-amber-50 text-amber-600"
-          }`}
-        >
-          {p.soluongton} sản phẩm
+        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${p.soluongton > 10 ? "bg-emerald-50 text-emerald-600" : p.soluongton === 0 ? "bg-rose-50 text-rose-600" : "bg-amber-50 text-amber-600"}`}>
+          {p.soluongton}
         </span>
       ),
     },
-  ];
-
-  const inputStyle =
-    "w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400 text-sm";
-  const labelStyle =
-    "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 ml-1";
+  ], []);
 
   return (
     <div className="space-y-4 bg-slate-50 p-4 md:p-8 min-h-full">
       <AdminPageHeader
         title="Quản lý Sản phẩm"
         description="Danh sách toàn bộ sách và văn phòng phẩm trong hệ thống."
-        onAdd={openAdd}
+        onAdd={() => { setEditingId(null); setFormData({ ...INIT_FORM }); setShowModal(true); }}
         addLabel="Thêm sản phẩm mới"
       />
 
@@ -291,278 +208,23 @@ export default function EmployeeProducts() {
         onEdit={openEdit}
         onDelete={handleDelete}
         idField="sanpham_id"
-        emptyMessage="Không tìm thấy sản phẩm nào"
         pagination={{
           current_page: pagination.current_page,
           last_page: pagination.last_page,
-          onPageChange: (page) => fetchProducts(page),
+          onPageChange: fetchProducts,
         }}
       />
 
-      <AdminModal
+      <ProductFormModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={editingId ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}
-        subtitle="Vui lòng điền đầy đủ các thông tin bắt buộc (*)"
-        maxWidth="max-w-2xl"
-      >
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className={labelStyle}>Loại sản phẩm</label>
-              <select
-                name="type"
-                value={formData.type}
-                onChange={handleInput}
-                className={inputStyle}
-                disabled={!!editingId}
-              >
-                <option value="Sach">📚 Sách</option>
-                <option value="VPP">✏️ Văn phòng phẩm</option>
-              </select>
-            </div>
-            <div>
-              <label className={labelStyle}>Danh mục</label>
-              <select
-                name="danhmucSP_id"
-                value={formData.danhmucSP_id}
-                onChange={handleInput}
-                className={inputStyle}
-              >
-                {categories.length > 0 ? (
-                  categories.map((c) => (
-                    <option key={c.danhmucSP_id} value={c.danhmucSP_id}>
-                      {c.tenDanhMuc}
-                    </option>
-                  ))
-                ) : (
-                  <>
-                    <option value="1">Sách</option>
-                    <option value="2">Văn phòng phẩm</option>
-                  </>
-                )}
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className={labelStyle}>Tên sản phẩm *</label>
-            <input
-              type="text"
-              name="tenSP"
-              value={formData.tenSP}
-              onChange={handleInput}
-              required
-              className={inputStyle}
-              placeholder="Nhập tên sản phẩm"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label className={labelStyle}>Giá bán (VNĐ) *</label>
-              <input
-                type="number"
-                name="gia"
-                value={formData.gia}
-                onChange={handleInput}
-                required
-                min="0"
-                className={inputStyle}
-              />
-            </div>
-            <div>
-              <label className={labelStyle}>Số lượng tồn kho *</label>
-              <input
-                type="number"
-                name="soluongton"
-                value={formData.soluongton}
-                onChange={handleInput}
-                required
-                min="0"
-                className={inputStyle}
-              />
-            </div>
-          </div>
-
-          {formData.type === "Sach" && (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className={labelStyle}>Nhà xuất bản</label>
-                  <select
-                    name="nhaxuatban_id"
-                    value={formData.nhaxuatban_id}
-                    onChange={handleInput}
-                    className={inputStyle}
-                  >
-                    <option value="">-- Chọn NXB --</option>
-                    {publishers.map((pub) => (
-                      <option key={pub.nhaxuatban_id} value={pub.nhaxuatban_id}>
-                        {pub.ten}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelStyle}>Tác giả</label>
-                  <select
-                    name="tacgia_id"
-                    value={formData.tacgia_id}
-                    onChange={handleInput}
-                    className={inputStyle}
-                  >
-                    <option value="">-- Chọn tác giả --</option>
-                    {authors.map((a) => (
-                      <option key={a.tacgia_id} value={a.tacgia_id}>
-                        {a.ho} {a.tendem} {a.ten}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className={labelStyle}>Năm xuất bản</label>
-                <input
-                  type="number"
-                  name="namXB"
-                  value={formData.namXB}
-                  onChange={handleInput}
-                  min="1900"
-                  max="2100"
-                  className={inputStyle}
-                  placeholder="VD: 2024"
-                />
-              </div>
-            </>
-          )}
-
-          <div>
-            <label className={labelStyle}>
-              Hình ảnh {editingId && "(để trống nếu không đổi)"}
-            </label>
-            <div className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 border-dashed rounded-sm">
-              <label className="flex flex-col items-center gap-2 px-6 py-4 bg-white border border-slate-200 rounded-sm cursor-pointer hover:bg-slate-50 transition-all shadow-sm group">
-                <FiUpload className="text-slate-400 group-hover:text-primary transition-colors" />
-                <span className="text-xs font-bold text-slate-600">
-                  Chọn ảnh
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => setImageFile(e.target.files[0])}
-                />
-              </label>
-              <div className="flex-1">
-                {imageFile ? (
-                  <span className="text-sm font-medium text-emerald-600 flex items-center gap-2">
-                    <FiCheck /> {imageFile.name}
-                  </span>
-                ) : (
-                  <span className="text-xs text-slate-400">
-                    Định dạng hỗ trợ: JPG, PNG, WEBP (Max 2MB)
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className={labelStyle}>Mô tả chi tiết</label>
-            <textarea
-              name="mo_ta"
-              value={formData.mo_ta}
-              onChange={handleInput}
-              rows="4"
-              className={`${inputStyle} resize-none`}
-              placeholder="Mô tả tóm tắt nội dung sản phẩm..."
-            />
-          </div>
-
-          <div className="p-4 bg-slate-50 rounded-sm border border-slate-200">
-            <label className={labelStyle}>Thuộc tính bổ sung (JSON)</label>
-            <div className="space-y-3">
-              {Object.entries(formData.attributes || {}).map(([key, val]) => (
-                <div key={key} className="flex items-center gap-2">
-                  <div className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded text-sm font-medium">
-                    <span className="text-slate-400 mr-2">{key}:</span>
-                    {val}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const next = { ...formData.attributes };
-                      delete next[key];
-                      setFormData({ ...formData, attributes: next });
-                    }}
-                    className="p-1.5 text-rose-500 hover:bg-rose-50 rounded transition-colors"
-                  >
-                    Xóa
-                  </button>
-                </div>
-              ))}
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  placeholder="Tên thuộc tính (VD: Màu sắc)"
-                  value={newAttrKey}
-                  onChange={(e) => setNewAttrKey(e.target.value)}
-                  className="px-3 py-2 bg-white border border-slate-200 rounded text-sm outline-none focus:border-primary"
-                />
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Giá trị (VD: Xanh)"
-                    value={newAttrValue}
-                    onChange={(e) => setNewAttrValue(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded text-sm outline-none focus:border-primary"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!newAttrKey.trim()) return;
-                      setFormData({
-                        ...formData,
-                        attributes: { ...formData.attributes, [newAttrKey.trim()]: newAttrValue }
-                      });
-                      setNewAttrKey("");
-                      setNewAttrValue("");
-                    }}
-                    className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded hover:bg-slate-800 transition-all"
-                  >
-                    Thêm
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
-            <button
-              type="button"
-              className="px-6 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-sm text-sm font-bold hover:bg-slate-100 transition-all cursor-pointer"
-              onClick={() => setShowModal(false)}
-              disabled={isSubmitting}
-            >
-              Hủy bỏ
-            </button>
-            <button
-              type="submit"
-              className="px-8 py-2.5 bg-slate-900 text-white rounded-sm text-sm font-bold shadow-lg shadow-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 cursor-pointer disabled:bg-slate-300 disabled:shadow-none"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : editingId ? (
-                "Cập nhật thay đổi"
-              ) : (
-                "Thêm vào hệ thống"
-              )}
-            </button>
-          </div>
-        </form>
-      </AdminModal>
+        onSubmit={handleFormSubmit}
+        initialData={formData}
+        isSubmitting={isSubmitting}
+        categories={lookups.categories}
+        publishers={lookups.publishers}
+        authors={lookups.authors}
+      />
     </div>
   );
 }

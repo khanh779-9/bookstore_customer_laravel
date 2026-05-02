@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\NhanVien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\ThongBao;
 
 class EmployeeAuthController extends Controller
 {
@@ -23,7 +24,21 @@ class EmployeeAuthController extends Controller
             return response()->json(['message' => 'Tài khoản của bạn không hoạt động.'], 403);
         }
         $token = $employee->createToken($request->header('User-Agent') ?: 'web')->plainTextToken;
-        
+           
+        $agent = parse_user_agent($request->header('User-Agent'));
+        $details = "Thiết bị: {$agent['device']}\n Hệ điều hành: {$agent['os']}\n Trình duyệt: {$agent['browser']}";
+        $ip = $request->ip();
+        if ($ip) $details .= "\n IP: {$ip}";
+
+        ThongBao::create([
+            'nhanvien_id' => $employee->nhanvien_id,
+            'tieu_de' => 'Đăng nhập thành công!',
+            'noi_dung' => "Bạn đã đăng nhập vào hệ thống.\n{$details}",
+            'loai' => 'noi_bo',
+            'ngay_tao' => now(),
+            'trang_thai' => notification_unread_code(),
+        ]);
+
         return response()->json([
             'message' => 'Đăng nhập thành công!',
             'token' => $token,

@@ -14,7 +14,7 @@ class ThongBao extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'khachhang_id', 'tieu_de', 'noi_dung', 'ngay_tao', 'loai', 'trang_thai',
+        'khachhang_id', 'nhanvien_id', 'tieu_de', 'noi_dung', 'ngay_tao', 'loai', 'trang_thai',
     ];
 
     public function khachHang()
@@ -22,10 +22,15 @@ class ThongBao extends Model
         return $this->belongsTo(KhachHang::class, 'khachhang_id', 'khachhang_id');
     }
 
-    public static function send(int $customerId, string $title, string $content, string $type = 'he_thong'): self
+    public function nhanVien()
+    {
+        return $this->belongsTo(NhanVien::class, 'nhanvien_id', 'nhanvien_id');
+    }
+
+    public static function send(?int $userId, string $title, string $content, string $type = 'he_thong', bool $isEmployee = false): self
     {
         return self::create([
-            'khachhang_id' => $customerId,
+            $isEmployee ? 'nhanvien_id' : 'khachhang_id' => $userId,
             'tieu_de' => $title,
             'noi_dung' => $content,
             'ngay_tao' => now(),
