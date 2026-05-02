@@ -14,5 +14,10 @@ export const lookupService = {
   getAuthors: async () => {
     const response = await api.get('/authors');
     return Array.isArray(response.data) ? response.data : (response.data?.data || []);
+  },
+  
+  getBookTypes: async () => {
+    const response = await api.get('/loaisach');
+    return Array.isArray(response.data) ? response.data : (response.data?.data || []);
   }
 };

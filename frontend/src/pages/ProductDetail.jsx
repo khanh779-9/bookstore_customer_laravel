@@ -407,6 +407,13 @@ export default function ProductDetail() {
                             />
                           </>
                         )}
+                        {product.attributes && Object.entries(product.attributes).map(([key, val]) => (
+                          <DetailRow
+                            key={key}
+                            label={key}
+                            value={val}
+                          />
+                        ))}
                       </motion.div>
                     )}
 

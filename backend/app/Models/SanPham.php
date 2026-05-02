@@ -28,6 +28,7 @@ class SanPham extends Model
         'soluongban',
         'gia',
         'nhacungcap_id',
+        'data_json',
     ];
 
     protected $casts = [
@@ -37,6 +38,7 @@ class SanPham extends Model
         'danhmucSP_id' => 'integer',
         'donvitinh_id' => 'integer',
         'nhacungcap_id' => 'integer',
+        'data_json' => 'array',
     ];
 
     protected $appends = [
@@ -50,10 +52,7 @@ class SanPham extends Model
         return $this->hasOne(Sach::class, 'sanpham_id', 'sanpham_id');
     }
 
-    public function vanPhongPham(): HasOne
-    {
-        return $this->hasOne(VanPhongPham::class, 'sanpham_id', 'sanpham_id');
-    }
+
 
     public function danhMuc(): BelongsTo
     {
@@ -100,15 +99,7 @@ class SanPham extends Model
 
     public function getTenHienThiAttribute(): string
     {
-        if ($this->tenSP) {
-            return $this->tenSP;
-        }
-
-        if ($this->relationLoaded('sach') && $this->sach && $this->sach->tenSach) {
-            return $this->sach->tenSach;
-        }
-
-        return 'Sản phẩm #' . $this->sanpham_id;
+        return $this->tenSP ?: 'Sản phẩm #' . $this->sanpham_id;
     }
 
     // ── Scopes ───────────────────────────────────────────
@@ -135,12 +126,25 @@ class SanPham extends Model
             $query->whereHas('sach', fn($q) => $q->where('nhaxuatban_id', $filters['publisher_id']));
         }
 
+        if (!empty($filters['loaisach_code'])) {
+            $query->whereHas('sach', fn($q) => $q->where('loaisach_code', $filters['loaisach_code']));
+        }
+
         if (!empty($filters['min'])) {
             $query->where('gia', '>=', $filters['min']);
         }
 
         if (!empty($filters['max'])) {
             $query->where('gia', '<=', $filters['max']);
+        }
+
+        // Lọc theo các thuộc tính trong data_json
+        if (!empty($filters['attr']) && is_array($filters['attr'])) {
+            foreach ($filters['attr'] as $key => $value) {
+                if ($value !== null && $value !== '') {
+                    $query->where("data_json->$key", $value);
+                }
+            }
         }
 
         $sortBy = $filters['sort_by'] ?? 'newest';
@@ -158,6 +162,10 @@ class SanPham extends Model
                        ->where('ngayketthuc', '>=', now());
                 });
             });
+        }
+
+        if (!empty($filters['in_stock_only'])) {
+            $query->where('soluongton', '>', 0);
         }
 
         return $query;

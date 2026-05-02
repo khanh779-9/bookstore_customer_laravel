@@ -84,12 +84,6 @@ class ProductSeeder extends Seeder
             ['sach_id' => 34, 'sanpham_id' => 50, 'tenSach' => 'Thiết Kế Web Với JavaScript Và Dom', 'nhaxuatban_id' => 6, 'namXB' => '2010', 'tacgia_id' => 28, 'loaisach_code' => 'tinhoc'],
         ]);
 
-        // Văn phòng phẩm
-        DB::table('vanphongpham')->insert([
-            ['vpp_id' => 1, 'sanpham_id' => 7],
-            ['vpp_id' => 5, 'sanpham_id' => 21],
-            ['vpp_id' => 7, 'sanpham_id' => 28],
-            ['vpp_id' => 8, 'sanpham_id' => 51],
-        ]);
+
     }
 }

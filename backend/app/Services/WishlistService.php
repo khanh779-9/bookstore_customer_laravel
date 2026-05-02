@@ -14,7 +14,7 @@ class WishlistService
     public function getWishlist(int $customerId, int $perPage = 12): LengthAwarePaginator
     {
         $wishlistIds = SanPhamYeuThich::where('khachhang_id', $customerId)->pluck('sanpham_id')->all();
-        return SanPham::with(['sach', 'vanPhongPham', 'danhMuc'])
+        return SanPham::with(['sach', 'danhMuc'])
             ->whereIn('sanpham_id', $wishlistIds)
             ->paginate($perPage);
     }

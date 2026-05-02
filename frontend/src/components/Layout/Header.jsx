@@ -23,6 +23,7 @@ import { notificationService } from "../../services/notificationService";
 import { cn } from "../../utils/cn";
 import ConfirmModal from "../Common/ConfirmModal";
 import Input from "../Common/Input";
+import { lookupService } from "../../services/lookupService";
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -42,6 +43,11 @@ export default function Header() {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: () => categoryService.getAllCategories(),
+  });
+
+  const { data: bookTypes = [] } = useQuery({
+    queryKey: ["bookTypes"],
+    queryFn: () => lookupService.getBookTypes(),
   });
 
   const { data: notifications = [] } = useQuery({
@@ -149,14 +155,35 @@ export default function Header() {
                     className="absolute top-full left-0 mt-4 w-60 bg-white border border-slate-200 p-2 z-50 shadow-sm"
                   >
                     {categories.map((cat) => (
-                      <Link
-                        key={cat.id}
-                        to={`/products?danhmucSP_id=${cat.id}`}
-                        className="px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition-all flex items-center justify-between"
-                      >
-                        {cat.name}
-                        <FiChevronRight className="text-slate-300 w-3 h-3" />
-                      </Link>
+                      <div key={cat.id} className="relative group/sub">
+                        <Link
+                          to={`/products?danhmucSP_id=${cat.id}`}
+                          className="px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-primary transition-all flex items-center justify-between"
+                        >
+                          {cat.name}
+                          <FiChevronRight className="text-slate-300 w-3 h-3 group-hover/sub:translate-x-1 transition-transform" />
+                        </Link>
+
+                        {/* Sub-dropdown for Books (cat.id === 1) */}
+                        {cat.id === 1 && bookTypes.length > 0 && (
+                          <div className="absolute left-full top-0 ml-1 w-64 bg-white border border-slate-200 p-2 shadow-lg hidden group-hover/sub:block">
+                            <div className="grid grid-cols-1 gap-1">
+                              {bookTypes.map((type) => (
+                                <Link
+                                  key={type.code}
+                                  to={`/products?danhmucSP_id=1&loaisach_code=${type.code}`}
+                                  className="px-4 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50 hover:text-primary transition-all flex items-center justify-between"
+                                >
+                                  {type.name}
+                                  <span className="text-[10px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100">
+                                    Xem
+                                  </span>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </motion.div>
                 )}

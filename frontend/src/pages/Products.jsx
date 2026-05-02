@@ -32,6 +32,7 @@ export default function Products() {
   const categoryId = searchParams.get("danhmucSP_id") || "";
   const providerId = searchParams.get("provider_id") || "";
   const publisherId = searchParams.get("publisher_id") || "";
+  const loaisachCode = searchParams.get("loaisach_code") || "";
   const promotedOnly = searchParams.get("promoted_only") === "1";
   const sortBy = searchParams.get("sort_by") || "newest";
   const page = parseInt(searchParams.get("page") || "1");
@@ -50,7 +51,16 @@ export default function Products() {
   const { data: productsData, isLoading } = useQuery({
     queryKey: [
       "products",
-      { q, categoryId, providerId, publisherId, promotedOnly, sortBy, page },
+      {
+        q,
+        categoryId,
+        providerId,
+        publisherId,
+        loaisachCode,
+        promotedOnly,
+        sortBy,
+        page,
+      },
       isAuthenticated,
     ],
     queryFn: () =>
@@ -59,6 +69,7 @@ export default function Products() {
         danhmucSP_id: categoryId || undefined,
         provider_id: providerId || undefined,
         publisher_id: publisherId || undefined,
+        loaisach_code: loaisachCode || undefined,
         promoted_only: promotedOnly ? 1 : undefined,
         sort_by: sortBy,
         page,
@@ -78,6 +89,11 @@ export default function Products() {
   const { data: providers = [] } = useQuery({
     queryKey: ["providers"],
     queryFn: lookupService.getProviders,
+  });
+
+  const { data: loaisachs = [] } = useQuery({
+    queryKey: ["bookTypes"],
+    queryFn: lookupService.getBookTypes,
   });
 
   const products = productsData?.data || [];
@@ -120,14 +136,14 @@ export default function Products() {
                 { id: "price_desc", name: "Giá giảm" },
                 { id: "best_selling", name: "Bán chạy" },
               ]}
-              className="py-2 min-w-[140px]"
+              className="py-2 min-w-[140px] shadow-sm"
             />
           </div>
         </div>
 
         <div className="flex gap-8">
           {/* ===== FILTER PANEL ===== */}
-          <aside className="hidden lg:block w-72 shrink-0 sticky top-24 h-fit">
+          <aside className="hidden lg:block w-72 shrink-0 sticky top-24 h-fit shadow-sm ">
             <div className="bg-white border border-slate-200 p-5 space-y-6">
               {/* Header */}
               <div className="flex justify-between items-center">
@@ -157,42 +173,49 @@ export default function Products() {
                 </span>
               </button>
 
-              <Divider />
-
               {/* Category */}
               <Section title="Danh mục">
-                <FilterButton
-                  active={!categoryId}
-                  onClick={() => updateFilter("danhmucSP_id", "")}
-                >
-                  Tất cả
-                </FilterButton>
-
-                {categories.map((c) => (
-                  <FilterButton
-                    key={c.id}
-                    active={categoryId == c.id}
-                    onClick={() => updateFilter("danhmucSP_id", c.id)}
-                  >
-                    {c.name}
-                  </FilterButton>
-                ))}
-              </Section>
-
-              <Divider />
-
-              {/* Publisher */}
-              <Section title="Nhà xuất bản">
                 <Select
-                  value={publisherId}
-                  onChange={(e) => updateFilter("publisher_id", e.target.value)}
-                  options={publishers}
-                  placeholder="Chọn NXB..."
+                  value={categoryId}
+                  onChange={(e) => updateFilter("danhmucSP_id", e.target.value)}
+                  options={categories}
+                  placeholder="Chọn danh mục..."
                   className="py-2"
                 />
               </Section>
 
-              <Divider />
+              {categoryId == 1 && (
+                <>
+                  <Divider />
+                  {/* Publisher */}
+                  <Section title="Nhà xuất bản">
+                    <Select
+                      value={publisherId}
+                      onChange={(e) =>
+                        updateFilter("publisher_id", e.target.value)
+                      }
+                      options={publishers}
+                      placeholder="Chọn NXB..."
+                      className="py-2"
+                    />
+                  </Section>
+
+                  {/* Loại sách */}
+                  <Section title="Loại sách">
+                    <Select
+                      value={loaisachCode}
+                      onChange={(e) =>
+                        updateFilter("loaisach_code", e.target.value)
+                      }
+                      options={loaisachs.map((l) => ({ ...l, id: l.code }))}
+                      placeholder="Chọn loại sách..."
+                      className="py-2"
+                    />
+                  </Section>
+                </>
+              )}
+
+              <Divider/>
 
               {/* Provider */}
               <Section title="Nhà cung cấp">
@@ -262,40 +285,48 @@ export default function Products() {
                       <h4 className="text-xs font-bold text-slate-400 mb-2">
                         Danh mục
                       </h4>
-                      <div className="space-y-1">
-                        <FilterButton
-                          active={!categoryId}
-                          onClick={() => updateFilter("danhmucSP_id", "")}
-                        >
-                          Tất cả
-                        </FilterButton>
-
-                        {categories.map((c) => (
-                          <FilterButton
-                            key={c.id}
-                            active={categoryId == c.id}
-                            onClick={() => updateFilter("danhmucSP_id", c.id)}
-                          >
-                            {c.name}
-                          </FilterButton>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* PUBLISHER */}
-                    <div>
-                      <h4 className="text-xs font-bold text-slate-400 mb-2">
-                        Nhà xuất bản
-                      </h4>
                       <Select
-                        value={publisherId}
+                        value={categoryId}
                         onChange={(e) =>
-                          updateFilter("publisher_id", e.target.value)
+                          updateFilter("danhmucSP_id", e.target.value)
                         }
-                        options={publishers}
-                        placeholder="Chọn NXB..."
+                        options={categories}
+                        placeholder="Chọn danh mục..."
                       />
                     </div>
+
+                    {/* PUBLISHER & BOOK TYPE (Conditional) */}
+                    {categoryId == 1 && (
+                      <>
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-400 mb-2">
+                            Nhà xuất bản
+                          </h4>
+                          <Select
+                            value={publisherId}
+                            onChange={(e) =>
+                              updateFilter("publisher_id", e.target.value)
+                            }
+                            options={publishers}
+                            placeholder="Chọn NXB..."
+                          />
+                        </div>
+
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-400 mb-2">
+                            Loại sách
+                          </h4>
+                          <Select
+                            value={loaisachCode}
+                            onChange={(e) =>
+                              updateFilter("loaisach_code", e.target.value)
+                            }
+                            options={loaisachs.map((l) => ({ ...l, id: l.code }))}
+                            placeholder="Chọn loại sách..."
+                          />
+                        </div>
+                      </>
+                    )}
 
                     {/* PROVIDER */}
                     <div>
@@ -501,6 +532,3 @@ function PaginationButton({ onClick, disabled, icon, label }) {
     </button>
   );
 }
-
-
-

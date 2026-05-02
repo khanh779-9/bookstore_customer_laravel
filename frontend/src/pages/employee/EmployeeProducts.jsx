@@ -11,18 +11,17 @@ import AdminSearchInput from "../../components/Admin/AdminSearchInput";
 const INIT_FORM = {
   type: "Sach",
   danhmucSP_id: "1",
+  tenSP: "",
   gia: "",
   soluongton: "",
   mo_ta: "",
   hinhanh: "",
-  // Book
-  tenSach: "",
+  attributes: {},
+  // Book specific
   nhaxuatban_id: "",
   tacgia_id: "",
   loaisach_code: "",
   namXB: "",
-  // VPP
-  tenVPP: "",
 };
 
 export default function EmployeeProducts() {
@@ -36,6 +35,8 @@ export default function EmployeeProducts() {
   const [searchTerm, setSearchTerm] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
+  const [newAttrKey, setNewAttrKey] = useState("");
+  const [newAttrValue, setNewAttrValue] = useState("");
 
   // Lookup data
   const [publishers, setPublishers] = useState([]);
@@ -98,16 +99,17 @@ export default function EmployeeProducts() {
     setFormData({
       type: isSach ? "Sach" : "VPP",
       danhmucSP_id: String(p.danhmucSP_id || "1"),
+      tenSP: p.tenSP || "",
       gia: p.gia ?? "",
       soluongton: p.soluongton ?? "",
       mo_ta: p.mo_ta || "",
       hinhanh: p.hinhanh || "",
-      tenSach: p.sach?.tenSach || "",
+      attributes: p.attributes || {},
+      // Book
       nhaxuatban_id: p.sach?.nhaxuatban_id || "",
       tacgia_id: p.sach?.tacgia_id || "",
       loaisach_code: p.sach?.loaisach_code || "",
       namXB: p.sach?.namXB || "",
-      tenVPP: p.van_phong_pham?.tenVPP || "",
     });
     setImageFile(null);
     setShowModal(true);
@@ -118,16 +120,18 @@ export default function EmployeeProducts() {
     setIsSubmitting(true);
     try {
       const payload = {
-        type: formData.type,
+        type: formData.type.toLowerCase(),
+        tenSP: formData.tenSP,
         danhmucSP_id: parseInt(formData.danhmucSP_id),
         gia: parseFloat(formData.gia),
         soluongton: parseInt(formData.soluongton),
         mo_ta: formData.mo_ta || null,
         hinhanh: formData.hinhanh || null,
+        attributes: formData.attributes,
       };
-
+ 
       if (formData.type === "Sach") {
-        payload.tenSach = formData.tenSach;
+        payload.tenSach = formData.tenSP;
         if (formData.nhaxuatban_id)
           payload.nhaxuatban_id = parseInt(formData.nhaxuatban_id);
         if (formData.tacgia_id)
@@ -135,8 +139,6 @@ export default function EmployeeProducts() {
         if (formData.loaisach_code)
           payload.loaisach_code = formData.loaisach_code;
         if (formData.namXB) payload.namXB = parseInt(formData.namXB);
-      } else {
-        payload.tenVPP = formData.tenVPP;
       }
 
       if (editingId) {
@@ -187,11 +189,7 @@ export default function EmployeeProducts() {
   };
 
   const filtered = products.filter((p) => {
-    const name = (
-      p.sach?.tenSach ||
-      p.van_phong_pham?.tenVPP ||
-      ""
-    ).toLowerCase();
+    const name = (p.tenSP || "").toLowerCase();
     return name.includes(searchTerm.toLowerCase());
   });
 
@@ -199,8 +197,7 @@ export default function EmployeeProducts() {
     {
       header: "Sản phẩm",
       render: (p) => {
-        const name =
-          p.sach?.tenSach || p.van_phong_pham?.tenVPP || `SP #${p.sanpham_id}`;
+        const name = p.tenSP || `SP #${p.sanpham_id}`;
         return (
           <div className="flex items-center gap-4">
             <div className="w-12 h-16 shrink-0 bg-slate-100 rounded-sm overflow-hidden border border-slate-100 shadow-sm">
@@ -348,33 +345,18 @@ export default function EmployeeProducts() {
             </div>
           </div>
 
-          {formData.type === "Sach" ? (
-            <div>
-              <label className={labelStyle}>Tên sách *</label>
-              <input
-                type="text"
-                name="tenSach"
-                value={formData.tenSach}
-                onChange={handleInput}
-                required
-                className={inputStyle}
-                placeholder="Nhập tên sách"
-              />
-            </div>
-          ) : (
-            <div>
-              <label className={labelStyle}>Tên văn phòng phẩm *</label>
-              <input
-                type="text"
-                name="tenVPP"
-                value={formData.tenVPP}
-                onChange={handleInput}
-                required
-                className={inputStyle}
-                placeholder="Nhập tên VPP"
-              />
-            </div>
-          )}
+          <div>
+            <label className={labelStyle}>Tên sản phẩm *</label>
+            <input
+              type="text"
+              name="tenSP"
+              value={formData.tenSP}
+              onChange={handleInput}
+              required
+              className={inputStyle}
+              placeholder="Nhập tên sản phẩm"
+            />
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
@@ -496,6 +478,64 @@ export default function EmployeeProducts() {
               className={`${inputStyle} resize-none`}
               placeholder="Mô tả tóm tắt nội dung sản phẩm..."
             />
+          </div>
+
+          <div className="p-4 bg-slate-50 rounded-sm border border-slate-200">
+            <label className={labelStyle}>Thuộc tính bổ sung (JSON)</label>
+            <div className="space-y-3">
+              {Object.entries(formData.attributes || {}).map(([key, val]) => (
+                <div key={key} className="flex items-center gap-2">
+                  <div className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded text-sm font-medium">
+                    <span className="text-slate-400 mr-2">{key}:</span>
+                    {val}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = { ...formData.attributes };
+                      delete next[key];
+                      setFormData({ ...formData, attributes: next });
+                    }}
+                    className="p-1.5 text-rose-500 hover:bg-rose-50 rounded transition-colors"
+                  >
+                    Xóa
+                  </button>
+                </div>
+              ))}
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  placeholder="Tên thuộc tính (VD: Màu sắc)"
+                  value={newAttrKey}
+                  onChange={(e) => setNewAttrKey(e.target.value)}
+                  className="px-3 py-2 bg-white border border-slate-200 rounded text-sm outline-none focus:border-primary"
+                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Giá trị (VD: Xanh)"
+                    value={newAttrValue}
+                    onChange={(e) => setNewAttrValue(e.target.value)}
+                    className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded text-sm outline-none focus:border-primary"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newAttrKey.trim()) return;
+                      setFormData({
+                        ...formData,
+                        attributes: { ...formData.attributes, [newAttrKey.trim()]: newAttrValue }
+                      });
+                      setNewAttrKey("");
+                      setNewAttrValue("");
+                    }}
+                    className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded hover:bg-slate-800 transition-all"
+                  >
+                    Thêm
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">

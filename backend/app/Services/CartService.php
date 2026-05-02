@@ -16,7 +16,7 @@ class CartService
     {
         if ($customerId > 0) {
             $cart = GioHang::getOrCreateForCustomer($customerId);
-            $items = $cart->chiTiet()->with('sanPham.sach', 'sanPham.vanPhongPham')->get()->map(function($item) {
+            $items = $cart->chiTiet()->with('sanPham.sach')->get()->map(function($item) {
                 return [
                     'sanpham_id' => $item->sanpham_id,
                     'name' => $item->sanPham->ten_hien_thi,

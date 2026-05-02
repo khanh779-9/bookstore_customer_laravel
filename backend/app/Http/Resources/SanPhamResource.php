@@ -52,9 +52,9 @@ class SanPhamResource extends JsonResource
             
             // Relationships (conditional)
             'sach' => new SachResource($this->whenLoaded('sach')),
-            'van_phong_pham' => $this->whenLoaded('vanPhongPham'),
             'book_details' => new SachResource($this->whenLoaded('sach')),
-            'stationery_details' => $this->whenLoaded('vanPhongPham'),
+            'metadata' => $this->data_json,
+            'attributes' => $this->data_json,
             
             // Stats
             'avg_rating' => (float) ($this->avg_rating ?? 0),

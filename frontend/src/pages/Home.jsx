@@ -187,9 +187,7 @@ export default function Home() {
                 </button>
 
                 {/* INDICATOR */}
-                <div
-                  className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full"
-                >
+                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full">
                   {BANNERS.map((_, idx) => (
                     <button
                       key={idx}
@@ -282,24 +280,24 @@ export default function Home() {
           </section>
 
           <section className="py-12">
-            <div className="container mx-auto px-4 max-w-[1600px]">
-              <div className="bg-secondary rounded-none overflow-hidden shadow-none flex flex-col md:flex-row items-center">
-                <div className="p-8 md:p-16 flex-1 text-white">
-                  <span className="text-xs font-bold uppercase tracking-[0.3em] text-primary mb-4 block">
+            <div className="container mx-auto px-4">
+              <div className="bg-secondary rounded-md overflow-hidden shadow-lg flex flex-col md:flex-row items-center">
+                <div className="p-4 md:p-12 flex-1 text-white">
+                  <span className="text-xs font-bold uppercase tracking-[0.3em] text-primary mb-2 block">
                     Flash Sale
                   </span>
 
-                  <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+                  <h2 className="text-2xl md:text-4xl font-bold mb-4 text-white leading-tight">
                     Đăng ký thành viên - Nhận ngay ưu đãi 20%
                   </h2>
 
-                  <p className="text-slate-300 mb-10 max-w-md">
+                  <p className="text-slate-300 mb-4 max-w-md">
                     Nhận thông báo về những đầu sách mới nhất và các chương
                     trình khuyến mãi độc quyền chỉ dành cho thành viên.
                   </p>
 
                   <form
-                    className="flex flex-col sm:flex-row items-stretch gap-4"
+                    className="flex flex-col sm:flex-row items-stretch gap-2"
                     onSubmit={(e) => e.preventDefault()}
                   >
                     <label htmlFor="email" className="sr-only">
@@ -321,9 +319,9 @@ export default function Home() {
                   </form>
                 </div>
 
-                <div className="hidden md:block w-1/3 p-12">
-                  <div className="aspect-square border-[1.5rem] border-primary/20 flex items-center justify-center p-8">
-                    <div className="w-full h-full bg-primary flex items-center justify-center text-white text-6xl font-bold">
+                <div className="hidden md:block w-1/5 p-6">
+                  <div className="aspect-square border-[1.5rem] border-primary/20 flex items-center justify-center p-4 rounded-full">
+                    <div className="w-full h-full bg-primary flex items-center justify-center text-white text-4xl font-bold  rounded-full">
                       20%
                     </div>
                   </div>
@@ -392,13 +390,9 @@ function FeatureItem({ icon: Icon, title, desc }) {
 
       {/* TEXT */}
       <div className="flex-1">
-        <h3 className="text-sm font-semibold text-slate-800 mb-1">
-          {title}
-        </h3>
+        <h3 className="text-sm font-semibold text-slate-800 mb-1">{title}</h3>
 
-        <p className="text-xs text-slate-500 leading-relaxed">
-          {desc}
-        </p>
+        <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
       </div>
     </div>
   );

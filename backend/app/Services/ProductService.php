@@ -14,8 +14,13 @@ class ProductService
      */
     public function getFilteredProducts(array $filters, int $perPage = 12): LengthAwarePaginator
     {
-        $query = SanPham::with(['sach', 'vanPhongPham', 'danhMuc', 'donViTinh'])
+        $query = SanPham::with(['sach', 'danhMuc', 'donViTinh'])
             ->filter($filters);
+
+        // Mặc định lọc bỏ hàng hết nếu không có yêu cầu xem toàn bộ (dùng cho Frontend)
+        if (!isset($filters['show_all'])) {
+            $query->where('soluongton', '>', 0);
+        }
 
         $products = $query->paginate($perPage);
 
@@ -56,11 +61,14 @@ class ProductService
         $product = SanPham::with([
             'sach.tacgia', 
             'sach.nhaxuatban', 
-            'vanPhongPham', 
             'danhGia.khachHang',
             'nhaCungCap',
             'danhMuc'
         ])->findOrFail($id);
+
+        if ($product->soluongton <= 0) {
+             throw new \Illuminate\Database\Eloquent\ModelNotFoundException("Sản phẩm hiện đang hết hàng.");
+        }
         
         $avgRating = (float) $product->danhGia()->avg('rating');
         $totalReviews = (int) $product->danhGia()->count();
@@ -109,18 +117,18 @@ class ProductService
     public function createProduct(array $data): SanPham
     {
         return \Illuminate\Support\Facades\DB::transaction(function() use ($data) {
+            if (isset($data['attributes']) && is_array($data['attributes'])) {
+                $data['data_json'] = $data['attributes'];
+            }
             $product = SanPham::create($data);
 
             if ($data['type'] === 'book') {
                 $product->sach()->create([
-                    'tenSach' => $data['tenSach'] ?? $data['tenSP'],
                     'tacgia_id' => $data['tacgia_id'],
                     'nhaxuatban_id' => $data['nhaxuatban_id'],
                     'namXB' => $data['namXB'],
                     'loaisach_code' => $data['loaisach_code'],
                 ]);
-            } else if ($data['type'] === 'stationery') {
-                $product->vanPhongPham()->create([]);
             }
 
             return $product;
@@ -134,12 +142,19 @@ class ProductService
     {
         return \Illuminate\Support\Facades\DB::transaction(function() use ($id, $data) {
             $product = SanPham::findOrFail($id);
-            $product->update($data);
+            
+            // Xử lý cập nhật/thêm mới các thuộc tính trong data_json mà không làm mất dữ liệu cũ
+            if (isset($data['attributes']) && is_array($data['attributes'])) {
+                $currentAttributes = $product->data_json ?? [];
+                $product->data_json = array_merge($currentAttributes, $data['attributes']);
+            }
+
+            // Cập nhật các trường thông thường khác
+            $product->fill($data);
+            $product->save();
 
             if ($product->sach) {
                 $product->sach->update($data);
-            } else if ($product->vanPhongPham) {
-                $product->vanPhongPham->update($data);
             }
 
             return $product;
@@ -153,9 +168,7 @@ class ProductService
     {
         \Illuminate\Support\Facades\DB::transaction(function() use ($id) {
             $product = SanPham::findOrFail($id);
-            // Delete subtype records first if not using cascade delete
             $product->sach()?->delete();
-            $product->vanPhongPham()?->delete();
             $product->delete();
         });
     }
