@@ -144,7 +144,7 @@ export default function ProductDetail() {
 
 /* Internal UI Helpers */
 const Breadcrumb = ({ name }) => (
-  <nav className="flex items-center gap-3 text-[10px] font-black text-slate-400 mb-8 uppercase tracking-widest overflow-x-auto whitespace-nowrap">
+  <nav className="flex items-center gap-3 text-xs font-black text-slate-400 mb-8 uppercase tracking-widest overflow-x-auto whitespace-nowrap">
     <Link to="/" className="hover:text-primary transition-colors">Trang chủ</Link>
     <FiChevronRight className="shrink-0" />
     <Link to="/products" className="hover:text-primary transition-colors">Sản phẩm</Link>
@@ -176,11 +176,11 @@ const TrustBadges = () => (
   <div className="grid grid-cols-2 gap-4">
     <div className="p-4 rounded-sm bg-emerald-50/50 border border-emerald-100 flex items-center gap-3">
       <FiShield className="text-emerald-500 text-xl" />
-      <span className="text-[10px] font-black text-emerald-900 uppercase">100% Chính hãng</span>
+      <span className="text-xs font-black text-emerald-900 uppercase">100% Chính hãng</span>
     </div>
     <div className="p-4 rounded-sm bg-blue-50/50 border border-blue-100 flex items-center gap-3">
       <FiTruck className="text-blue-500 text-xl" />
-      <span className="text-[10px] font-black text-blue-900 uppercase">Giao hàng nhanh</span>
+      <span className="text-xs font-black text-blue-900 uppercase">Giao hàng nhanh</span>
     </div>
   </div>
 );
