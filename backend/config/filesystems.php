@@ -60,6 +60,24 @@ return [
             'report' => false,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Oracle Cloud Object Storage (S3-compatible)
+        |--------------------------------------------------------------------------
+        */
+        'oci' => [
+            'driver' => 's3',
+            'key' => env('OCI_ACCESS_KEY_ID'),
+            'secret' => env('OCI_SECRET_ACCESS_KEY'),
+            'region' => env('OCI_REGION', 'ap-singapore-1'),
+            'bucket' => env('OCI_BUCKET_NAME'),
+            'endpoint' => env('OCI_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'report' => false,
+            'visibility' => 'public',
+        ],
+
     ],
 
     /*

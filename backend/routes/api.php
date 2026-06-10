@@ -15,6 +15,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\LoaiSachController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\OracleCloudController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,6 +35,10 @@ Route::prefix('v1')->group(function () {
     Route::get('/authors', [AuthorController::class, 'index']);
     Route::get('/units', [UnitController::class, 'index']);
     Route::get('/loaisach', [LoaiSachController::class, 'index']);
+
+    // ── Oracle Cloud (Public) ────────────────────────────
+    Route::get('/image', [OracleCloudController::class, 'getImage']);
+    Route::get('/image/product/{productId}', [OracleCloudController::class, 'getProductImage']);
 
     // ── Search & General API ─────────────────────────────
     Route::get('/search', [ProductController::class, 'search']);
@@ -150,6 +155,14 @@ Route::prefix('v1')->group(function () {
             Route::post('/authors', [AuthorController::class, 'store']);
             Route::put('/authors/{id}', [AuthorController::class, 'update']);
             Route::delete('/authors/{id}', [AuthorController::class, 'destroy']);
+
+            // ── Oracle Cloud Storage ──────────────────────
+            Route::prefix('oracle-cloud')->group(function () {
+                Route::post('/upload', [OracleCloudController::class, 'upload']);
+                Route::post('/upload-product/{productId}', [OracleCloudController::class, 'uploadProductImage']);
+                Route::get('/files', [OracleCloudController::class, 'listFiles']);
+                Route::delete('/image', [OracleCloudController::class, 'deleteImage']);
+            });
 
             // ── Reports ──────────────────────────────────
             Route::get('/reports', [EmployeeAccountController::class, 'reports']);

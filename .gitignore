@@ -27,6 +27,8 @@ Thumbs.db
 /.*/
 .aider*
 
+/vendor/
+
 /backend/vendor
 /backend/node_modules
 /backend/public/build

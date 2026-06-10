@@ -36,8 +36,9 @@ class SanPhamResource extends JsonResource
             'danhmucSP_id' => $this->danhmucSP_id,
             'category_id' => $this->danhmucSP_id,
             'category_name' => $this->danhMuc->tenDanhMuc ?? null,
-            'hinhanh' => $this->hinhanh,
-            'image' => $this->hinhanh,
+            'hinhanh' => $this->resolveImageUrl(),
+            'image' => $this->resolveImageUrl(),
+            'image_url' => $this->resolveImageUrl(),
             'mo_ta' => $this->mo_ta,
             'description' => $this->mo_ta,
             'soluongton' => $this->soluongton,
@@ -60,5 +61,34 @@ class SanPhamResource extends JsonResource
             'avg_rating' => (float) ($this->avg_rating ?? 0),
             'total_reviews' => (int) ($this->total_reviews ?? 0),
         ];
+    }
+
+    /**
+     * Resolve the full image URL.
+     * - OCI path (e.g. "products/xxx.jpg") → OCI public URL
+     * - Full URL already → return as-is
+     * - Local storage path → asset URL
+     */
+    private function resolveImageUrl(): ?string
+    {
+        if (!$this->hinhanh) return null;
+
+        // Already a full URL
+        if (filter_var($this->hinhanh, FILTER_VALIDATE_URL)) {
+            return $this->hinhanh;
+        }
+
+        // OCI file path
+        if (str_starts_with($this->hinhanh, 'products/')) {
+            try {
+                return \Illuminate\Support\Facades\Storage::disk('oci')->url($this->hinhanh);
+            } catch (\Exception) {
+                // Fallback
+            }
+        }
+
+        // Local storage
+        return asset('storage/' . $this->hinhanh);
+    }
     }
 }
